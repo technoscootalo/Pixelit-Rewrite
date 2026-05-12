@@ -1,0 +1,439 @@
+let user = null;
+const DAILY_WHEEL_COOLDOWN_MS = 1000 * 60 * 60 * 4;
+
+function formatRemaining(ms) {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${hours}h ${minutes}m ${seconds}s`;
+}
+
+function updateDailyWheelState() {
+  const button = document.getElementById("spinButton");
+  const messageEl = document.getElementById("dailyWheelMessage");
+
+  if (!button || !messageEl) return;
+
+  if (user && user.lastClaim) {
+    const lastClaimDate = new Date(user.lastClaim);
+    const nextClaimDate = new Date(lastClaimDate.getTime() + DAILY_WHEEL_COOLDOWN_MS);
+    const now = new Date();
+
+    if (nextClaimDate > now) {
+      button.style.display = "none";
+      messageEl.innerText = `Next wheel in ${formatRemaining(nextClaimDate - now)}`;
+      return;
+    }
+  }
+
+  button.style.display = "inline-flex";
+  button.disabled = false;
+  messageEl.innerText = "";
+}
+
+function showClaimModal(reward) {
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeInOverlay 0.25s ease;
+  `;
+
+  const box = document.createElement("div");
+  box.style.cssText = `
+    background-color: #6f057a;
+    box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 280px;
+    color: white;
+    font-family: Pixelify Sans, sans-serif;
+    font-size: 18px;
+    transform: scale(0.85);
+    animation: popIn 0.25s ease forwards;
+    position: relative;
+    overflow: hidden;
+  `;
+
+  box.innerHTML = `
+    <h2 style="margin-bottom: 10px; font-size: 1.6rem;">Daily Wheel Reward!</h2>
+    <p style="margin: 0 0 12px; font-size: 1rem; opacity: 0.9;">You just received</p>
+    <p style="margin: 0; font-size: 2.2rem; font-weight: 700;">${reward.toLocaleString()} tokens</p>
+    <p style="margin-top: 10px; opacity: 0.85;">Keep spinning every 4 hours for more!</p>
+  `;
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+
+  modal.addEventListener("click", () => modal.remove());
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  `;
+
+  modal.appendChild(style);
+}
+
+async function loadUser() {
+  try {
+    const res = await fetch("/api/user", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      window.location.href = "/login";
+      return;
+    }
+
+    user = await res.json();
+
+    user.tokens = user.tokens || 0;
+    user.packs = user.packs || 0;
+    user.sent = user.sent || 0;
+
+    const pfp = document.getElementById("pfp");
+    const banner = document.getElementById("banner");
+    const usernameEl = document.getElementById("username");
+    const roleEl = document.getElementById("role");
+
+    if (pfp) pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+    if (banner) banner.src = user.banner || "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
+    if (usernameEl) usernameEl.innerText = user.username;
+    if (roleEl) roleEl.innerText = user.role || "Player";
+
+    const tokensEl = document.getElementById("tokens");
+    const packsEl = document.getElementById("packs");
+    const messagesEl = document.getElementById("messages");
+
+    if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
+    if (packsEl) packsEl.innerText = user.packs.toLocaleString();
+    if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
+
+    checkPanelAccess();
+    updateDailyWheelState();
+  } catch (err) {
+    console.error("Failed to load user data:", err);
+  }
+}
+
+async function claimDailyWheel() {
+  const button = document.getElementById("spinButton");
+  const messageEl = document.getElementById("dailyWheelMessage");
+
+  if (!button || !messageEl) return;
+
+  button.disabled = true;
+  messageEl.innerText = "Claiming...";
+
+  try {
+    const res = await fetch("/api/user/daily-wheel", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      button.disabled = false;
+      if (data && data.nextClaim) {
+        const remaining = new Date(data.nextClaim) - new Date();
+        messageEl.innerText = `Next wheel in ${formatRemaining(remaining)}`;
+        button.style.display = "none";
+      } else {
+        messageEl.innerText = data.error || "Unable to claim reward.";
+      }
+      return;
+    }
+
+    user.tokens = data.tokens;
+    user.lastClaim = new Date().toISOString();
+
+    const tokensEl = document.getElementById("tokens");
+    if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
+
+    showClaimModal(data.reward);
+    messageEl.innerText = `You won ${data.reward.toLocaleString()} tokens! Next claim in 4h.`;
+    updateDailyWheelState();
+  } catch (err) {
+    console.error("Claim failed:", err);
+    button.disabled = false;
+    messageEl.innerText = "Claim failed. Try again later.";
+  }
+}
+
+const spinButton = document.getElementById("spinButton");
+if (spinButton) {
+  spinButton.addEventListener("click", claimDailyWheel);
+}
+
+function createElement(tag, props = {}, styles = {}) {
+  const el = document.createElement(tag);
+  Object.assign(el, props);
+  Object.assign(el.style, styles);
+  return el;
+}
+
+function openViewUserPopup() {
+  const modal = createElement('div', {}, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: '10000',
+  });
+
+  const modalContent = createElement('div', {}, {
+    backgroundColor: '#6f057a',
+    boxShadow: 'inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+    padding: '20px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    fontSize: '26px',
+    width: '420px',
+    color: 'white',
+    fontFamily: 'Pixelify Sans, sans-serif',
+  });
+
+  const title = createElement('h2');
+  title.textContent = 'View User';
+  modalContent.appendChild(title);
+
+  const input = createElement(
+    'input',
+    {
+      type: 'text',
+      placeholder: 'Username',
+      id: 'viewUsernameInput',
+    },
+    {
+      width: '60%',
+      height: '50px',
+      marginBottom: '10px',
+      fontFamily: 'Pixelify Sans, sans-serif',
+      fontSize: '18px',
+      textAlign: 'center',
+      border: '3px solid #5e046e',
+      borderRadius: '4px',
+      boxSizing: 'border-box',
+      backgroundColor: 'transparent',
+      color: 'white',
+      marginRight: '5px',
+      outline: 'none',
+    }
+  );
+
+  modalContent.appendChild(input);
+
+  const buttonRow = createElement('div', {}, {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '12px',
+    flexWrap: 'wrap',
+    marginTop: '10px',
+  });
+
+  const viewButton = createElement(
+    'button',
+    {
+      type: 'button',
+      className: 'view-profile-btn'
+    },
+    {
+      backgroundColor: 'green',
+      boxShadow:
+        'inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+      fontFamily: 'Pixelify Sans, sans-serif',
+      color: 'white',
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+    }
+  );
+
+  viewButton.textContent = 'View Profile';
+
+  const cancelButton = createElement(
+    'button',
+    {
+      type: 'button',
+      className: 'cancel-profile-btn'
+    },
+    {
+      backgroundColor: 'red',
+      boxShadow:
+        'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+      fontFamily: 'Pixelify Sans, sans-serif',
+      color: 'white',
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+    }
+  );
+
+  cancelButton.textContent = 'Cancel';
+
+  const resultArea = createElement('div', {}, {
+    marginTop: '20px',
+    color: 'white',
+    textAlign: 'left',
+    display: 'none',
+  });
+
+  modalContent.appendChild(resultArea);
+
+  viewButton.onclick = async () => {
+    const searchUser = input.value.trim();
+
+    if (!searchUser) {
+      alert('Please enter a username.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/viewUser/getUserStats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: searchUser
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || 'User not found.');
+        return;
+      }
+
+      const other = data.user;
+
+      resultArea.style.display = 'block';
+      resultArea.innerHTML = `
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <img 
+            src="${other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png'}" 
+            alt="Avatar" 
+            style="
+              width:48px;
+              height:48px;
+              border-radius:8px;
+              object-fit:cover;
+              border:2px solid #fff;
+            "
+          />
+
+          <div>
+            <div style="font-size:22px; font-weight:bold;">
+              ${other.username}
+            </div>
+
+            <div style="font-size:14px; opacity:0.8;">
+              ${other.role || 'Player'}
+            </div>
+          </div>
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap:10px;
+        ">
+          <div style="
+            background: rgba(255,255,255,0.08);
+            padding:10px;
+            border-radius:6px;
+          ">
+            Tokens<br>
+            <strong>${other.tokens.toLocaleString()}</strong>
+          </div>
+
+          <div style="
+            background: rgba(255,255,255,0.08);
+            padding:10px;
+            border-radius:6px;
+          ">
+            Packs Opened<br>
+            <strong>${other.packsOpened.toLocaleString()}</strong>
+          </div>
+
+          <div style="
+            grid-column: span 2;
+            background: rgba(255,255,255,0.08);
+            padding:10px;
+            border-radius:6px;
+          ">
+            Messages<br>
+            <strong>${other.stats.sent.toLocaleString()}</strong>
+          </div>
+        </div>
+
+        <div style="
+          margin-top:12px;
+          font-size:14px;
+          opacity:0.85;
+        ">
+          Badges: ${
+            other.badges.length
+              ? other.badges.join(', ')
+              : 'None'
+          }
+        </div>
+      `;
+
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      alert('Error loading user profile.');
+    }
+  };
+
+  cancelButton.onclick = () => {
+    document.body.removeChild(modal);
+  };
+
+  buttonRow.appendChild(viewButton);
+  buttonRow.appendChild(cancelButton);
+
+  modalContent.appendChild(buttonRow);
+  modal.appendChild(modalContent);
+
+  document.body.appendChild(modal);
+
+  input.focus();
+}
+
+const viewUserButton = document.querySelector('.viewUser');
+
+if (viewUserButton) {
+  viewUserButton.addEventListener(
+    'click',
+    openViewUserPopup
+  );
+}
+
+loadUser();

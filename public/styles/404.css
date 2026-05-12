@@ -1,0 +1,158 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #6f0083;
+  font-family: Pixelify Sans;
+}
+
+.background {
+  position: fixed;
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  background-size: 550px;
+  background-position: -100px -100px;
+  background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+  transform: translate(-50%, -50%) rotate(15deg);
+  opacity: 0.1;
+}
+
+.container-404 {
+  width: 800px;
+  height: 550px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  background-color: #6f057a;
+  box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+@media screen and (max-width: 600px) {
+  .container-404 {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+.title {
+  font-size: 236px;
+  margin: 0px;
+  color: #ffffff;
+}
+
+@media screen and (max-width: 600px) {
+  .title {
+    font-size: 75px;
+    margin: 0px;
+    color: #ffffff;
+  }
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.center-content {
+  max-width: 600px;
+  border-radius: 8px;
+}
+
+@media screen and (max-width: 600px) {
+  .center-content {
+    max-width: 200px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 0 auto;
+  }
+}
+
+.description {
+  color: #ffffff;
+  font-size: 26px;
+}
+
+@media screen and (max-width: 600px) {
+  .description {
+    font-size: 1em;
+    margin: 10px 0;
+    color: #ffffff;
+  }
+}
+
+.img {
+  width: 145px;
+  height: 160px;
+  cursor: pointer;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+@media screen and (max-width: 600px) {
+  .img {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container-404 {
+    width: 90%;
+    max-width: 340px;
+    height: auto;
+    min-height: 320px;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .center-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .center-content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .title {
+    font-size: 112px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 10px 0;
+    padding: 0 5px;
+  }
+
+  .img {
+    width: 70px;
+    height: 75px;
+    margin-top: 10px;
+  }
+}
+

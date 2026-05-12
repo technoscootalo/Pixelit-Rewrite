@@ -1,0 +1,61 @@
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, trim: true, unique: true },
+  password: { type: String, required: true },
+
+  accessKey: {
+    type: String,
+    required: true
+  },
+
+  pfp: {
+    type: String,
+    default:
+      "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
+  },
+
+  banner: {
+    type: String,
+    default:
+      "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png",
+  },
+
+  id: { type: String, required: true, unique: true },
+
+  role: { type: String, default: "Player" },
+
+  tokens: { type: Number, default: 0 },
+  packs: { type: Number, default: 0 },
+  sent: { type: Number, default: 0 },
+
+  muted: { type: Boolean, default: false },
+  muteReason: { type: String, default: "No Reason Provided" },
+
+  banned: { type: Boolean, default: false },
+  banReason: { type: String, default: "No Reason Provided" },
+
+  badges: { type: Array, default: [] },
+
+  banDuration: { type: Number, default: 0 },
+  muteDuration: { type: Number, default: 0 },
+
+  joinDate: {
+    type: String,
+    default: () => new Date().toISOString(),
+  },
+
+  createdAt: { type: Date, default: Date.now },
+
+  lastClaim: {
+    type: Date,
+    default: null,
+  },
+
+  discordId: {
+    type: String,
+    default: null,
+  },
+});
+
+module.exports = mongoose.model("User", userSchema, "accounts");

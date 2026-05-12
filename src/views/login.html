@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<main>
+
+    <div class="login-wrapper">
+
+        <img
+            src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Technology/Virus.gif"
+            class="animated-blook"
+            id="goHome"
+            style="cursor:pointer;"
+            alt="blook"
+        />
+
+        <div class="login-form-container">
+
+            <h1>Login</h1>
+
+            <form id="loginForm">
+
+                <input type="text" id="username" placeholder="Username" required>
+                <br>
+
+                <input type="password" id="password" placeholder="Password" required>
+                <br>
+
+                <p class="login-error" id="error"></p>
+
+                <p class="redirect-text" id="redirect" style="display:none;">
+                    Redirecting...
+                </p>
+
+                <div style="text-align:center;">
+                    <button type="submit" id="submitBtn">
+                        Login
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <span class="terms">Running version 3.0.0</span>
+
+</main>
+
+<script src="/js/login.js"></script>
+
+</body>
+</html>

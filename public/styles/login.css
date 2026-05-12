@@ -1,0 +1,160 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #6f0083;
+    color: white;
+    font-family: Pixelify Sans;
+    overflow: hidden;
+}    
+
+main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 200px;
+  max-width: 900px;
+  width: 90%;
+}
+
+.terms {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.terms a {
+  color: white;
+  text-decoration: underline;
+}
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 200px;
+  max-width: 900px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.animated-blook {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  cursor: pointer;
+  /* animation: spinBob 4s ease-in-out infinite, fadeInScale 1s ease-out; */
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+}
+
+.login-form-container {
+  font-family: 'Pixelify Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 440px;
+  height: 420px;
+  background-color: #6f057a;
+  color: white;
+  border: none;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  box-shadow: inset 0 -0.365vw #5a0463, 3px 3px 15px rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.login-form-container h1 {
+    font-size: 58px;
+    margin-bottom: 20px;
+}
+
+.login-form-container input {
+    font-family: 'Pixelify Sans';
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.login-form-container button {
+    width: auto;
+    font-size: 20px;
+    border-radius: 5px;
+    background-color: #6f057a;
+    color: white;
+    border: 3px solid rgb(94, 4, 110);
+    padding: 15px 30px;
+    cursor: pointer;
+    font-family: 'Pixelify Sans';
+    pointer-events: auto;
+    cursor: pointer; 
+    position: relative;
+    top: 0;
+    left: 0;
+    transition: background-color 0.3s ease;
+}
+
+.login-form-container button:hover {
+    background-color: #5a0463;
+}
+
+.login-error {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.redirect-text {
+    color: #00ff88;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+    gap: 70px;
+  }
+
+  .animated-blook {
+    width: 250px;
+    height: 250px;
+  }
+
+  .login-form-container {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    margin: 0;
+  }
+}
+
+.background {
+	position: fixed;
+	width: 250%;
+	height: 250%;
+	top: 50%;
+	left: 50%;
+	z-index: -1;
+	background-size: 550px;
+	background-position: -100px -100px;
+	background-image: url('https://izumiihd.github.io/pixelitcdn/assets/background.png');
+	transform: translate(-50%, -50%) rotate(15deg);
+	opacity: 0.1;
+}

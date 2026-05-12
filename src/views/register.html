@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="/styles/register.css">
+</head>
+
+<body>
+
+<img class="background" alt="background"/>
+
+<main>
+
+    <div class="register-wrapper">
+
+        <img
+            src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Space/TimTheAlien.gif"
+            class="animated-blook"
+            id="goLogin"
+            style="cursor:pointer;"
+            alt="blook"
+        />
+
+        <div class="register-form-container">
+
+            <h1>Register</h1>
+
+            <form id="registerForm">
+
+                <input type="text" id="username" placeholder="Username" required>
+                <br>
+
+                <input type="password" id="password" placeholder="Password" required>
+                <br>
+
+                <input type="text" id="accessKey" placeholder="Access Key" required>
+                <br>
+
+                <p class="register-error" id="error"></p>
+
+                <div style="text-align:center;">
+                    <button type="submit" id="submitBtn">
+                        Register
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <span class="terms">Running version 3.0.0</span>
+
+</main>
+
+<script src="/js/register.js"></script>
+
+</body>
+</html>
