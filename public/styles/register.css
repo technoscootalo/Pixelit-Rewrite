@@ -87,7 +87,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 440px;
-  height: 420px;
+  height: 440px;
   background-color: #6f057a;
   color: white;
   border: none;
@@ -163,6 +163,11 @@ main {
   text-decoration: underline;
 }
 
+.accessKeyDiscord {
+  color: white;
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .register-wrapper {
     flex-direction: column;
@@ -179,5 +184,9 @@ main {
     height: auto;
     padding: 20px;
     margin: 0;
+  }
+
+  .terms {
+    display: none;
   }
 }

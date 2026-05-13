@@ -44,7 +44,11 @@ router.get("/settings", (req, res) => {
 });
 
 router.get("/panel", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../src/views/admin/panel.html"));
+    res.sendFile(path.join(__dirname, "../../src/views/panel/panel.html"));
+});
+
+router.get("/users", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/users.html"));
 });
 
 module.exports = router;

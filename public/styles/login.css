@@ -60,7 +60,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 440px;
-  height: 420px;
+  height: 440px;
   background-color: #6f057a;
   color: white;
   border: none;
@@ -142,6 +142,10 @@ main {
     height: auto;
     padding: 20px;
     margin: 0;
+  }
+
+  .terms {
+    display: none;
   }
 }
 

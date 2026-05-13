@@ -57,21 +57,15 @@
 <div class="background"></div>
 <main>
   <center>
-    <h1 style="color:white;text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Admin Panel</h1>
-    <br />
+    <h1 style="color:white;  text-shadow: #000 1px 0 13px;">Admin Panel</h1>
+      <br />
     <div class="adminManagments">
-    <div class="adminManagment">
-      <button onclick="window.location.href='/panel/users'">User Management</button>
+      <div class="adminManagment">
+        <button onclick="window.location.href='/users'"> <i class="fa-solid fa-users"></i>
+          User Management
+        </button>
+      </div>
     </div>
-    <br/>
-    <div class="adminManagment">
-      <button onclick="window.location.href='/panel/moderation'">Content Moderation</button>
-    </div>
-    <br />
-    <div class="adminManagment">
-      <button class="adminButton" onclick="window.location.href='/panel/settings'">Site Settings</button>
-    </div>
-  </div>
   </center>
 </main>
 
@@ -100,7 +94,6 @@
 </div>
 
 <script src="/js/profile-dropdown.js"></script>
-<script src="/js/dashboard.js"></script>
 <script src="/js/auth/checkSession.js"></script>
 <script src="/js/auth/panelAuth.js"></script>
 
