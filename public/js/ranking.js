@@ -43,27 +43,40 @@ function renderLeaderboard(users) {
   `;
 
   const title = document.createElement("div");
-  title.textContent = isMessagesView ? "Messages" : "Tokens";
+  title.innerHTML = isMessagesView
+    ? `<i class="fa-solid fa-comments"></i> Messages`
+    : `<i class="fa-solid fa-coins"></i> Tokens`;
+
   title.style.cssText = `
     font-size: 28px;
     font-weight: bold;
     color: white;
     font-family: Pixelify Sans;
     text-shadow: 0px 3px 8px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   `;
 
   const button = document.createElement("button");
-  button.textContent = isMessagesView ? "Tokens" : "Messages";
+  button.innerHTML = isMessagesView
+    ? `<i class="fa-solid fa-coins"></i> Tokens`
+    : `<i class="fa-solid fa-comments"></i> Messages`;
+
   button.style.cssText = `
     padding: 8px 14px;
     border: none;
     border-radius: 6px;
+    font-size: 16px;
     background: #6f057a;
     box-shadow: inset 0 -3px #0003;
     color: white;
     font-family: Pixelify Sans;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   `;
 
   button.onmouseenter = () => {
@@ -153,7 +166,6 @@ function renderLeaderboard(users) {
       font-family: Pixelify Sans;
       font-size: 15px;
       box-sizing: border-box;
-      overflow: hidden;
       box-shadow: inset 0 -0.225vw #570066, 3px 3px 15px rgba(0,0,0,0.6);
     `;
 
