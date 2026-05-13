@@ -42,36 +42,38 @@
   
   <div class="icons">
     <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
-    <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
+    <a href="/chat"><i class="fa-solid fa-comment"></i> Chat</a>
     <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
     <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
     <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
     <a href="/panel"><i class="fa-solid fa-wrench"></i> Panel</a>
   </div>
   <br>
-  <div class="bottomIcons">
+  <div class="bottomIcons"></div>
 </nav>
 
 <div class="background"></div>
 
-<main>
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon...
-    coming soon....
-</main>
+<main class="chat-page">
+    <header class="chat-header">
+      <div>
+        <div class="page-title">Chat</div>
+      </div>
+    </header>
+
+    <section class="chat-window">
+      <div id="chatMessages" class="chat-messages"></div>
+      <div id="chatEmpty" class="chat-empty">No messages yet. Start the conversation.</div>
+    </section>
+
+    <form id="chatForm" class="chat-input-form">
+      <div class="chat-input-row">
+        <textarea id="chatInput" placeholder="Type your message and press Enter..." maxlength="280"></textarea>
+        <button type="submit" class="chat-send-button">Send</button>
+      </div>
+      <div id="chatError" class="chat-error" aria-live="polite"></div>
+    </form>
+  </main>
 
 <div class="mobile_nav">
   <a href="/stats" class="active">
@@ -80,7 +82,7 @@
   </a>
 
   <a href="/chat">
-    <i class="fa-solid fa-comments"></i>
+    <i class="fa-solid fa-comment"></i>
     <span>Chat</span>
   </a>
 
@@ -106,6 +108,7 @@
 </div>
 
 <script src="/js/profile-dropdown.js"></script>
+<script src="/js/chat.js"></script>
 <script src="/js/market.js"></script>
 <script src="/js/auth/checkSession.js"></script>
 <script src="/js/auth/panelAuth.js"></script>
