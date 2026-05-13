@@ -4,7 +4,7 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 
-const { connectDB } = require("./backend/utils/db");
+const connectDB = require("./backend/utils/db");
 
 // routers
 const pages = require("./backend/routers/pages");
