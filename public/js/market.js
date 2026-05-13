@@ -235,8 +235,8 @@ function showResult(blook) {
     left:50%;
     transform:translate(-50%,-50%);
     background:radial-gradient(circle, #6f057a, #4a034f);
-    width:360px;
-    height:375px;
+    width:370px;
+    height:385px;
     border-radius:10px;
     box-shadow: inset 0 -0.365vw #330838, 3px 3px 15px rgba(0,0,0,0.6);
     text-align:center;
@@ -245,15 +245,15 @@ function showResult(blook) {
   `;
 
   box.innerHTML = `
-    <h2>${blook.name}</h2>
-
-    <p style="color:${color}; font-weight:bold;">
+    <h2 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${blook.name}</h2>
+    <p style="color:${color}; font-weight:bold; font-size: 20px; text-shadow: -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black; ">
       ${capitalize(rarity)}
     </p>
-
-    <img src="${blook.imageUrl}" style="width:150px;height:150px;">
-
-    <p>${blook.chance}%</p>
+    <img src="${blook.imageUrl}" style="width:165px;height:170px;">
+    <p style="font-size:30px; font-weight:bold;">${blook.chance}%</p>
   `;
 
   overlay.appendChild(box);

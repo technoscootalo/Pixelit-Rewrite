@@ -87,7 +87,6 @@ body {
   .leaderboard-item {
     min-height: auto;
     padding: 12px;
-    flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }

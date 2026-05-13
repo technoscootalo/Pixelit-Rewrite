@@ -171,15 +171,15 @@ nav {
 }
 
 .profile-pic {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 5px;
   object-fit: cover;
 }
 
 .profile-name {
   flex: 1;
-  font-size: 16px;
+  font-size: 22px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -177,8 +177,8 @@ function renderLeaderboard(users) {
 
       <div style="
         flex: 1;
-        overflow: hidden;
         white-space: nowrap;
+        overflow: hidden;
         text-overflow: ellipsis;
       ">
         <span style="color:${roleColor}">[${role}]</span>
