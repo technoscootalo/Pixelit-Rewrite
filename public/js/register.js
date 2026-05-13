@@ -32,7 +32,6 @@ form.addEventListener("submit", async (e) => {
         return;
     }
 
-    // validate's the password password
     if (password.length < 8) {
         errorEl.textContent = "Password must be at least 8 characters long";
         submitBtn.disabled = false;
@@ -61,7 +60,7 @@ form.addEventListener("submit", async (e) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ username, password }),
-            credentials: "include" // IMPORTANT for cookies/sessions
+            credentials: "include" // for cookies/sessions
         });
 
         const logData = await logRes.json();

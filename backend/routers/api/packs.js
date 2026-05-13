@@ -5,7 +5,7 @@ const Pack = require("../../models/Pack");
 const User = require("../../models/User");
 
 
-// GET ALL PACKS
+// get the packs
 router.get("/", async (req, res) => {
     try {
         const packs = await Pack.find({ visible: true });
@@ -20,7 +20,6 @@ router.get("/", async (req, res) => {
 });
 
 
-// OPEN PACK
 router.post("/open/:packName", async (req, res) => {
     try {
         if (!req.session.userId) {

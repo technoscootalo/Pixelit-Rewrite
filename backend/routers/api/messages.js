@@ -3,11 +3,6 @@ const router = express.Router();
 
 const User = require("../../models/User");
 
-/*
-=========================
-TOP MESSAGE SENDERS
-=========================
-*/
 router.get("/", async (req, res) => {
   try {
     const users = await User.find({})

@@ -13,10 +13,8 @@ const {
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 
-// IMPORTANT: adjust path if needed
 const AccessKey = require("../backend/models/AccessKey");
 
-// -------------------- MONGO --------------------
 
 mongoose.set("strictQuery", true);
 mongoose.set("bufferCommands", false);
@@ -36,7 +34,6 @@ async function connectDB() {
 
 connectDB();
 
-// -------------------- DISCORD CLIENT --------------------
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
@@ -53,8 +50,6 @@ const commands = [
     .setName("ping")
     .setDescription("Check bot latency")
 ].map(cmd => cmd.toJSON());
-
-// -------------------- REGISTER COMMANDS --------------------
 
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
@@ -77,8 +72,6 @@ async function registerCommands() {
 }
 
 registerCommands();
-
-// -------------------- BOT READY --------------------
 
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
@@ -107,7 +100,6 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 
-  // ACCESS KEY GENERATION
   if (interaction.commandName === "accesskey") {
     try {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -150,7 +142,5 @@ One-time use only
     }
   }
 });
-
-// -------------------- LOGIN --------------------
 
 client.login(process.env.BOT_TOKEN);
