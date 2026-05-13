@@ -4,7 +4,7 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 
-const connectDB = require("./backend/utils/db");
+const { connectDB } = require("./backend/utils/db");
 
 // routers
 const pages = require("./backend/routers/pages");
@@ -14,11 +14,11 @@ const loggedinRoute = require("./backend/routers/auth/loggedin");
 const logoutRoute = require("./backend/routers/auth/logout");
 const userRoutes = require("./backend/routers/user");
 const packsRouter = require("./backend/routers/api/packs");
-const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const messagesRoute = require("./backend/routers/api/messages");
+const chatRoute = require("./backend/routers/api/chat");
+const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,13 +28,11 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use(session({
     name: "pixelit.sid",
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-
     cookie: {
         secure: false,
         httpOnly: true,
@@ -52,6 +50,8 @@ app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
 app.use("/api/logout", logoutRoute);
 app.use("/api/messages", messagesRoute);
+app.get("/api/chat/debug", (req, res) => res.json({ ok: true, path: req.path }));
+app.use("/api/chat", chatRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 
