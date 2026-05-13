@@ -14,14 +14,12 @@ async function checkPanelAccess() {
     const allowedRoles = ["Owner", "Community Manager"];
 
     if (!allowedRoles.includes(user.role)) {
-      // Hide panel links for non-authorized users on other pages
       if (window.location.pathname !== "/panel") {
         const panelLinks = document.querySelectorAll('a[href="/panel"]');
         panelLinks.forEach(link => {
           link.style.display = "none";
         });
       } else {
-        // Redirect away from panel if trying to access it without authorization
         window.history.back();
       }
     }
