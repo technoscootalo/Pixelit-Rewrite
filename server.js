@@ -15,7 +15,6 @@ const logoutRoute = require("./backend/routers/auth/logout");
 const userRoutes = require("./backend/routers/user");
 const packsRouter = require("./backend/routers/api/packs");
 const messagesRoute = require("./backend/routers/api/messages");
-const chatRoute = require("./backend/routers/api/chat");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
@@ -50,8 +49,6 @@ app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
 app.use("/api/logout", logoutRoute);
 app.use("/api/messages", messagesRoute);
-app.get("/api/chat/debug", (req, res) => res.json({ ok: true, path: req.path }));
-app.use("/api/chat", chatRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 
