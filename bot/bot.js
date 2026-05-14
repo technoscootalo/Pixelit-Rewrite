@@ -79,7 +79,7 @@ client.once("ready", () => {
   client.user.setPresence({
     activities: [
       {
-        name: "Pixelit",
+        name: "",
         type: ActivityType.Playing
       }
     ],

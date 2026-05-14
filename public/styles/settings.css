@@ -39,6 +39,13 @@ body {
   margin-bottom: 20px;
 }
 
+.edit-info-title,
+.profile-title {
+  color: white;
+  font-size: 32px;
+  text-align: center;
+}
+
 .content-container {
   display: flex;
   justify-content: center;
@@ -77,10 +84,13 @@ body {
   cursor: pointer;
 }
 
+.credits,
+.discord,
 .sign-out,
 .visit-store {
   color: white;
   text-decoration: none;
+  text-align: left;
 }
 
 #accessKey {
