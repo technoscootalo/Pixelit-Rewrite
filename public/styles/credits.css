@@ -86,13 +86,9 @@ main {
 .credits-container img {
   width: 110px;
   height: 110px;
+  cursor: pointer;
   object-fit: contain;
   filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
-  transition: transform 0.2s ease;
-}
-
-.credits-container img:hover {
-  transform: scale(1.08);
 }
 
 .credits-container h4 {
@@ -138,9 +134,9 @@ main {
 .honor-container img {
   width: 90px;
   height: 90px;
+  cursor: pointer;
   object-fit: contain;
   filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
-  transition: transform 0.2s ease;
 }
 
 .honor-container h4 {

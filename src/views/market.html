@@ -35,7 +35,9 @@
     </div>
     <div class="profile-dropdown-menu">
       <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="/" onclick="logout(); return false;"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+      <a href="/" onclick="handleLogout(event)">
+      <i class="fa-solid fa-sign-out-alt"></i> Logout
+      </a>   
     </div>
   </div>
   <br>
@@ -80,10 +82,10 @@
     <span>Market</span>
   </a>
 
-    <a href="/settings">
-      <i class="fa-solid fa-gear"></i>
-      <span>Settings</span>
-    </a>
+  <a href="/settings">
+    <i class="fa-solid fa-gear"></i>
+    <span>Settings</span>
+  </a>
 
   <a href="/panel">
     <i class="fa-solid fa-wrench"></i>

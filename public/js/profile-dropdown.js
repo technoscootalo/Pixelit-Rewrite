@@ -26,14 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
   loadProfileData();
 });
 
-function logout() {
+function logout(event) {
+  event.preventDefault();
+
   fetch('/logout', {
-    method: 'POST'
-  }).then(response => {
+    method: 'POST',
+    credentials: 'include'
+  })
+  .then(response => {
     if (response.ok) {
       window.location.href = '/login';
     }
-  }).catch(error => {
+  })
+  .catch(error => {
     console.error('Logout error:', error);
   });
 }

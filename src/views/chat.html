@@ -25,6 +25,7 @@
     Pixelit
   </h1>
   <br>
+  
   <div class="profile-container">
     <div class="profile-row">
       <img src="" id="profilePic" class="profile-pic" alt="Profile" />
@@ -33,10 +34,13 @@
     </div>
     <div class="profile-dropdown-menu">
       <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="/" onclick="logout(); return false;"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+      <a href="/" onclick="handleLogout(event)">
+      <i class="fa-solid fa-sign-out-alt"></i> Logout
+      </a>   
     </div>
   </div>
   <br>
+  
   <div class="icons">
     <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
     <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
@@ -47,7 +51,7 @@
     <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
   </div>
   <br>
-  <div class="bottomIcons"></div>
+  <div class="bottomIcons">
 </nav>
 
 <div class="background"></div>
@@ -212,10 +216,10 @@
     <span>Market</span>
   </a>
 
-    <a href="/settings">
-      <i class="fa-solid fa-gear"></i>
-      <span>Settings</span>
-    </a>
+  <a href="/settings">
+    <i class="fa-solid fa-gear"></i>
+    <span>Settings</span>
+  </a>
 
   <a href="/panel">
     <i class="fa-solid fa-wrench"></i>

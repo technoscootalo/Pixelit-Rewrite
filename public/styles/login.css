@@ -126,6 +126,11 @@ main {
     text-align: center;
 }
 
+.accountRedirect {
+  color: white;
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .login-wrapper {
     flex-direction: column;
