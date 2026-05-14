@@ -51,28 +51,6 @@
 
 <div class="background"></div>
 
-<<<<<<< HEAD
-<main class="chat-page">
-    <header class="chat-header">
-      <div>
-        <div class="page-title">Chat</div>
-      </div>
-    </header>
-
-    <section class="chat-window">
-      <div id="chatMessages" class="chat-messages"></div>
-      <div id="chatEmpty" class="chat-empty">No messages yet. Start the conversation.</div>
-    </section>
-
-    <form id="chatForm" class="chat-input-form">
-      <div class="chat-input-row">
-        <textarea id="chatInput" placeholder="Type your message and press Enter..." maxlength="280"></textarea>
-        <button type="submit" class="chat-send-button">Send</button>
-      </div>
-      <div id="chatError" class="chat-error" aria-live="polite"></div>
-    </form>
-  </main>
-=======
 <main>
   <div class="chat-container">
 
@@ -92,24 +70,24 @@
         </div>
       </div>
 
-      <div class="message">
-        <img 
-          class="chat-pfp" 
-          src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png"
-          alt="pfp"
-        >
-
-        <div class="message-content">
-          <strong>Loading...</strong>
-          <p>Loading...</p>
-          <small>Loading...</small>
-        </div>
-      </div>
-
     </div>
+
+    <form id="chatForm" class="chat-form">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Type a message..."
+        autocomplete="off"
+        required
+      />
+
+      <button type="submit">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+
   </div>
 </main>
->>>>>>> 3a0c4eb (worked on chat css, no logic yet)
 
 <div class="mobile_nav">
   <a href="/stats" class="active">
@@ -145,13 +123,10 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/profile-dropdown.js"></script>
-<script src="/js/chat.js"></script>
 <script src="/js/auth/checkSession.js"></script>
 <script src="/js/auth/panelAuth.js"></script>
 <script src="/js/chat.js"></script>
 </body>
-</html>
-<<<<<<< HEAD
-=======
 
->>>>>>> 3a0c4eb (worked on chat css, no logic yet)
+</html>
+
