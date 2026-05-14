@@ -22,7 +22,12 @@ async function checkPanelAccess() {
       } else {
         window.history.back();
       }
+
+      return;
     }
+
+    document.body.classList.add("panel-allowed");
+
   } catch (err) {
     console.error("Failed to check panel access:", err);
   }

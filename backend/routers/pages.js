@@ -27,6 +27,10 @@ router.get("/market", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/market.html"));
 });
 
+router.get("/pixels", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/pixels.html"));
+});
+
 router.get("/chat", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/chat.html"));
 });
@@ -49,6 +53,18 @@ router.get("/panel", (req, res) => {
 
 router.get("/users", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/users.html"));
+});
+
+router.get("/developer", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/developer.html"));
+});
+
+router.get("/developer", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/developer.html"));
+});
+
+router.get("/pixelseditor", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/pixelseditor.html"));
 });
 
 module.exports = router;

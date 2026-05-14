@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: white;
+  background: #6f0083;
+  overflow-y: auto;
+}
+
+.background {
+  position: fixed;
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  background-size: 550px;
+  background-position: -100px -100px;
+  background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+  transform: translate(-50%, -50%) rotate(15deg);
+  opacity: 0.1;
+}
+
+main {
+  min-height: 100vh;
+  padding: 110px 20px 100px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.rightPanel {
+  position: fixed;
+  top: 50px;
+  right: 660px; 
+
+  width: 1000px;
+  height: calc(100vh - 120px);
+
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c, 
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+
+  border-radius: 5px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.rightTop {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.addBlookBtn {
+  width: 60px;
+  height: 60px;
+  text-shadow: #000 1px 0 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  background: #6f057a;
+  box-shadow: inset 0 -0.3vw #53055c,
+              3px 3px 10px rgba(0,0,0,0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.addBlookBtn:hover {
+  transform: scale(1.08);
+}
+
+.addBlookBtn:active {
+  transform: scale(0.95);
+}
+
+.blookGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-content: flex-start;
+}
+
+.blookItem {
+  width: 65px;
+  height: 65px;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.1s ease;
+}
+
+.blookItem:hover {
+  transform: scale(1.1);
+}
+
+.previewPanel {
+  position: fixed;
+  top: 210px;
+  right: 100px;
+
+  width: 415px;
+  height: 435px;
+
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c, 
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+
+  border-radius: 5px;
+  padding: 25px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; 
+
+  overflow: hidden;
+}
+
+.name {
+  font-size: 32px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+}
+
+.rarity {
+  font-size: 22px;
+  margin: 4px 0 10px 0; 
+  text-align: center;
+  font-weight: bold;
+
+  text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+}
+
+.previewPanel img {
+  width: 160px !important;
+  height: 160px !important;
+  object-fit: contain;
+  border-radius: 5px;
+
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+.previewActions {
+  position: fixed;
+  top: 670px;
+  right: 100px;
+
+  width: 415px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.previewActions button {
+  flex: 1;
+  height: 55px;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  text-shadow: #000 1px 0 13px;
+  box-shadow: inset 0 -0.365vw rgba(0,0,0,0.2),
+              3px 3px 15px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease;
+}
+
+.previewActions button:hover {
+  transform: translateY(-2px);
+}
+
+.previewActions button:active {
+  transform: translateY(2px);
+}
+
+.editBtn {
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c, 
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+}
+
+.cloneBtn {
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c, 
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+}
+
+.deleteBtn {
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c, 
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+}
+
+@media screen and (max-width: 768px) {
+
+  main {
+    padding: 90px 10px 120px;
+  }
+
+  .rightPanel {
+    width: 100%;
+    height: 55vh;
+    right: auto;
+    top: auto;
+    position: relative;
+    padding: 12px;
+  }
+
+  .rightTop {
+    gap: 8px;
+  }
+
+  .blookGrid {
+    gap: 8px;
+  }
+
+  .blookItem {
+    width: 55px;
+    height: 55px;
+  }
+
+  .addBlookBtn {
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+  }
+
+  .previewPanel {
+    width: 100%;
+    height: 320px;
+    right: auto;
+    top: auto;
+    position: relative;
+    padding: 15px;
+    margin-top: 10px;
+  }
+
+  .name {
+    font-size: 24px;
+  }
+
+  .rarity {
+    font-size: 18px;
+  }
+
+  .previewPanel img {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .previewActions {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  .previewActions button {
+    font-size: 16px;
+    height: 45px;
+  }
+}

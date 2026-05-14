@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings</title>
+  <title>Developer</title>
 
-  <link rel="stylesheet" href="/styles/settings.css">
+  <link rel="stylesheet" href="/styles/developer.css">
   <link rel="stylesheet" href="/styles/navbar.css">
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+    crossorigin="anonymous" 
+    referrerpolicy="no-referrer">
+  
   <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
-</head>
+  </head>
 
 <body>
 
@@ -62,63 +59,36 @@
 <div class="background"></div>
 
 <main>
-  <div class="main-content">
+  <center>
+    <div class="developerManagments">
+      <div class="developerManagment">
+        <button onclick="window.location.href='/packeditor'">
+          <i class="fa-solid fa-store"></i>
+          Pack Editor
+        </button>
 
-    <h1 class="page-title">Settings</h1>
+        <button onclick="window.location.href='/pixelseditor'">
+          <i class="fa-solid fa-suitcase"></i>
+          Pixels Editor
+        </button>
 
-    <div class="content-container">
+        <button onclick="window.location.href='/badgeeditor'">
+          <i class="fa-solid fa-ribbon"></i>
+          Badge Editor
+        </button>
 
-      <div class="profile-section">
-        <h1 class="profile-title"   >Profile</h1>
-        <hr class="separator"/>
+        <button onclick="window.location.href='/bannereditor'">
+          <i class="fa-solid fa-images"></i>
+          Banner Editor
+        </button>
 
-        <div class="profile-details">
-          <h3 id="username"></h3>
-          <h3 id="date"></h3>
-          <h3 id="id"></h3>
-          <h3 id="accessKey"></h3>
-
-          <hr class="separator"/>
-          <!-- <h3>
-            <a href="/store" class="visit-store">
-              Visit Store <i class="fa-solid fa-cart-shopping"></i>
-            </a>
-          </h3> -->
-
-          <h3>
-            <i class="fa-solid fa-heart"></i>
-            <a href="/credits" class="credits">Credits</a>
-          </h3>
-
-          <h3>
-            <i class="fa-brands fa-discord"></i>
-            <a href="https://discord.gg/KXvHan3C8R" class="discord">Discord</a>
-          </h3>
-
-          <h3 id="devLink">
-            <i class="fa-solid fa-code"></i>
-            <a href="/developer" class="developer">Developer</a>
-          </h3>
-
-          <h3>
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <a href="/" class="sign-out" onclick="logout()">Sign Out</a>
-          </h3>
-        </div>
+        <button onclick="window.location.href='/manageusers'">
+          <i class="fa-solid fa-users-gear"></i>
+          Manage Users
+        </button>
       </div>
-
-      <div class="edit-info-section">
-        <h1 class="edit-info-title">Edit Info</h1>
-        <hr class="separator"/>
-
-        <div class="edit-info-details">
-          <h3 id="changeUsername" class="changeUser">Change Username</h3>
-          <h3 id="changePassword" class="changePass">Change Password (disabled)</h3>
-        </div>
-      </div>
-
     </div>
-  </div>
+  </center>
 </main>
 
 <div class="mobile_nav">
@@ -162,11 +132,9 @@
     <span>Credits</span>
   </a>
 </div>
-
 <script src="/js/profile-dropdown.js"></script>
-<script src="/js/settings.js"></script>
 <script src="/js/auth/checkSession.js"></script>
-<script src="/js/auth/panelAuth.js"></script>
+<script src="/js/auth/developerAuth.js"></script>
 
 </body>
 </html>

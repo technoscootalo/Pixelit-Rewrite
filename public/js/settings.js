@@ -519,6 +519,33 @@ const dateOptions = {
 };
 date.innerHTML = today.toLocaleDateString("en-US", dateOptions);
 
+async function handleDeveloperVisibility() {
+  try {
+    const res = await fetch("/api/user", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!res.ok) return;
+
+    const user = await res.json();
+
+    const allowedRoles = ["Owner", "Developer"];
+    const devLink = document.getElementById("devLink");
+
+    if (!allowedRoles.includes(user.role)) {
+      devLink.style.display = "none";
+    } else {
+      devLink.style.display = "block";
+    }
+
+  } catch (err) {
+    console.error("Failed to check role:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", handleDeveloperVisibility);
+
 function logout() {
   fetch('/logout', { method: 'POST' })
     .then(response => {

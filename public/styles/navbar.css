@@ -81,6 +81,14 @@ nav {
   flex: 1;
 }
 
+#panelLink {
+  display: none;
+}
+
+body.panel-allowed #panelLink {
+  display: inline-flex;
+}
+
 .mobile_nav {
   display: none;
 }

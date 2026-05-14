@@ -84,6 +84,7 @@ body {
   cursor: pointer;
 }
 
+.developer,
 .credits,
 .discord,
 .sign-out,
@@ -97,6 +98,10 @@ body {
   word-break: break-word;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+#devLink {
+  display: none;
 }
 
 @media screen and (max-width: 600px) {
