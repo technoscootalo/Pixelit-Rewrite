@@ -89,6 +89,77 @@ function showClaimModal(reward) {
   modal.appendChild(style);
 }
 
+const inboxButton = document.querySelector(".inboxButton");
+
+inboxButton.addEventListener("click", () => {
+  const modal = document.createElement("div");
+
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeInOverlay 0.25s ease;
+  `;
+
+  const box = document.createElement("div");
+
+  box.style.cssText = `
+    background-color: #6f057a;
+    box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 555px;
+    height: 490px;
+    color: white;
+    font-family: Pixelify Sans, sans-serif;
+    font-size: 18px;
+    transform: scale(0.85);
+    animation: popIn 0.25s ease forwards;
+    position: relative;
+    overflow: hidden;
+  `;
+
+  const title = document.createElement("div");
+  title.textContent = "Inbox";
+  title.style.cssText = `
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    font-size: 32px;
+    font-weight: bold;
+    opacity: 0.8;
+  `;
+
+  const empty = document.createElement("div");
+  empty.textContent = "No messages";
+  empty.style.cssText = `
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    opacity: 0.9;
+    text-align: center;
+  `;
+
+  box.appendChild(title);
+  box.appendChild(empty);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+});
+
 async function loadUser() {
   try {
     const res = await fetch("/api/user", {
