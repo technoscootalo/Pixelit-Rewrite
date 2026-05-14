@@ -240,3 +240,10 @@ nav {
     display: none;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .background {
+    opacity: 0.06;
+    background-size: 350px;
+  }
+}

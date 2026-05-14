@@ -4,20 +4,15 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  min-height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
 body {
   font-family: 'Pixelify Sans', sans-serif;
   color: white;
   background: #6f0083;
-  overflow-y: auto;
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
 }
 
 .background {
@@ -79,6 +74,10 @@ body {
 }
 
 @media screen and (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+
   .leaderboard_Container {
     min-height: 70vh;
     padding: 16px;
@@ -115,14 +114,6 @@ body {
 
   .ranking-wrapper {
     padding: 10px;
-  }
-
-  .background {
-    width: 200%;
-    height: 200%;
-    background-size: 300px;
-    background-position: center;
-    transform: translate(-50%, -50%) rotate(0deg);
   }
 }
 
