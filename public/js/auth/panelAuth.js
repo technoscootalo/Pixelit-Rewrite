@@ -11,7 +11,7 @@ async function checkPanelAccess() {
     }
 
     const user = await res.json();
-    const allowedRoles = ["Owner", "Community Manager"];
+    const allowedRoles = ["Owner", "Developer", "Community Manager"];
 
     if (!allowedRoles.includes(user.role)) {
       if (window.location.pathname !== "/panel") {

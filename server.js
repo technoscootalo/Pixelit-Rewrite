@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
+const http = require("http");
+const { Server: SocketIOServer } = require("socket.io");
 const path = require("path");
 const session = require("express-session");
 
@@ -20,6 +22,7 @@ const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
 
 const app = express();
+const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
 connectDB();
@@ -58,6 +61,6 @@ app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
 });
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

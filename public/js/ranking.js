@@ -102,7 +102,7 @@ function renderLeaderboard(users) {
   button.onclick = () => {
     if (cooldown) return;
     cooldown = true;
-    setTimeout(() => (cooldown = false), 250);
+    setTimeout(() => (cooldown = false), 0);
 
     isMessagesView = !isMessagesView;
     fetchLeaderboard();
