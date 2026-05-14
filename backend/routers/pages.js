@@ -67,4 +67,16 @@ router.get("/pixelseditor", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/pixelseditor.html"));
 });
 
+router.get("/packeditor", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/packeditor.html"));
+});
+
+router.get("/badgeeditor", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/badgeeditor.html"));
+});
+
+router.get("/bannereditor", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/bannereditor.html"));
+});
+
 module.exports = router;
