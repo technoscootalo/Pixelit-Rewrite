@@ -20,6 +20,7 @@ const messagesRoute = require("./backend/routers/api/messages");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
+const changeUsernameRoute = require("./backend/routers/api/changeUsername");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -54,6 +55,8 @@ app.use("/api/logout", logoutRoute);
 app.use("/api/messages", messagesRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
+app.use("/api/changeUsername", changeUsernameRoute);
+
 
 app.use("/", pages);
 

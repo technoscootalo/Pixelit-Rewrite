@@ -220,7 +220,7 @@ function showResult(blook) {
   overlay.style.cssText = `
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.7);
+    background: radial-gradient(circle, rgb(51, 8, 56), rgb(74, 3, 79));
     z-index:999;
   `;
 
@@ -261,3 +261,14 @@ function showResult(blook) {
 
   overlay.onclick = () => overlay.remove();
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const instantOpenElement = document.getElementById("instantOpen");
+    let instantOpen = localStorage.getItem('instantOpen') === 'On';
+    instantOpenElement.textContent = `Instant Open (no functions yet): ${instantOpen ? 'On' : 'Off'}`;
+    instantOpenElement.addEventListener('click', function () {
+        instantOpen = !instantOpen;
+        localStorage.setItem('instantOpen', instantOpen ? 'On' : 'Off');
+        instantOpenElement.textContent = `Instant Open (no functions yet) : ${instantOpen ? 'On' : 'Off'}`;
+    });
+});
