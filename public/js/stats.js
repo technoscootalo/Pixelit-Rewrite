@@ -290,31 +290,35 @@ function openViewUserPopup() {
   title.textContent = 'View User';
   modalContent.appendChild(title);
 
-  const input = createElement(
-    'input',
-    {
-      type: 'text',
-      placeholder: 'Username',
-      id: 'viewUsernameInput',
-    },
-    {
-      width: '60%',
-      height: '50px',
-      marginBottom: '10px',
-      fontFamily: 'Pixelify Sans, sans-serif',
-      fontSize: '18px',
-      textAlign: 'center',
-      border: '3px solid #5e046e',
-      borderRadius: '4px',
-      boxSizing: 'border-box',
-      backgroundColor: 'transparent',
-      color: 'white',
-      marginRight: '5px',
-      outline: 'none',
-    }
-  );
-
+  const input = createElement('input', {
+    type: 'text',
+    placeholder: 'Username',
+    id: 'viewUsernameInput',
+  }, {
+    width: '60%',
+    height: '50px',
+    marginBottom: '10px',
+    fontFamily: 'Pixelify Sans, sans-serif',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    border: '3px solid #5e046e',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+    backgroundColor: 'transparent',
+    color: 'white',
+    marginRight: '5px',
+    outline: 'none',
+  });
   modalContent.appendChild(input);
+
+  const errorEl = createElement('div', { id: 'viewUserError' }, {
+    color: 'red',
+    fontSize: '14px',
+    marginTop: '5px',
+    display: 'none'
+  });
+  modalContent.appendChild(errorEl);
 
   const buttonRow = createElement('div', {}, {
     display: 'flex',
@@ -324,175 +328,323 @@ function openViewUserPopup() {
     marginTop: '10px',
   });
 
-  const viewButton = createElement(
-    'button',
-    {
-      type: 'button',
-      className: 'view-profile-btn'
-    },
-    {
-      backgroundColor: 'green',
-      boxShadow:
-        'inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-      fontFamily: 'Pixelify Sans, sans-serif',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    }
-  );
-
+  const viewButton = createElement('button', { type: 'button' }, {
+    backgroundColor: 'green',
+    boxShadow: 'inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+    fontFamily: 'Pixelify Sans, sans-serif',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  });
   viewButton.textContent = 'View Profile';
 
-  const cancelButton = createElement(
-    'button',
-    {
-      type: 'button',
-      className: 'cancel-profile-btn'
-    },
-    {
-      backgroundColor: 'red',
-      boxShadow:
-        'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-      fontFamily: 'Pixelify Sans, sans-serif',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    }
-  );
-
+  const cancelButton = createElement('button', { type: 'button' }, {
+    backgroundColor: 'red',
+    boxShadow: 'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+    fontFamily: 'Pixelify Sans, sans-serif',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  });
   cancelButton.textContent = 'Cancel';
 
-  const resultArea = createElement('div', {}, {
-    marginTop: '20px',
-    color: 'white',
-    textAlign: 'left',
-    display: 'none',
-  });
+  const restoreMyProfile = () => {
+    const orig = window.__profileViewOriginal;
+    if (!orig) return;
 
-  modalContent.appendChild(resultArea);
+    const reportBtn = document.querySelector('.report-user-btn');
+    if (reportBtn) reportBtn.remove();
+
+    const elements = {
+      pfp: document.getElementById('pfp'),
+      banner: document.getElementById('banner'),
+      username: document.getElementById('username'),
+      role: document.getElementById('role'),
+      tokens: document.getElementById('tokens'),
+      packs: document.getElementById('packs'),
+      messages: document.getElementById('messages'),
+      spinButton: document.getElementById('spinButton')
+    };
+
+    if (elements.pfp) elements.pfp.src = orig.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+    if (elements.banner) elements.banner.src = orig.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
+    if (elements.username) elements.username.innerText = orig.username;
+    if (elements.role) elements.role.innerText = orig.role || 'Player';
+    if (elements.tokens) elements.tokens.innerText = (orig.tokens ?? 0).toLocaleString();
+    if (elements.packs) elements.packs.innerText = (orig.packs ?? 0).toLocaleString();
+    if (elements.messages) elements.messages.innerText = (orig.sent ?? 0).toLocaleString();
+
+    if (elements.spinButton) {
+      elements.spinButton.style.display = 'inline-flex';
+      elements.spinButton.disabled = false;
+    }
+
+    window.history.pushState({}, '', '/stats');
+
+    window.__profileViewMode = 'my';
+    if (typeof loadUser === 'function') loadUser();
+
+    const btn = document.querySelector('.viewUser');
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> View Stats';
+      btn.onclick = openViewUserPopup;
+    }
+  };
 
   viewButton.onclick = async () => {
     const searchUser = input.value.trim();
+    errorEl.style.display = 'none';
 
     if (!searchUser) {
-      alert('Please enter a username.');
+      errorEl.textContent = 'Please enter a username.';
+      errorEl.style.display = 'block';
       return;
     }
 
     try {
       const res = await fetch('/api/viewUser/getUserStats', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          username: searchUser
-        }),
+        body: JSON.stringify({ username: searchUser }),
       });
 
       const data = await res.json();
-
       if (!res.ok || !data.success) {
-        alert(data.message || 'User not found.');
+        errorEl.textContent = data.message || 'User not found.';
+        errorEl.style.display = 'block';
         return;
       }
 
       const other = data.user;
+      if (!window.__profileViewOriginal && typeof user !== 'undefined') {
+        window.__profileViewOriginal = { ...user };
+      }
 
-      resultArea.style.display = 'block';
-      resultArea.innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <img 
-            src="${other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png'}" 
-            alt="Avatar" 
-            style="
-              width:48px;
-              height:48px;
-              border-radius:8px;
-              object-fit:cover;
-              border:2px solid #fff;
-            "
-          />
+      const url = new URL(window.location.href);
+      url.searchParams.set('name', other.username);
+      window.history.pushState({}, '', url);
+      window.__profileViewMode = 'other';
 
-          <div>
-            <div style="font-size:22px; font-weight:bold;">
-              ${other.username}
-            </div>
+      const ui = {
+        pfp: document.getElementById('pfp'),
+        banner: document.getElementById('banner'),
+        username: document.getElementById('username'),
+        role: document.getElementById('role'),
+        tokens: document.getElementById('tokens'),
+        packs: document.getElementById('packs'),
+        messages: document.getElementById('messages'),
+        spinButton: document.getElementById('spinButton'),
+        dailyWheelMessage: document.getElementById('dailyWheelMessage'),
+        viewUserBtn: document.querySelector('.viewUser')
+      };
 
-            <div style="font-size:14px; opacity:0.8;">
-              ${other.role || 'Player'}
-            </div>
-          </div>
-        </div>
+      if (ui.pfp) ui.pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+      if (ui.banner) ui.banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
+      if (ui.username) ui.username.innerText = other.username;
+      if (ui.role) ui.role.innerText = other.role || 'Player';
+      if (ui.tokens) ui.tokens.innerText = (other.tokens ?? 0).toLocaleString();
+      if (ui.packs) ui.packs.innerText = (other.packsOpened ?? 0).toLocaleString();
+      if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
 
-        <div style="
-          display:grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap:10px;
-        ">
-          <div style="
-            background: rgba(255,255,255,0.08);
-            padding:10px;
-            border-radius:6px;
-          ">
-            Tokens<br>
-            <strong>${other.tokens.toLocaleString()}</strong>
-          </div>
+      if (ui.spinButton) {
+        ui.spinButton.style.display = 'none';
+        ui.spinButton.disabled = true;
+      }
 
-          <div style="
-            background: rgba(255,255,255,0.08);
-            padding:10px;
-            border-radius:6px;
-          ">
-            Packs Opened<br>
-            <strong>${other.packsOpened.toLocaleString()}</strong>
-          </div>
+      if (ui.viewUserBtn) {
+        ui.viewUserBtn.innerHTML = '<i class="fa-solid fa-reply"></i> Back to my profile';
+        ui.viewUserBtn.onclick = restoreMyProfile;
 
-          <div style="
-            grid-column: span 2;
-            background: rgba(255,255,255,0.08);
-            padding:10px;
-            border-radius:6px;
-          ">
-            Messages<br>
-            <strong>${other.stats.sent.toLocaleString()}</strong>
-          </div>
-        </div>
+        const existingReport = document.querySelector('.report-user-btn');
+        if (existingReport) existingReport.remove();
 
-        <div style="
-          margin-top:12px;
-          font-size:14px;
-          opacity:0.85;
-        ">
-          Badges: ${
-            other.badges.length
-              ? other.badges.join(', ')
-              : 'None'
-          }
-        </div>
-      `;
+        const reportBtn = document.createElement('button');
+        reportBtn.className = 'reportUser report-user-btn';
+        reportBtn.innerHTML = '<i class="fa-solid fa-flag"></i> Report';
 
+        reportBtn.onclick = () => {
+          const modal = createElement('div', {}, {
+            position: 'fixed',
+            inset: '0',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: '10000',
+          });
+
+          const box = createElement('div', {}, {
+            backgroundColor: '#6f057a',
+            boxShadow: 'inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+            padding: '20px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            fontSize: '26px',
+            width: '420px',
+            color: 'white',
+            fontFamily: 'Pixelify Sans, sans-serif',
+          });
+
+          const title = createElement('div', {}, {
+            fontSize: '26px',
+            marginBottom: '12px',
+            fontWeight: 'bold',
+          });
+          title.textContent = `Why are you reporting ${other.username}?`;
+
+          const input = createElement('input', {
+            type: 'text',
+            placeholder: 'Reason for reporting...',
+          }, {
+            width: '60%',
+            height: '50px',
+            marginBottom: '10px',
+            fontFamily: 'Pixelify Sans, sans-serif',
+            fontSize: '20px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            border: '3px solid #5e046e',
+            borderRadius: '4px',
+            boxSizing: 'border-box',
+            backgroundColor: 'transparent',
+            color: 'white',
+            marginRight: '5px',
+            outline: 'none',
+          });
+
+          const errorEl = createElement('div', {}, {
+            color: '#ffb3b3',
+            fontSize: '14px',
+            marginBottom: '10px',
+            display: 'none',
+          });
+
+          const successEl = createElement('div', {}, {
+            color: '#5CFF77',
+            fontSize: '16px',
+            marginBottom: '10px',
+            display: 'none',
+          });
+
+          const sendBtn = createElement('button', { type: 'button' }, {
+            backgroundColor: '#ff4d4d',
+            boxShadow: 'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: 'Pixelify Sans, sans-serif',
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'bold',
+          });
+          sendBtn.textContent = 'Send report';
+
+          const cancelBtn = createElement('button', { type: 'button' }, {
+            marginLeft: '12px',
+            backgroundColor: '#8a8a8a',
+            boxShadow: 'inset 0 -0.365vw #6f6f6f, 3px 3px 15px rgba(0, 0, 0, 0.6)',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: 'Pixelify Sans, sans-serif',
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'bold',
+          });
+          cancelBtn.textContent = 'Cancel';
+
+          const btnRow = createElement('div', {}, {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '12px',
+            flexWrap: 'wrap',
+            marginTop: '8px',
+          });
+          btnRow.appendChild(sendBtn);
+          btnRow.appendChild(cancelBtn);
+
+          box.appendChild(title);
+          box.appendChild(input);
+          box.appendChild(errorEl);
+          box.appendChild(successEl);
+          box.appendChild(btnRow);
+
+          modal.appendChild(box);
+          document.body.appendChild(modal);
+
+          const close = () => modal.remove();
+          cancelBtn.onclick = close;
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+          });
+
+          input.focus();
+
+          const submit = async () => {
+            const reason = (input.value || '').trim();
+            errorEl.style.display = 'none';
+
+            if (!reason) {
+              errorEl.textContent = 'Reason is required.';
+              errorEl.style.display = 'block';
+              return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+
+            try {
+              const r = await fetch('/api/reportUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ username: other.username, reason }),
+              });
+
+              const d = await r.json();
+
+              successEl.textContent = d.message || 'Report sent.';
+              successEl.style.display = 'block';
+              setTimeout(() => close(), 500);
+            } catch (err) {
+              console.error(err);
+              errorEl.textContent = 'Failed to send report.';
+              errorEl.style.display = 'block';
+              sendBtn.disabled = false;
+              sendBtn.textContent = 'Send report';
+            }
+          };
+
+          sendBtn.onclick = submit;
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submit();
+          });
+        };
+
+        ui.viewUserBtn.parentNode.insertBefore(reportBtn, ui.viewUserBtn.nextSibling);
+      }
+
+      modal.remove();
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      alert('Error loading user profile.');
+      console.error(error);
+      alert('Error loading profile.');
     }
   };
 
-  cancelButton.onclick = () => {
-    document.body.removeChild(modal);
-  };
+  cancelButton.onclick = () => modal.remove();
 
   buttonRow.appendChild(viewButton);
   buttonRow.appendChild(cancelButton);
-
   modalContent.appendChild(buttonRow);
   modal.appendChild(modalContent);
-
   document.body.appendChild(modal);
 
   input.focus();
@@ -501,10 +653,7 @@ function openViewUserPopup() {
 const viewUserButton = document.querySelector('.viewUser');
 
 if (viewUserButton) {
-  viewUserButton.addEventListener(
-    'click',
-    openViewUserPopup
-  );
+  viewUserButton.onclick = openViewUserPopup;
 }
 
 loadUser();

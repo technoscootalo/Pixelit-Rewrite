@@ -9,12 +9,12 @@ router.post("/", async (req, res) => {
         const session = req.session;
         const { newUsername, password } = req.body;
 
-        if (!session.loggedIn) {
+        if (!session || !session.userId) {
             return res.status(401).send("You must be logged in.");
         }
 
         const user = await User.findOne({
-            username: session.username
+            id: session.userId
         });
 
         if (!user) {

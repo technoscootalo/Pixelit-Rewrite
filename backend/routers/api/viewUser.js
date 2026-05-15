@@ -5,9 +5,10 @@ const router = express.Router();
 
 router.post('/getUserStats', async (req, res) => {
     try {
-        if (!req.session || !req.session.loggedIn) {
+        if (!req.session || !req.session.userId) {
             return res.status(401).json({ success: false, message: 'You must be logged in.' });
         }
+
 
         const { username } = req.body;
         if (!username) {
