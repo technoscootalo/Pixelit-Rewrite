@@ -1,21 +1,19 @@
 const mongoose = require("mongoose");
 
-const blookSchema = new mongoose.Schema({
-    name: String,
-    imageUrl: String,
-    rarity: String,
-    chance: Number
-});
-
 const packSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
 
-    image: {
+    packImageUrl: {
         type: String,
         required: true
+    },
+
+    packBackground: {
+        type: String,
+        default: ""
     },
 
     cost: {
@@ -28,7 +26,10 @@ const packSchema = new mongoose.Schema({
         default: true
     },
 
-    blooks: [blookSchema]
+    blooks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blook"
+    }]
 });
 
 module.exports = mongoose.model("Pack", packSchema, "packs");

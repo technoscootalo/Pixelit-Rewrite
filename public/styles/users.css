@@ -160,3 +160,97 @@ main {
 #userSearch::placeholder {
   color: rgba(255,255,255,0.7);
 }
+
+@media (max-width: 900px) {
+  .userManager {
+    position: fixed;
+    inset: 0; /* replaces top/left/width/height */
+    width: 100vw;
+    height: 100vh;
+
+    transform: none; /* IMPORTANT: removes centering */
+    top: 0;
+    left: 0;
+
+    padding: 12px;
+    border-radius: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+  }
+
+  .userManager h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  #userSearch {
+    height: 42px;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .userGrid {
+    flex: 1; /* KEY FIX: takes remaining space only */
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .userCard {
+    height: auto;
+    padding: 12px;
+
+    flex-direction: row; /* keep horizontal but compact */
+    align-items: center;
+    gap: 10px;
+
+    font-size: 14px;
+  }
+
+  .userLeft {
+    flex: 1;
+    gap: 10px;
+  }
+
+  .userLeft img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .userInfo h3 {
+    font-size: 15px;
+  }
+
+  .userInfo p {
+    font-size: 12px;
+  }
+
+  .userStatus {
+    font-size: 11px;
+    min-width: 60px;
+    text-align: right;
+  }
+}
+
+/* small phones */
+@media (max-width: 480px) {
+  .userManager {
+    padding: 10px;
+  }
+
+  #userSearch {
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .userCard {
+    padding: 10px;
+  }
+
+  .userLeft img {
+    width: 38px;
+    height: 38px;
+  }
+}
