@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, default: "Player" },
 
   tokens: { type: Number, default: 0 },
-  packs: { type: Number, default: 0 },
+  opened: { type: Number, default: 0 },
   sent: { type: Number, default: 0 },
 
   muted: { type: Boolean, default: false },
@@ -35,7 +35,10 @@ const userSchema = new mongoose.Schema({
   banned: { type: Boolean, default: false },
   banReason: { type: String, default: "No Reason Provided" },
 
-  badges: { type: Array, default: [] },
+  badges: {
+    type: [String],
+   default: []
+  },
 
   banDuration: { type: Number, default: 0 },
   muteDuration: { type: Number, default: 0 },
