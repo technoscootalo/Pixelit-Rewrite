@@ -7,8 +7,9 @@ const path = require("path");
 const session = require("express-session");
 
 const connectDB = require("./backend/utils/db");
+const User = require("./backend/models/User");
+const Message = require("./backend/models/Messages");
 
-// routers
 const pages = require("./backend/routers/pages");
 const registerRoute = require("./backend/routers/auth/register");
 const loginRoute = require("./backend/routers/auth/login");
@@ -27,8 +28,6 @@ const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
 const usersRoutes = require("./backend/routers/api/users");
 const packRouter = require("./backend/routers/api/pack");
-const moderationReportsRoute = require("./backend/routers/api/moderationReports");
-
 
 
 const app = express();
@@ -37,10 +36,7 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(session({
+const sessionMiddleware = session({
     name: "pixelit.sid",
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -50,7 +46,11 @@ app.use(session({
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
-}));
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(sessionMiddleware);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -71,13 +71,79 @@ app.use("/api/badges", badgeRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
-app.use("/api/moderationReports", moderationReportsRoute);
 
 app.use("/", pages);
 
-
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
+});
+
+const io = new SocketIOServer(httpServer, {
+    cors: {
+        origin: true,
+        credentials: true,
+    },
+});
+
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
+
+io.on("connection", async (socket) => {
+    const session = socket.request.session;
+
+    if (!session || !session.userId) {
+        return socket.disconnect(true);
+    }
+
+    try {
+        const user = await User.findOne({ id: session.userId }).select("-password");
+
+        if (!user) {
+            return socket.disconnect(true);
+        }
+
+        const recentMessages = await Message.find({})
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .lean();
+
+        socket.emit("chatHistory", recentMessages.reverse());
+
+        socket.on("chatMessage", async (payload) => {
+            if (!payload || typeof payload.content !== "string") {
+                return;
+            }
+
+            const content = payload.content.trim();
+            if (!content) {
+                return;
+            }
+
+            const savedMessage = await Message.create({
+                userId: user.id,
+                username: user.username,
+                pfp: user.pfp,
+                badges: user.badges || [],
+                content,
+            });
+
+            const broadcastMessage = {
+                userId: savedMessage.userId,
+                username: savedMessage.username,
+                pfp: savedMessage.pfp,
+                badges: savedMessage.badges || [],
+                content: savedMessage.content,
+                createdAt: savedMessage.createdAt,
+                _id: savedMessage._id,
+            };
+
+            io.emit("chatMessage", broadcastMessage);
+        });
+    } catch (err) {
+        console.error("Socket connection error:", err);
+        socket.disconnect(true);
+    }
 });
 
 httpServer.listen(PORT, () => {

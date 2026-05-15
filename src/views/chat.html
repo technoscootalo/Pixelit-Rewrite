@@ -61,8 +61,52 @@
 
 <div class="background"></div>
 
-<main>
-  <center>coming soon...</center>
+<main class="chat-page">
+
+  <div class="chat-container">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <h2 class="chat-header-text"># General (beta chat)</h2>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+
+      <div class="message">
+        <img
+          class="chat-pfp"
+          src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png"
+          alt="User Profile"
+        >
+
+        <div class="message-content">
+          <strong>Loading...</strong>
+          <p>Loading messages...</p>
+          <small>Loading...</small>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Input -->
+    <form id="chatForm" class="chat-form">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Type a message..."
+        autocomplete="off"
+        maxlength="250"
+        required
+      />
+
+      <button type="submit" aria-label="Send Message">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+
+  </div>
+
 </main>
 
 <div class="mobile_nav">
@@ -121,4 +165,3 @@
 </body>
 
 </html>
-
