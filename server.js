@@ -23,6 +23,7 @@ const viewUserRoute = require("./backend/routers/api/viewUser");
 const blookRoutes = require("./backend/routers/api/blooks");
 const changeUsernameRoute = require("./backend/routers/api/changeUsername");
 const badgeRoutes = require("./backend/routers/api/badges");
+const bannerRoutes = require("./backend/routers/api/banners");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -60,6 +61,7 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/badges", badgeRoutes);
+app.use("/api/banners", bannerRoutes);
 
 app.use("/", pages);
 
