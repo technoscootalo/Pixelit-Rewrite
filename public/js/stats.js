@@ -518,7 +518,7 @@ function openViewUserPopup() {
           });
 
           const errorEl = createElement('div', {}, {
-            color: '#ffb3b3',
+            color: 'red',
             fontSize: '14px',
             marginBottom: '10px',
             display: 'none',
@@ -545,21 +545,6 @@ function openViewUserPopup() {
           });
           sendBtn.textContent = 'Send report';
 
-          const cancelBtn = createElement('button', { type: 'button' }, {
-            marginLeft: '12px',
-            backgroundColor: '#8a8a8a',
-            boxShadow: 'inset 0 -0.365vw #6f6f6f, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'Pixelify Sans, sans-serif',
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: 'bold',
-          });
-          cancelBtn.textContent = 'Cancel';
-
           const btnRow = createElement('div', {}, {
             display: 'flex',
             justifyContent: 'center',
@@ -569,7 +554,6 @@ function openViewUserPopup() {
             marginTop: '8px',
           });
           btnRow.appendChild(sendBtn);
-          btnRow.appendChild(cancelBtn);
 
           box.appendChild(title);
           box.appendChild(input);
@@ -581,7 +565,7 @@ function openViewUserPopup() {
           document.body.appendChild(modal);
 
           const close = () => modal.remove();
-          cancelBtn.onclick = close;
+          body.onclick = close;
           modal.addEventListener('click', (e) => {
             if (e.target === modal) close();
           });

@@ -27,6 +27,8 @@ const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
 const usersRoutes = require("./backend/routers/api/users");
 const packRouter = require("./backend/routers/api/pack");
+const moderationReportsRoute = require("./backend/routers/api/moderationReports");
+
 
 
 const app = express();
@@ -69,9 +71,10 @@ app.use("/api/badges", badgeRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
-
+app.use("/api/moderationReports", moderationReportsRoute);
 
 app.use("/", pages);
+
 
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));

@@ -79,4 +79,8 @@ router.get("/bannereditor", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/bannereditor.html"));
 });
 
+router.get("/reports", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/reports.html"));
+});
+
 module.exports = router;
