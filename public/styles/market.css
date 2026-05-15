@@ -55,7 +55,7 @@ main h1 {
 }
 
 .box {
-  width: 100%;
+  width: 12%;
   min-height: 200px;
   border-radius: 12px;
   cursor: pointer;

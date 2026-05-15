@@ -271,242 +271,214 @@ function createPasswordChangeModal() {
     return modal;
 }
 
-document.getElementById('changeUsername').addEventListener('click', function() {
-    const modal = document.createElement('div');
+document.getElementById("changeUsername").addEventListener("click", function () {
+    const modal = document.createElement("div");
+
     modal.style.cssText = `
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0,0,0,0.5);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 1000;
     `;
 
-    const modalContent = document.createElement('div');
+    const modalContent = document.createElement("div");
+
     modalContent.style.cssText = `
         background-color: #6f057a;
-        box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
+        box-shadow: inset 0 -0.365vw #61056b,
+                    3px 3px 15px rgba(0,0,0,0.6);
         padding: 20px;
         border-radius: 5px;
         text-align: center;
-        font-size: 26px;
         width: 420px;
+        font-family: 'Pixelify Sans', sans-serif;
+        color: white;
     `;
 
-    const title = document.createElement('h2');
+    const title = document.createElement("h2");
     title.textContent = "Change Username";
     modalContent.appendChild(title);
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'New Username';
-    input.style.cssText = `
-    width: 60%;
-    height: 50px;
-    margin-bottom: 10px;
-    display: inline;
-    font-family: 'pixelify sans';
-    font-size: 28px;
-    text-align: center;
-    border: 3px solid #5e046e;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: transparent;
-    color: white;
-    margin-right: 5px;
-    appearance: textfield;
-    -webkit-appearance: none;
+    const usernameInput = document.createElement("input");
+    usernameInput.type = "text";
+    usernameInput.placeholder = "New Username";
+
+    usernameInput.style.cssText = `
+        width: 70%;
+        height: 50px;
+        margin-bottom: 10px;
+        font-family: 'Pixelify Sans', sans-serif;
+        font-size: 24px;
+        text-align: center;
+        border: 3px solid #5e046e;
+        border-radius: 4px;
+        background: transparent;
+        color: white;
+        outline: none;
     `;
 
-    modalContent.appendChild(input);
+    modalContent.appendChild(usernameInput);
+    modalContent.appendChild(document.createElement("br"));
 
-    
-    const br = document.createElement('br');
-    modalContent.appendChild(br);
+    const passwordInput = document.createElement("input");
+    passwordInput.type = "password";
+    passwordInput.placeholder = "Confirm Password";
 
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'password';
-    passwordInput.placeholder = 'Confirm Password';
     passwordInput.style.cssText = `
-    width: 60%;
-    height: 50px;
-    margin-bottom: 10px;
-    display: inline;
-    font-family: 'pixelify sans';
-    font-size: 28px;
-    text-align: center;
-    border: 3px solid #5e046e;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: transparent;
-    color: white;
-    margin-right: 5px;
-    appearance: textfield;
-    -webkit-appearance: none;
+        width: 70%;
+        height: 50px;
+        margin-bottom: 10px;
+        font-family: 'Pixelify Sans', sans-serif;
+        font-size: 24px;
+        text-align: center;
+        border: 3px solid #5e046e;
+        border-radius: 4px;
+        background: transparent;
+        color: white;
+        outline: none;
     `;
-    modalContent.appendChild(passwordInput); 
 
-    
-    const br2 = document.createElement('br');
-    modalContent.appendChild(br2);
+    modalContent.appendChild(passwordInput);
+    modalContent.appendChild(document.createElement("br"));
 
-    
-    const warningText = document.createElement('div');
-    warningText.id = 'error-message';
-    warningText.innerHTML = "If you change your username, someone else can snipe your old username.";
-    warningText.style.cssText = `
+    const errorMessage = document.createElement("div");
+    errorMessage.textContent =
+        "If you change your username, someone else can claim your old one.";
+
+    errorMessage.style.cssText = `
         color: red;
         font-size: 16px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         font-weight: bold;
     `;
-    modalContent.appendChild(warningText);
-    
-    const changeButton = document.createElement('button');
-    changeButton.textContent = 'Change';
-    changeButton.style.cssText = `
-        background-color: green;
-        box-shadow: inset 0 -3px #0003;
-        font-family: 'pixelify sans';
-        color: white;
-        padding: 10px 20px;
-        margin: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
-        margin-right: 60px;
+
+    modalContent.appendChild(errorMessage);
+
+    const buttonWrap = document.createElement("div");
+    buttonWrap.style.cssText = `
+        display: flex;
+        justify-content: center;
+        gap: 20px;
     `;
 
-    changeButton.onmouseenter = () => {
-        changeButton.style.transform = "translateY(-2px)";
-        changeButton.style.background = "#006400";
-        changeButton.style.boxShadow = "inset 0 -4px #0005, 0 4px 10px rgba(0,0,0,0.2)";
-    };
+    function createButton(text, color, hoverColor) {
+        const btn = document.createElement("button");
+        btn.textContent = text;
 
-    changeButton.onmouseleave = () => {
-        changeButton.style.transform = "translateY(0px)";
-        changeButton.style.background = "green";
-        changeButton.style.boxShadow = "inset 0 -3px #0003";
-    };
+        btn.style.cssText = `
+            background: ${color};
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Pixelify Sans', sans-serif;
+            box-shadow: inset 0 -3px #0003;
+            transition: 0.15s ease;
+        `;
 
-    changeButton.onmousedown = () => {
-        changeButton.style.transform = "translateY(1px) scale(0.98)";
-    };
+        btn.onmouseenter = () => {
+            btn.style.transform = "translateY(-2px)";
+            btn.style.background = hoverColor;
+        };
 
-    changeButton.onmouseup = () => {
-        changeButton.style.transform = "translateY(-2px) scale(1)";
-    };
-        
-    modalContent.appendChild(changeButton);
+        btn.onmouseleave = () => {
+            btn.style.transform = "translateY(0px)";
+            btn.style.background = color;
+        };
 
-    ///////////////////////////////////////////////////////////////////////
+        btn.onmousedown = () => {
+            btn.style.transform = "translateY(1px) scale(0.98)";
+        };
 
-    const cancelButton = document.createElement('button');
-    cancelButton.textContent = 'Cancel';
-    cancelButton.style.cssText = `
-        background-color: red;
-        box-shadow: inset 0 -3px #0003;
-        font-family: 'pixelify sans';
-        color: white;
-        padding: 10px 20px;
-        margin: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
-        margin-left: 60px;
-    `;
+        btn.onmouseup = () => {
+            btn.style.transform = "translateY(-2px) scale(1)";
+        };
 
+        return btn;
+    }
 
-    cancelButton.onmouseenter = () => {
-        cancelButton.style.transform = "translateY(-2px)";
-        cancelButton.style.background = "#b30000";
-        cancelButton.style.boxShadow = "inset 0 -3px #0005, 0 4px 10px rgba(0,0,0,0.2)";
-    };
-
-    cancelButton.onmouseleave = () => {
-        cancelButton.style.transform = "translateY(0px)";
-        cancelButton.style.background = "red";
-        cancelButton.style.boxShadow = "inset 0 -3px #0003";
-    };
-
-    cancelButton.onmousedown = () => {
-        cancelButton.style.transform = "translateY(1px) scale(0.98)";
-    };
-
-    cancelButton.onmouseup = () => {
-        cancelButton.style.transform = "translateY(-2px) scale(1)";
-    };
-
-    modalContent.appendChild(cancelButton);
-
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-
-    cancelButton.onclick = () => {
-        document.body.removeChild(modal);
-    };
+    const changeButton = createButton(
+        "Change",
+        "green",
+        "#006400"
+    );
 
     changeButton.onclick = async () => {
-        const newUsername = input.value.trim();
+        const newUsername = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
         const forbiddenChars = /[^a-zA-Z0-9_]/;
+
         if (!newUsername || !password) {
-            document.getElementById('error-message').textContent = "Please fill out all fields.";
-            setTimeout(() => {
-                document.getElementById('error-message').textContent = "If you change your username, someone else can snipe your old username.";
-            }, 2000);
+            errorMessage.textContent = "Please fill out all fields.";
             return;
         }
 
-        if (forbiddenChars.test(newUsername) || newUsername.length < 3 || newUsername.length > 20) {
-            document.getElementById('error-message').textContent = "Username must be 3-20 characters long and contain only letters, numbers, and underscores.";
-            setTimeout(() => {
-                document.getElementById('error-message').textContent = "If you change your username, someone else can snipe your old username.";
-            }, 2000);
+        if (
+            forbiddenChars.test(newUsername) ||
+            newUsername.length < 3 ||
+            newUsername.length > 20
+        ) {
+            errorMessage.textContent =
+                "Username must be 3-20 chars and only contain letters, numbers, and underscores.";
             return;
         }
 
-        const existingUserResponse = await fetch('/allUsers');
-        const existingUsers = await existingUserResponse.json();
+        try {
+            const response = await fetch("/api/changeUsername", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    newUsername,
+                    password
+                })
+            });
 
-        const existingUsernames = existingUsers.map(user => user.username.toLowerCase());
-        if (existingUsernames.includes(newUsername.toLowerCase())) {
-            document.getElementById('error-message').textContent = "Username already exists.";
-            setTimeout(() => {
-                document.getElementById('error-message').textContent = "If you change your username, someone else can snipe your old username.";
-            }, 2000);
-            return;
-        }
+            const text = await response.text();
 
-        const response = await fetch('/changeUsername', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ newUsername, password })
-        });
+            if (response.ok) {
+                window.location.href = "/login";
+            } else {
+                errorMessage.textContent = text;
+            }
 
-        if (response.ok) {
-            window.location.href = '/login'; 
-        } else {
-            const errorText = await response.text();
-            document.getElementById('error-message').textContent = `Error: ${errorText}`;
+        } catch (err) {
+            console.error(err);
+            errorMessage.textContent = "Server error.";
         }
     };
 
-    modal.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            document.body.removeChild(modal);
+    const cancelButton = createButton(
+        "Cancel",
+        "red",
+        "#b30000"
+    );
+
+    cancelButton.onclick = () => {
+        modal.remove();
+    };
+
+    buttonWrap.appendChild(changeButton);
+    buttonWrap.appendChild(cancelButton);
+
+    modalContent.appendChild(buttonWrap);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.remove();
         }
     });
-
 });
 
 const today = new Date();

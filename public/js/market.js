@@ -124,7 +124,9 @@ function createPack(pack) {
   div.setAttribute("data-pack-name", pack.name);
 
   const img = document.createElement("img");
-  img.src = pack.image;
+
+  // FIXED
+  img.src = pack.packImageUrl;
   img.alt = pack.name;
 
   img.style.cssText = `
@@ -134,6 +136,7 @@ function createPack(pack) {
     filter: drop-shadow(0 10px 12px rgba(0,0,0,0.5));
     transition: 0.25s;
     cursor: pointer;
+    object-fit: contain;
   `;
 
   img.onmouseenter = () => {
@@ -148,19 +151,25 @@ function createPack(pack) {
 
   const cost = document.createElement("p");
   cost.style.cssText = `
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    color:white;
-    font-weight:bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: white;
+    font-weight: bold;
     font-size: 32px;
-    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   `;
 
   cost.innerHTML = `
-    <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png"
-      style="width:28px;height:28px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));">
+    <img 
+      src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png"
+      style="
+        width:28px;
+        height:28px;
+        filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+      "
+    >
     ${pack.cost}
   `;
 
