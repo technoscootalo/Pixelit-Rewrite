@@ -152,6 +152,8 @@ main {
     1px 1px 0 black;
 }
 
+.price,
+.chance,
 .rarity {
   font-size: 22px;
   margin: 4px 0 10px 0; 
@@ -170,7 +172,6 @@ main {
   height: 160px !important;
   object-fit: contain;
   border-radius: 5px;
-
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
 }
 

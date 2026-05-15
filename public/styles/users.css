@@ -20,6 +20,21 @@ body {
   overflow-y: auto;
 }
 
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #6f057a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8c099a;
+  border-radius: 10px;
+  border: 3px solid #6f057a;
+}
+
 .background {
   position: fixed;
   width: 250%;
@@ -40,4 +55,108 @@ main {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
+
+.userManager {
+  position: fixed;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 900px;
+  height: 750px;
+  padding: 20px;
+
+  background: #5e046e;
+  border-radius: 5px;
+
+  box-shadow:
+    inset 0 -0.365vw #53055c,
+    3px 3px 15px rgba(0,0,0,0.6);
+
+  overflow-y: auto;
+}
+
+.userManager h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.userGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.userCard {
+  height: 85px;
+  background: #6f057a;
+  border-radius: 6px;
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 -0.3vw #53055c,
+    3px 3px 10px rgba(0,0,0,0.4);
+}
+
+.userCard:hover {
+  transform: scale(1.02);
+}
+
+.userStatus {
+  margin-left: auto;
+  padding-left: 10px;
+  min-width: 70px;
+  text-align: right;
+}
+
+.userLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.userLeft img {
+  width: 55px;
+  height: 55px;
+  border-radius: 5px;
+  object-fit: cover;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+.userInfo h3 {
+  margin: 0;
+}
+
+.userInfo p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+#userSearch {
+  width: 100%;
+  height: 50px;
+  margin-bottom: 20px;
+  padding: 0 15px;
+  text-align: center;
+  background: #6f057a;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 -0.3vw #53055c,
+    3px 3px 10px rgba(0,0,0,0.5);
+}
+
+#userSearch::placeholder {
+  color: rgba(255,255,255,0.7);
 }

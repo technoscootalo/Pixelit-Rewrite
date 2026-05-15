@@ -23,15 +23,32 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(
-            password,
-            user.password
-        );
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res.status(400).json({
                 error: "Invalid credentials"
             });
+        }
+
+        if (user.banned) {
+            let banMessage = `You have been banned from Pixelit\nReason: ${user.banReason || "No reason provided"}`;
+
+            if (user.banDuration && user.banDuration > 0) {
+
+                banMessage += `\nExpires: (${user.banDuration} hours)`;
+
+                return res.status(403).json({
+                    error: banMessage
+                });
+
+            } else {
+                banMessage += `\nExpires: Never`;
+
+                return res.status(403).json({
+                    error: banMessage
+                });
+            }
         }
 
         req.session.userId = user.id;

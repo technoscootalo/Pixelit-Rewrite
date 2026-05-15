@@ -6,6 +6,7 @@ const imageEl = document.getElementById("blook-image");
 const priceEl = document.getElementById("blook-price");
 const chanceEl = document.getElementById("blook-chance");
 const grid = document.getElementById("blookGrid");
+const previewPanel = document.querySelector(".previewPanel");
 
 const rarityColors = {
   uncommon: "#4bc22e",
@@ -141,7 +142,6 @@ async function loadBlooks() {
     grid.appendChild(img);
   });
 }
-
 function selectBlook(blook) {
   selectedBlook = blook;
 
@@ -153,8 +153,25 @@ function selectBlook(blook) {
   chanceEl.innerText = `Chance - ${blook.chance}%`;
 
   const key = (blook.rarity || "").toLowerCase();
-
   rarityEl.style.color = rarityColors[key] || "white";
+
+  if (previewPanel) {
+    const bg = blook.backgroundUrl;
+
+    previewPanel.style.backgroundColor = "transparent";
+
+    previewPanel.style.backgroundImage = bg ? `url(${bg})` : "none";
+    previewPanel.style.backgroundSize = "cover";
+    previewPanel.style.backgroundPosition = "center";
+    previewPanel.style.backgroundRepeat = "no-repeat";
+
+    previewPanel.style.boxShadow = `
+      inset 0 0 80px rgba(0,0,0,0.55),
+      inset 0 0 140px rgba(0,0,0,0.35),
+      inset 0 -6px rgba(0,0,0,0.4),
+      3px 3px 15px rgba(0,0,0,0.6)
+    `;
+  }
 }
 
 document.getElementById("addBlookBtn").onclick = () => {
