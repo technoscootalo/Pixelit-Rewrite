@@ -30,6 +30,11 @@ const BlookSchema = new mongoose.Schema({
   chance: {
     type: Number,
     required: true
+  },
+
+  obtainable: {
+    type: Boolean,
+    default: true
   }
 });
 

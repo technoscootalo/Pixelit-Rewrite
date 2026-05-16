@@ -28,6 +28,8 @@ const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
 const usersRoutes = require("./backend/routers/api/users");
 const packRouter = require("./backend/routers/api/pack");
+const moderationReportsRoute = require("./backend/routers/api/moderationReports");
+const articlesRoute = require("./backend/routers/api/articles");
 
 
 const app = express();
@@ -67,14 +69,12 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/reportUser", reportUserRoute);
-
-const moderationReportsRoute = require("./backend/routers/api/moderationReports");
 app.use("/api/moderationReports", moderationReportsRoute);
-
 app.use("/api/badges", badgeRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
+app.use("/api/articles", articlesRoute);
 
 
 app.use("/", pages);
@@ -125,7 +125,7 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            const earnedTokens = Math.floor(Math.random() * 5) + 1; // 1..5
+            const earnedTokens = Math.floor(Math.random() * 5) + 1; // 1 - 5 tokens per message
 
             await User.findOneAndUpdate(
                 { id: user.id },

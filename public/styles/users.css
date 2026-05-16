@@ -164,11 +164,11 @@ main {
 @media (max-width: 900px) {
   .userManager {
     position: fixed;
-    inset: 0; /* replaces top/left/width/height */
+    inset: 0;
     width: 100vw;
     height: 100vh;
 
-    transform: none; /* IMPORTANT: removes centering */
+    transform: none; 
     top: 0;
     left: 0;
 
@@ -193,7 +193,7 @@ main {
   }
 
   .userGrid {
-    flex: 1; /* KEY FIX: takes remaining space only */
+    flex: 1;
     overflow-y: auto;
     padding-right: 4px;
   }
@@ -202,7 +202,7 @@ main {
     height: auto;
     padding: 12px;
 
-    flex-direction: row; /* keep horizontal but compact */
+    flex-direction: row; 
     align-items: center;
     gap: 10px;
 
@@ -234,7 +234,6 @@ main {
   }
 }
 
-/* small phones */
 @media (max-width: 480px) {
   .userManager {
     padding: 10px;
