@@ -14,6 +14,12 @@ function updateDailyWheelState() {
 
   if (!button || !messageEl) return;
 
+  if (window.__profileViewMode === 'other') {
+    button.style.display = 'none';
+    messageEl.innerText = '';
+    return;
+  }
+
   if (user && user.lastClaim) {
     const lastClaimDate = new Date(user.lastClaim);
     const nextClaimDate = new Date(lastClaimDate.getTime() + DAILY_WHEEL_COOLDOWN_MS);
@@ -25,6 +31,7 @@ function updateDailyWheelState() {
       return;
     }
   }
+
 
   button.style.display = "inline-flex";
   button.disabled = false;
@@ -352,6 +359,7 @@ function openViewUserPopup() {
   });
   cancelButton.textContent = 'Cancel';
 
+
   const restoreMyProfile = () => {
     const orig = window.__profileViewOriginal;
     if (!orig) return;
@@ -565,7 +573,25 @@ function openViewUserPopup() {
           document.body.appendChild(modal);
 
           const close = () => modal.remove();
-          body.onclick = close;
+
+          const cancelBtn = createElement('button', { type: 'button' }, {
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            color: 'white',
+            fontSize: '24px',
+            cursor: 'pointer',
+          });
+          cancelBtn.textContent = '×';
+          cancelBtn.onclick = close;
+
+          modal.appendChild(cancelBtn);
+
+          if (typeof cancelBtn !== 'undefined') {
+          }
+
           modal.addEventListener('click', (e) => {
             if (e.target === modal) close();
           });
@@ -639,5 +665,34 @@ const viewUserButton = document.querySelector('.viewUser');
 if (viewUserButton) {
   viewUserButton.onclick = openViewUserPopup;
 }
+
+(function initStatsViewFromQuery() {
+  const url = new URL(window.location.href);
+  const requested = (url.searchParams.get('name') || '').trim();
+  if (!requested) return;
+
+  setTimeout(() => {
+    const openBtn = document.querySelector('.viewUser');
+    if (!openBtn || typeof openBtn.onclick !== 'function') return;
+
+    openBtn.onclick();
+
+    const input = document.getElementById('viewUsernameInput');
+    if (!input) return;
+
+    input.value = requested;
+
+    const errorEl = document.getElementById('viewUserError');
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
+
+    const viewProfileBtn = [...document.querySelectorAll('button')]
+      .find((b) => (b.textContent || '').trim() === 'View Profile');
+
+    viewProfileBtn?.click();
+  }, 0);
+})();
 
 loadUser();

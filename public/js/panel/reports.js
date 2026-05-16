@@ -156,6 +156,7 @@ function escapeHtml(str) {
     .replaceAll(">", ">")
 }
 
+
 function formatDate(d) {
   try {
     if (!d) return "";

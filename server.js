@@ -67,10 +67,15 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/reportUser", reportUserRoute);
+
+const moderationReportsRoute = require("./backend/routers/api/moderationReports");
+app.use("/api/moderationReports", moderationReportsRoute);
+
 app.use("/api/badges", badgeRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
+
 
 app.use("/", pages);
 
@@ -120,6 +125,14 @@ io.on("connection", async (socket) => {
                 return;
             }
 
+            const earnedTokens = Math.floor(Math.random() * 5) + 1; // 1..5
+
+            await User.findOneAndUpdate(
+                { id: user.id },
+                { $inc: { sent: 1, tokens: earnedTokens } },
+                { new: true }
+            );
+
             const savedMessage = await Message.create({
                 userId: user.id,
                 username: user.username,
@@ -127,6 +140,7 @@ io.on("connection", async (socket) => {
                 badges: user.badges || [],
                 content,
             });
+
 
             const broadcastMessage = {
                 userId: savedMessage.userId,
