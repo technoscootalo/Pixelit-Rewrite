@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const Pack = require("../../models/Pack");
+const { requireDeveloperAccess } = require("../../middleware/panelAuth");
 
-router.post("/", async (req, res) => {
+router.post("/", requireDeveloperAccess(), async (req, res) => {
+
   try {
     const {
       name,
@@ -36,7 +38,8 @@ router.post("/", async (req, res) => {
 
 const Blook = require("../../models/Blook");
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireDeveloperAccess(), async (req, res) => {
+
   try {
     const pack = await Pack.findByIdAndUpdate(
       req.params.id,
@@ -50,7 +53,8 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireDeveloperAccess(), async (req, res) => {
+
   try {
     await Pack.findByIdAndDelete(req.params.id);
     res.json({ success: true });

@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Blook = require("../../models/Blook");
+const { requireDeveloperAccess } = require("../../middleware/panelAuth");
 
 
-// GET ALL BLOOKS (for right panel)
+
 router.get("/", async (req, res) => {
   try {
     const blooks = await Blook.find();
@@ -14,8 +15,8 @@ router.get("/", async (req, res) => {
 });
 
 
-// CREATE BLOOK
-router.post("/create", async (req, res) => {
+router.post("/create", requireDeveloperAccess(), async (req, res) => {
+
   try {
     const blook = new Blook(req.body);
     await blook.save();
@@ -27,8 +28,8 @@ router.post("/create", async (req, res) => {
 });
 
 
-// UPDATE BLOOK
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireDeveloperAccess(), async (req, res) => {
+
   try {
     const updated = await Blook.findByIdAndUpdate(
       req.params.id,
@@ -43,8 +44,8 @@ router.put("/:id", async (req, res) => {
 });
 
 
-// DELETE BLOOK
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireDeveloperAccess(), async (req, res) => {
+
   try {
     await Blook.findByIdAndDelete(req.params.id);
     res.json({ success: true });

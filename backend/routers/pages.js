@@ -19,23 +19,26 @@ router.get("/credits", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
 });
 
-router.get("/stats", (req, res) => {
+const { requireLoggedIn, requireNotBanned } = require("../middleware/sessionUser");
+
+router.get("/stats", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/stats.html"));
 });
 
-router.get("/market", (req, res) => {
+
+router.get("/market", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/market.html"));
 });
 
-router.get("/pixels", (req, res) => {
+router.get("/pixels", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/pixels.html"));
 });
 
-router.get("/chat", (req, res) => {
+router.get("/chat", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/chat.html"));
 });
 
-router.get("/ranking", (req, res) => {
+router.get("/ranking", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/ranking.html"));
 });
 
@@ -43,44 +46,44 @@ router.get("/terms", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/terms.html"));
 });
 
-router.get("/settings", (req, res) => {
+router.get("/settings", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/settings.html"));
 });
 
-router.get("/panel", (req, res) => {
+const { requirePanelAccess, requireDeveloperAccess } = require("../middleware/panelAuth");
+
+router.get("/panel", requirePanelAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/panel.html"));
 });
 
-router.get("/users", (req, res) => {
+router.get("/users", requirePanelAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/users.html"));
 });
 
-router.get("/developer", (req, res) => {
+router.get("/developer", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/developer.html"));
 });
 
-router.get("/developer", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../src/views/panel/developer.html"));
-});
 
-router.get("/pixelseditor", (req, res) => {
+router.get("/pixelseditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/pixelseditor.html"));
 });
 
-router.get("/packeditor", (req, res) => {
+router.get("/packeditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/packeditor.html"));
 });
 
-router.get("/badgeeditor", (req, res) => {
+router.get("/badgeeditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/badgeeditor.html"));
 });
 
-router.get("/bannereditor", (req, res) => {
+router.get("/bannereditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/bannereditor.html"));
 });
 
-router.get("/reports", (req, res) => {
+router.get("/reports", requirePanelAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/reports.html"));
 });
+
 
 module.exports = router;

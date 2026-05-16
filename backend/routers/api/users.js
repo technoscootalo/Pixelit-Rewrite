@@ -3,8 +3,15 @@ const router = express.Router();
 const User = require("../../models/User");
 
 
-// GET ALL USERS
-router.get("/", async (req, res) => {
+const { requirePanelAccess } = require("../../middleware/panelAuth");
+const { rateLimit } = require("../../middleware/rateLimit");
+const { requireNotBanned } = require("../../middleware/sessionUser");
+
+
+
+
+router.get("/", requirePanelAccess(), requireNotBanned, rateLimit({ max: 10, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const users = await User.find().select(
       "username pfp role muted banned muteReason banReason muteDuration banDuration"
@@ -20,10 +27,12 @@ router.get("/", async (req, res) => {
 });
 
 
-// MUTE USER
-router.put("/:id/mute", async (req, res) => {
+
+router.put("/:id/mute", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const { reason, duration } = req.body;
+
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -45,10 +54,11 @@ router.put("/:id/mute", async (req, res) => {
 });
 
 
-// UNMUTE USER
-router.put("/:id/unmute", async (req, res) => {
+router.put("/:id/unmute", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const user = await User.findByIdAndUpdate(
+
       req.params.id,
       {
         muted: false,
@@ -68,10 +78,11 @@ router.put("/:id/unmute", async (req, res) => {
 });
 
 
-// BAN USER
-router.put("/:id/ban", async (req, res) => {
+router.put("/:id/ban", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const { reason, duration } = req.body;
+
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -93,10 +104,11 @@ router.put("/:id/ban", async (req, res) => {
 });
 
 
-// UNBAN USER
-router.put("/:id/unban", async (req, res) => {
+router.put("/:id/unban", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const user = await User.findByIdAndUpdate(
+
       req.params.id,
       {
         banned: false,

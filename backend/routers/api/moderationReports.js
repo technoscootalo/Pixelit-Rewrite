@@ -3,10 +3,17 @@ const router = express.Router();
 
 const UserReport = require("../../models/UserReport");
 const User = require("../../models/User");
+const { requirePanelAccess } = require("../../middleware/panelAuth");
+const { rateLimit } = require("../../middleware/rateLimit");
 
-router.get("/pending", async (req, res) => {
+
+
+
+router.get("/pending", requirePanelAccess(), rateLimit({ max: 10, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const reports = await UserReport.find({ status: "pending" })
+
       .sort({ createdAt: -1 })
       .lean();
 
@@ -17,9 +24,11 @@ router.get("/pending", async (req, res) => {
   }
 });
 
-router.post("/:reportId/dismiss", async (req, res) => {
+router.post("/:reportId/dismiss", requirePanelAccess(), rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     await UserReport.findByIdAndUpdate(req.params.reportId, {
+
       status: "dismissed",
     });
 
@@ -30,9 +39,11 @@ router.post("/:reportId/dismiss", async (req, res) => {
   }
 });
 
-router.post("/:reportId/mute", async (req, res) => {
+router.post("/:reportId/mute", requirePanelAccess(), rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const report = await UserReport.findById(req.params.reportId);
+
     if (!report) return res.status(404).json({ success: false, message: "Report not found" });
 
     const { reason, duration } = req.body || {};
@@ -59,9 +70,11 @@ router.post("/:reportId/mute", async (req, res) => {
   }
 });
 
-router.post("/:reportId/ban", async (req, res) => {
+router.post("/:reportId/ban", requirePanelAccess(), rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
+
   try {
     const report = await UserReport.findById(req.params.reportId);
+
     if (!report) return res.status(404).json({ success: false, message: "Report not found" });
 
     const { reason, duration } = req.body || {};

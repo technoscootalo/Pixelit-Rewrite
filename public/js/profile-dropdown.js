@@ -26,19 +26,23 @@ document.addEventListener('DOMContentLoaded', function() {
   loadProfileData();
 });
 
-function logout(event) {
+function handleLogout(event) {
   event.preventDefault();
 
-  fetch('/logout', {
+  try {
+    document.cookie = "pixelit.sid=; Max-Age=0; path=/;";
+  } catch (e) {
+  }
+
+  fetch('/api/logout', {
     method: 'POST',
     credentials: 'include'
   })
-  .then(response => {
-    if (response.ok) {
+    .then((response) => {
       window.location.href = '/login';
-    }
-  })
-  .catch(error => {
-    console.error('Logout error:', error);
-  });
+    })
+    .catch((error) => {
+      console.error('Logout error:', error);
+      window.location.href = '/login';
+    });
 }

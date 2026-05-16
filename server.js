@@ -83,9 +83,11 @@ app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
 });
 
+const allowedCorsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
+
 const io = new SocketIOServer(httpServer, {
     cors: {
-        origin: true,
+        origin: allowedCorsOrigin,
         credentials: true,
     },
 });

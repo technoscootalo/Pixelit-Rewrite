@@ -3,8 +3,9 @@ const router = express.Router();
 
 const UserReport = require("../../models/UserReport");
 const User = require("../../models/User");
+const { rateLimit } = require("../../middleware/rateLimit");
 
-router.post("/", async (req, res) => {
+router.post("/", rateLimit({ max: 1, windowMs: 20 * 1000 }), async (req, res) => {
   try {
     if (!req.session || !req.session.userId) {
       return res.status(401).json({ success: false, message: "You must be logged in." });
