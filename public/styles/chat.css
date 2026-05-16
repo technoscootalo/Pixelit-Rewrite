@@ -247,4 +247,35 @@ body {
   .chat-messages::-webkit-scrollbar {
     display: none;
   }
+/* HJr's group messaging please dont edit, im also praying it works */
+  .message.grouped {
+    margin-top: -8px;
+    padding-top: 4px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.message.grouped .chat-pfp {
+    visibility: hidden;
+    width: 55px;
+    height: 55px;
+}
+
+.message.grouped .message-header {
+    display: none;
+}
+
+.message.grouped .message-content {
+    padding-top: 2px;
+}
+
+.message.grouped:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+    .message.grouped .chat-pfp {
+        width: 45px;
+        height: 45px;
+    }
+}
 }
