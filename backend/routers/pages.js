@@ -25,7 +25,6 @@ router.get("/stats", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/stats.html"));
 });
 
-
 router.get("/market", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/market.html"));
 });
@@ -48,6 +47,10 @@ router.get("/terms", (req, res) => {
 
 router.get("/settings", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/settings.html"));
+});
+
+router.get("/credits", requireLoggedIn, (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
 });
 
 const { requirePanelAccess, requireDeveloperAccess } = require("../middleware/panelAuth");
