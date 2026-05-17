@@ -143,14 +143,15 @@ inboxButton.addEventListener("click", () => {
   `;
 
   const empty = document.createElement("div");
-  empty.textContent = "No messages";
+  empty.textContent = "No messages.S";
   empty.style.cssText = `
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 18px;
+    font-size: 28px;
+    font-weight: bold;
     opacity: 0.9;
     text-align: center;
   `;
@@ -192,8 +193,31 @@ async function loadUser() {
 
     if (pfp) pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
     if (banner) banner.src = user.banner || "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
+
     if (usernameEl) usernameEl.innerText = user.username;
     if (roleEl) roleEl.innerText = user.role || "Player";
+
+    // Role color styling
+    const usernameElement = usernameEl;
+    const roleColors = {
+      "Owner": "#020202",
+      "Veteran": "#969a5c",
+      "Verified": "#5ab65b",
+      "Plus": "#5657d3",
+      "Tester": "#80a1d3",
+      "Helper": "#4b69c3",
+      "Moderator": "#ab53c4",
+      "Admin": "#dc6dc1",
+      "Community Manager": "#69c95d",
+      "Developer": "#6a76c7",
+      "Artist": "#ca964c"
+    };
+
+    if (roleColors[user.role]) {
+      if (usernameElement) usernameElement.style.color = roleColors[user.role];
+      if (roleEl) roleEl.style.color = roleColors[user.role];
+    }
+
 
     const tokensEl = document.getElementById("tokens");
     const packsEl = document.getElementById("packs");

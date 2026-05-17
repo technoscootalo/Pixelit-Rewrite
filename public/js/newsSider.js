@@ -5,54 +5,156 @@
 
   if (!newsBtn || !sidebar || !overlay) return;
 
-  const open = () => {
-    overlay.classList.add("active");
-    sidebar.classList.add("active");
-    sidebar.setAttribute("aria-hidden", "false");
-  };
-
-
-  const contentEl = sidebar.querySelector("#newsSidebarArticles");
+  const contentEl = document.getElementById("newsSidebarArticles");
 
   async function loadArticles() {
     if (!contentEl) return;
+
     try {
-      contentEl.innerHTML = "<div style='opacity:0.8'>Loading...</div>";
-      const res = await fetch("/api/articles", { credentials: "include" });
+      contentEl.innerHTML = `
+        <div style="opacity:0.8;text-align:center;padding:20px;">
+          Loading news...
+        </div>
+      `;
+
+      const res = await fetch("/api/articles", {
+        credentials: "include"
+      });
+
       const data = await res.json();
+
       if (!res.ok || !Array.isArray(data)) {
-        contentEl.innerHTML = "<div style='opacity:0.9'>Failed to load news.</div>";
+        contentEl.innerHTML = `
+          <div style="opacity:0.9;text-align:center;padding:20px;">
+            Failed to load news.
+          </div>
+        `;
+        return;
+      }
+
+      if (data.length === 0) {
+        contentEl.innerHTML = `
+          <div style="opacity:0.9;text-align:center;padding:20px;">
+            No news articles found.
+          </div>
+        `;
         return;
       }
 
       contentEl.innerHTML = data
-        .map((a) => {
-          const title = a.title ? String(a.title) : "(Untitled)";
-          const body = a.content ? String(a.content) : "";
-          const normalizedPublishedAt =
-            a.publishedAt && typeof a.publishedAt === "object" && a.publishedAt.$date
-              ? a.publishedAt.$date
-              : a.publishedAt;
+        .map((article) => {
+          const title = article.title || "Untitled";
+          const body = article.content || "";
+          const imageUrl = article.imageUrl || "";
 
-          const date = normalizedPublishedAt ? new Date(normalizedPublishedAt) : null;
-          const dateStr = date && !isNaN(date.getTime()) ? date.toLocaleDateString() : "";
+          const date = article.publishedAt
+            ? new Date(article.publishedAt)
+            : null;
+
+          const dateStr =
+            date && !isNaN(date.getTime())
+              ? date.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "";
+
+
           return `
-            <div class="news-card" style="box-sizing:border-box;width:90%;margin:0.521vw auto;padding:0.521vw 0.781vw 0.885vw;background-color:#1f1f1f;box-shadow:inset 0 -0.365vw rgba(0,0,0,0.2),0 0 0.208vw rgba(0,0,0,0.15);border-radius:0.365vw;color:#fff;font-family:Quicksand, sans-serif;color:#ffffff;">
-              <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;">
-                <div style="font-weight:700;font-size:1.1rem;line-height:1.2;">${title}</div>
-                ${dateStr ? `<div style="opacity:0.7;font-size:0.85rem;white-space:nowrap;">${dateStr}</div>` : ""}
+            <br/>
+
+            <div class="news-card"
+              style="
+                width:95%;
+                margin:12px auto;
+                padding:16px;
+                border-radius:5px;
+                background: #6f057a;
+                box-shadow: inset 0 -0.365vw #570066, 3px 3px 15px rgba(0, 0, 0, 0.6);
+                color:white;
+                font-family:'Pixelify Sans', sans-serif;
+                text-align:left;
+              "
+            >
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:10px;
+                gap:10px;
+              ">
+                <h2 style="
+                  margin:0;
+                  font-size:24px;
+                  font-weight:700;
+                ">
+                  ${title}
+                </h2>
               </div>
-              ${a.imageUrl ? `<img src="${a.imageUrl}" alt="News image" style="width:100%;border-radius:0.25rem;margin:8px 0;"/>` : ""}
-              <div style="opacity:0.9;line-height:1.5;white-space:pre-wrap;">${body}</div>
+
+              ${
+                imageUrl
+                  ? `
+                    <img
+                      src="${imageUrl}"
+                      alt="News Image"
+                      style="
+                        width:100%;
+                        max-height:100%;
+                        object-fit:cover;
+                        border-radius:8px;
+                        margin-bottom:12px;
+                      "
+                    />
+                  `
+                  : ""
+              }
+
+              <div style="
+                line-height:1.5;
+                opacity:0.9;
+              ">
+                ${body}
+              </div>
+
+              ${
+                dateStr
+                  ? `
+                    <span style="
+                      opacity:0.7;
+                      font-size:13px;
+                      white-space:nowrap;
+                    ">
+                      <i class="far fa-calendar-alt" style="margin-right: 0.365vw;" aria-hidden="true"></i> ${dateStr}
+                    </span>
+                  `
+                  : ""
+              }
             </div>
           `;
         })
         .join("");
+
     } catch (err) {
       console.error(err);
-      if (contentEl) contentEl.innerHTML = "<div style='opacity:0.9'>Failed to load news.</div>";
+
+      contentEl.innerHTML = `
+        <div style="opacity:0.9;text-align:center;padding:20px;">
+          Failed to load news.
+        </div>
+      `;
     }
   }
+
+  const open = async () => {
+    overlay.classList.add("active");
+    sidebar.classList.add("active");
+    sidebar.setAttribute("aria-hidden", "false");
+
+    await loadArticles();
+  };
 
   const close = () => {
     overlay.classList.remove("active");
@@ -60,20 +162,31 @@
     sidebar.setAttribute("aria-hidden", "true");
   };
 
-  newsBtn.addEventListener("click", (e) => {
+  newsBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+
     const isOpen = sidebar.classList.contains("active");
-    if (isOpen) close();
-    else open();
+
+    if (isOpen) {
+      close();
+    } else {
+      await open();
+    }
   });
 
   overlay.addEventListener("click", close);
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") {
+      close();
+    }
   });
 
-  const closeBtn = sidebar.querySelector("[data-news-sidebar-close]");
-  if (closeBtn) closeBtn.addEventListener("click", close);
-})();
+  const closeBtn = sidebar.querySelector(
+    "[data-news-sidebar-close]"
+  );
 
+  if (closeBtn) {
+    closeBtn.addEventListener("click", close);
+  }
+})();

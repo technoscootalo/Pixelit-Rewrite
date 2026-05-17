@@ -48,3 +48,80 @@ h2 {
 	transform: translate(-50%, -50%) rotate(15deg);
 	opacity: 0.1;
 }
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #6f0083;
+	color: white;
+	font-family: Pixelify Sans;
+	overflow: hidden;
+}
+
+@keyframes blooks {
+	0% {
+		transform: translateY(-1rem) rotate(1deg);
+	}
+	50% {
+		transform: translateY(1rem) rotate(0deg);
+	}
+	100% {
+		transform: translateY(-1rem) rotate(1deg);
+	}
+}
+
+h1 {
+	font-size: 4rem;
+	margin-bottom: 10px;
+}
+
+main {
+	display: flex;
+	height: 100vh;
+	width: 100%;
+}
+
+.terms {
+	position: fixed;
+	bottom: 2rem;
+	right: 2rem;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.terms a {
+	color: white;
+	text-decoration: none;
+}
+
+.terms a:hover {
+	text-decoration: underline;
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	flex: 1;
+	text-shadow: #000 1px 0 13px;
+}
+
+.blooks {
+	display: flex;
+	flex: 2;
+	align-items: center;
+	justify-content: center;
+}
+
+.blooks img {
+	width: 70%;
+	animation: blooks 10s ease infinite;
+	filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.subheading {
+	font-size: 2rem;
+	text-shadow: #000 1px 0 13px;
+}

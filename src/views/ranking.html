@@ -54,7 +54,7 @@
     <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
     <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
     <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
-    <a href="/news"><i class="fa-solid fa-newspaper"></i> News</a>
+    <a href="#"><i class="fa-solid fa-newspaper"></i> News</a>
     <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
     <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
     <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
@@ -64,6 +64,29 @@
 </nav>
 
 <div class="background"></div>
+
+<div id="newsSidebarOverlay"></div>
+
+<aside id="newsSidebar" class="news-sidebar" aria-hidden="true">
+  <div class="news-sidebar-header">
+    <div class="news-sidebar-header-title">
+      <i class="far fa-newspaper" aria-hidden="true"></i>
+      <span><span class="pixelitLogo">Pixelit</span> News</span>
+    </div>
+
+    <button
+      type="button"
+      class="news-sidebar-close"
+      data-news-sidebar-close
+      aria-label="Close news"
+    >
+      &times;
+    </button>
+  </div>
+  <div class="news-sidebar-content">
+    <div id="newsSidebarArticles"></div>
+  </div>
+</aside>
 
 <main>
   <div class="ranking-wrapper">
@@ -98,12 +121,6 @@
     <i class="fa-solid fa-suitcase"></i>
     <span>Pixels</span>
   </a>
-
-  <a href="/news">
-    <i class="fa-solid fa-newspaper"></i>
-    <span>News</span>
-  </a>
-
 
   <a href="/panel" id="panelLink">
     <i class="fa-solid fa-wrench"></i>
