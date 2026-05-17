@@ -152,6 +152,10 @@ addPackBtn.onclick = () => {
     fields: ["Pack Name", "Image URL", "Background URL", "Cost", "Visible (true/false)"],
     onSave: async (v) => {
       const [name, image, background, cost, visible] = v;
+ 
+      // allow packBackground to be any CSS-ready value (hex, gradients, etc.)
+      // If empty, default to ""
+      const packBackground = (background ?? "").toString().trim();
 
       const res = await fetch("/api/packs", {
         method: "POST",
@@ -159,7 +163,7 @@ addPackBtn.onclick = () => {
         body: JSON.stringify({
           name,
           packImageUrl: image,
-          packBackground: background,
+          packBackground,
           cost: Number(cost),
           visible: visible === "true"
         })
@@ -214,10 +218,17 @@ function createEditorPanel() {
   };
 
   document.getElementById("savePack").onclick = async () => {
+    const blookIds = (selectedPack.blooks || [])
+      .map(b => (typeof b === "string" ? b : b?._id || b?.id))
+      .filter(Boolean);
+
     await fetch(`/api/packs/${selectedPack._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(selectedPack)
+      body: JSON.stringify({
+        ...selectedPack,
+        blooks: blookIds
+      })
     });
 
     loadPacks();
@@ -236,6 +247,10 @@ function createEditorPanel() {
 
 function openEditor(pack) {
   selectedPack = structuredClone(pack);
+
+  selectedPack.blooks = (selectedPack.blooks || [])
+    .map(b => (typeof b === "string" ? b : b?._id || b?.id))
+    .filter(Boolean);
 
   const panel = document.getElementById("editor");
   panel.style.right = "0";
@@ -256,7 +271,9 @@ function renderPackBlooks() {
   const box = document.getElementById("packBlooks");
   box.innerHTML = "";
 
-  (selectedPack.blooks || []).forEach((b, i) => {
+  (selectedPack.blooks || []).forEach((blookId, i) => {
+    const b = allBlooks.find(x => x._id === blookId) || {};
+
     const div = document.createElement("div");
 
     div.style.cssText = `
@@ -271,8 +288,8 @@ function renderPackBlooks() {
 
     div.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;">
-        <img src="${b.imageUrl}" style="width:35px;height:35px;border-radius:4px;">
-        <span>${b.blookName}</span>
+        <img src="${b.imageUrl || ''}" style="width:35px;height:35px;border-radius:4px;">
+        <span>${b.blookName || 'Unknown blook'}</span>
       </div>
       <button style="background:red;color:white;border:none;padding:5px;">X</button>
     `;
@@ -319,7 +336,7 @@ function renderBlookList() {
     `;
 
     div.onclick = () => {
-      selectedPack.blooks.push(b);
+      selectedPack.blooks.push(b._id);
       renderPackBlooks();
     };
 

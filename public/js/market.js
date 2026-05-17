@@ -125,7 +125,6 @@ function createPack(pack) {
 
   const img = document.createElement("img");
 
-  // FIXED
   img.src = pack.packImageUrl;
   img.alt = pack.name;
 
@@ -177,21 +176,126 @@ function createPack(pack) {
   div.appendChild(document.createElement("br"));
   div.appendChild(cost);
 
-  div.onclick = () => openPack(pack);
+  div.onclick = () => openPack(pack, img);
+
+  img.onclick = (e) => {
+    e.stopPropagation();
+    openPack(pack, img);
+  };
 
   return div;
 }
 
-/* =========================
-   OPEN PACK
-========================= */
-async function openPack(pack) {
-  if (userTokens < pack.cost) {
-    showModal("Not enough tokens!");
-    return;
-  }
+function confirmPurchase(pack) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
 
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    `;
+
+    const modalBox = document.createElement("div");
+
+    modalBox.style.cssText = `
+      padding: 25px;
+      width: 400px;
+      border-radius: 5px;
+      text-align: center;
+      color: white;
+      font-family: Pixelify Sans;
+      background: #5e046e;
+      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
+    `;
+
+    modalBox.innerHTML = `
+      <p style="font-size:35px;">
+        Purchase <strong>${pack.name}</strong>
+        for <span>${pack.cost}</span> tokens?
+      </p>
+
+      <div style="
+        display:flex;
+        justify-content:center;
+        gap:15px;
+        margin-top:20px;
+      ">
+        <button id="purchaseYes">Yes</button>
+        <button id="purchaseNo">No</button>
+      </div>
+    `;
+
+    overlay.appendChild(modalBox);
+    document.body.appendChild(overlay);
+
+    const yesBtn = modalBox.querySelector("#purchaseYes");
+    const noBtn = modalBox.querySelector("#purchaseNo");
+
+    yesBtn.style.cssText = `
+      background: #5e046e;
+      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
+      font-family: 'Pixelify Sans', sans-serif;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    `;
+
+    noBtn.style.cssText = `
+      background: #5e046e;
+      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
+      font-family: 'Pixelify Sans', sans-serif;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    `;
+
+    yesBtn.onclick = () => {
+      overlay.remove();
+      resolve(true);
+    };
+
+    noBtn.onclick = () => {
+      overlay.remove();
+      resolve(false);
+    };
+
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        overlay.remove();
+        resolve(false);
+      }
+    };
+  });
+}
+
+async function openPack(pack) {
   try {
+    const instantOpen = localStorage.getItem("instantOpen") === "On";
+
+    if (userTokens < pack.cost) {
+      showModal("Not enough tokens!");
+      return;
+    }
+
+    if (!instantOpen) {
+      const confirmed = await confirmPurchase(pack);
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
     const res = await fetch(`/api/packs/open/${encodeURIComponent(pack.name)}`, {
       method: "POST",
       credentials: "include"
@@ -202,66 +306,91 @@ async function openPack(pack) {
       return;
     }
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to open pack");
-    }
-
     const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to open pack");
+    }
 
     userTokens = data.tokens;
     updateTokens();
 
-    showResult(data.blook);
+    showResult(data.blook, {
+      packBackground: pack.packBackground
+    });
 
   } catch (err) {
     console.error(err);
-    showModal(err.message);
+    showModal(err.message || "Something went wrong");
   }
 }
 
-/* =========================
-   RESULT MODAL
-========================= */
-function showResult(blook) {
+function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
+
+  const packBg = pack?.packBackground || "";
+
+  // packBackground can be:
+  // a plain color (e.g. #6ea2ca)
+  // a CSS gradient (linear-gradient(...), radial-gradient(...))
+  // an image url stored in Mongo
+  // we detect URL-ish strings and apply as background-image: url(...);
+  // otherwise we treat it as a raw CSS background string.
+  const isImageUrl = (value) => {
+    if (!value) return false;
+    const v = String(value).trim();
+    return /^(https?:\/\/|\/|data:image\/)/i.test(v);
+  };
+
+  const overlayBg = packBg
+    ? (isImageUrl(packBg) ? `url(${packBg})` : packBg)
+    : "radial-gradient(circle, rgb(51, 8, 56), rgb(74, 3, 79))";
 
   overlay.style.cssText = `
     position:fixed;
     inset:0;
-    background: radial-gradient(circle, rgb(51, 8, 56), rgb(74, 3, 79));
     z-index:999;
+    background-image: ${overlayBg};
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   `;
+
 
   const box = document.createElement("div");
 
   const rarity = blook.rarity || "unknown";
   const color = rarityColors[rarity.toLowerCase()] || "white";
 
+  const bg = blook.backgroundUrl || "";
+
   box.style.cssText = `
     position:absolute;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    background:radial-gradient(circle, #6f057a, #4a034f);
     width:370px;
     height:385px;
     border-radius:10px;
-    box-shadow: inset 0 -0.365vw #330838, 3px 3px 15px rgba(0,0,0,0.6);
     text-align:center;
     color:white;
     padding:20px;
+    background-image: ${bg ? `url(${bg})` : 'radial-gradient(circle, #6f057a, #4a034f)'};
+    background-size: cover;
+    cursor: pointer;
+    background-position: center;
+    box-shadow: rgb(162 140 140 / 55%) 0px 0px 80px inset, rgb(255 255 255 / 35%) 0px 0px 140px inset, rgb(145 137 137 / 40%) 0px -6px inset, rgb(125 120 120 / 60%) 3px 3px 15px
   `;
 
   box.innerHTML = `
-    <h2 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${blook.name}</h2>
+    <h1 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${blook.blookName}</h1>
     <p style="color:${color}; font-weight:bold; font-size: 20px; text-shadow: -1px -1px 0 black,
     1px -1px 0 black,
     -1px 1px 0 black,
     1px 1px 0 black; ">
       ${capitalize(rarity)}
     </p>
-    <img src="${blook.imageUrl}" style="width:165px;height:170px;">
+    <img src="${blook.imageUrl}" style="width:165px;height:170px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); object-fit:contain;">
     <p style="font-size:30px; font-weight:bold;">${blook.chance}%</p>
   `;
 
@@ -271,13 +400,28 @@ function showResult(blook) {
   overlay.onclick = () => overlay.remove();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const instantOpenElement = document.getElementById("instantOpen");
-    let instantOpen = localStorage.getItem('instantOpen') === 'On';
-    instantOpenElement.textContent = `Instant Open (no functions yet): ${instantOpen ? 'On' : 'Off'}`;
-    instantOpenElement.addEventListener('click', function () {
-        instantOpen = !instantOpen;
-        localStorage.setItem('instantOpen', instantOpen ? 'On' : 'Off');
-        instantOpenElement.textContent = `Instant Open (no functions yet) : ${instantOpen ? 'On' : 'Off'}`;
-    });
+document.addEventListener("DOMContentLoaded", () => {
+  const instantOpenElement = document.getElementById("instantOpen");
+
+  if (!instantOpenElement) return;
+
+  let instantOpen = localStorage.getItem("instantOpen") === "On";
+
+  function updateText() {
+    instantOpenElement.textContent =
+      `Instant Open: ${instantOpen ? "On" : "Off"}`;
+  }
+
+  updateText();
+
+  instantOpenElement.addEventListener("click", () => {
+    instantOpen = !instantOpen;
+
+    localStorage.setItem(
+      "instantOpen",
+      instantOpen ? "On" : "Off"
+    );
+
+    updateText();
+  });
 });

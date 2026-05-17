@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema({
   opened: { type: Number, default: 0 },
   sent: { type: Number, default: 0 },
 
+  blooks: {
+  type: Object,
+  default: {}
+  },
+
   muted: { type: Boolean, default: false },
   muteReason: { type: String, default: "No Reason Provided" },
 

@@ -8,6 +8,18 @@ function formatRemaining(ms) {
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 
+let dailyWheelInterval = null;
+
+function startDailyWheelCountdown() {
+  if (dailyWheelInterval) {
+    clearInterval(dailyWheelInterval);
+  }
+
+  dailyWheelInterval = setInterval(() => {
+    updateDailyWheelState();
+  }, 1000);
+}
+
 function updateDailyWheelState() {
   const button = document.getElementById("spinButton");
   const messageEl = document.getElementById("dailyWheelMessage");
@@ -36,6 +48,11 @@ function updateDailyWheelState() {
   button.style.display = "inline-flex";
   button.disabled = false;
   messageEl.innerText = "";
+
+  if (dailyWheelInterval) {
+  clearInterval(dailyWheelInterval);
+  dailyWheelInterval = null;
+}
 }
 
 function showClaimModal(reward) {
@@ -229,6 +246,7 @@ async function loadUser() {
 
     checkPanelAccess();
     updateDailyWheelState();
+    startDailyWheelCountdown();
   } catch (err) {
     console.error("Failed to load user data:", err);
   }
@@ -272,6 +290,7 @@ async function claimDailyWheel() {
     showClaimModal(data.reward);
     messageEl.innerText = `You won ${data.reward.toLocaleString()} tokens! Next claim in 4h.`;
     updateDailyWheelState();
+    startDailyWheelCountdown();
   } catch (err) {
     console.error("Claim failed:", err);
     button.disabled = false;

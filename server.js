@@ -30,7 +30,9 @@ const usersRoutes = require("./backend/routers/api/users");
 const packRouter = require("./backend/routers/api/pack");
 const moderationReportsRoute = require("./backend/routers/api/moderationReports");
 const articlesRoute = require("./backend/routers/api/articles");
-
+const blooksRoutes = require("./backend/routers/users/blooks");
+const sellRoutes = require("./backend/routers/users/sell");
+const userBlooksRoutes = require("./backend/routers/api/blooks");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -75,7 +77,9 @@ app.use("/api/banners", bannerRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
 app.use("/api/articles", articlesRoute);
-
+app.use("/api/users", blooksRoutes);
+app.use("/api/users", sellRoutes);
+app.use("/api/blooks", userBlooksRoutes);
 
 app.use("/", pages);
 
