@@ -160,7 +160,7 @@ inboxButton.addEventListener("click", () => {
   `;
 
   const empty = document.createElement("div");
-  empty.textContent = "No messages.S";
+  empty.textContent = "No messages.";
   empty.style.cssText = `
     display: flex;
     justify-content: center;
@@ -214,7 +214,6 @@ async function loadUser() {
     if (usernameEl) usernameEl.innerText = user.username;
     if (roleEl) roleEl.innerText = user.role || "Player";
 
-    // Role color styling
     const usernameElement = usernameEl;
     const roleColors = {
       "Owner": "#020202",
@@ -511,6 +510,9 @@ function openViewUserPopup() {
         ui.viewUserBtn.innerHTML = '<i class="fa-solid fa-reply"></i> Back to my profile';
         ui.viewUserBtn.onclick = restoreMyProfile;
 
+        const existingTrade = document.querySelector('.tradeUser');
+        if (existingTrade) existingTrade.remove();
+
         const existingReport = document.querySelector('.report-user-btn');
         if (existingReport) existingReport.remove();
 
@@ -519,6 +521,8 @@ function openViewUserPopup() {
         reportBtn.innerHTML = '<i class="fa-solid fa-flag"></i> Report';
 
         reportBtn.onclick = () => {
+
+
           const modal = createElement('div', {}, {
             position: 'fixed',
             inset: '0',
@@ -682,8 +686,134 @@ function openViewUserPopup() {
           });
         };
 
+        const tradeBtn = document.createElement('button');
+        tradeBtn.className = 'button tradeUser trade-user-btn';
+        tradeBtn.style.marginLeft = '10px';
+        tradeBtn.innerHTML = '<i class="fa-solid fa-right-left"></i> Trade';
+
+
+        tradeBtn.onclick = () => {
+          if (!user || !user.username) {
+            alert('Not logged in');
+            return;
+          }
+          const sender = user.username;
+          const recipient = other.username;
+
+          const existing = document.getElementById('trade-toast');
+          if (existing) existing.remove();
+
+          const toast = document.createElement('div');
+          toast.id = 'trade-toast';
+          toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #6f057a;
+            box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            font-family: 'Pixelify Sans';
+            font-size: 16px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+          `;
+          toast.innerHTML = `<i class="fa-solid fa-spinner" style="font-size:20px;"></i><span>Sending trade request to ${recipient}...</span>`;
+          document.body.appendChild(toast);
+
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            setTimeout(() => toast.remove(), 500);
+          }, 3000);
+
+
+
+          if (!window.__tradeSocket) {
+            window.__tradeSocket = io();
+          }
+          const socket = window.__tradeSocket;
+          socket.off('tradeRequest');
+          socket.off('tradeAccepted');
+          socket.off('tradeDeclined');
+
+          socket.on('tradeAccepted', (data) => {
+            if (!data || !data.tradeId) return;
+            window.location.href = `/trade?id=${encodeURIComponent(data.tradeId)}`;
+          });
+
+
+          socket.emit('joinUserRoom', { username: sender });
+          socket.emit('tradeRequest', { sender, recipient });
+
+          socket.on('tradeRequest', (data) => {
+
+            if (!data || data.recipient !== sender) return;
+
+            const requestSender = data.sender;
+
+            const existingToast = document.getElementById('trade-request-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'trade-request-toast';
+            toast.style.cssText = `
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background-color: #6f057a;
+              box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
+              color: white;
+              padding: 20px;
+              border-radius: 5px;
+              font-family: 'Pixelify Sans';
+              font-size: 16px;
+              z-index: 9999;
+              width: 300px;
+            `;
+
+            toast.innerHTML = `
+              <div style="font-weight:bold;margin-bottom:15px;">${requestSender} sent you a trade request!</div>
+              <div style="display:flex;gap:10px;">
+                <button style="flex:1;background-color:green;border:none;color:white;padding:14px;border-radius:5px;font-family:'Pixelify Sans';font-size:18px;font-weight:bold;cursor:pointer;" id="trade-accept-btn">Accept</button>
+                <button style="flex:1;background-color:#b30000;border:none;color:white;padding:14px;border-radius:5px;font-family:'Pixelify Sans';font-size:18px;font-weight:bold;cursor:pointer;" id="trade-decline-btn">Decline</button>
+              </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            const acceptBtn = document.getElementById('trade-accept-btn');
+            const declineBtn = document.getElementById('trade-decline-btn');
+
+            acceptBtn.onclick = () => {
+              socket.emit('tradeResponse', {
+                sender: requestSender,
+                recipient: sender,
+                accepted: true
+              });
+              toast.remove();
+            };
+
+            declineBtn.onclick = () => {
+              socket.emit('tradeResponse', {
+                sender: requestSender,
+                recipient: sender,
+                accepted: false
+              });
+              toast.remove();
+            };
+          });
+
+        };
+
         ui.viewUserBtn.parentNode.insertBefore(reportBtn, ui.viewUserBtn.nextSibling);
+        ui.viewUserBtn.parentNode.insertBefore(tradeBtn, ui.viewUserBtn.nextSibling);
       }
+
 
       modal.remove();
     } catch (error) {

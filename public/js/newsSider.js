@@ -67,7 +67,7 @@
 
             <div class="news-card"
               style="
-                width:95%;
+                width:92%;
                 margin:12px auto;
                 padding:16px;
                 border-radius:5px;
@@ -100,6 +100,7 @@
                     <img
                       src="${imageUrl}"
                       alt="News Image"
+                      draggable="false"
                       style="
                         width:100%;
                         max-height:100%;
@@ -119,6 +120,8 @@
                 ${body}
               </div>
 
+              <br/>
+              
               ${
                 dateStr
                   ? `

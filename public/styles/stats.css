@@ -185,6 +185,33 @@ body {
   box-shadow: inset 0 -3px #b30000, 0 4px 10px rgba(0,0,0,0.2);
 }
 
+
+.tradeUser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  flex: 1 1 180px;
+  height: 48px;
+  font-weight: bold;
+  text-shadow: #000 1px 0 13px;
+  border-radius: 5px;
+  background-color: #EB6133;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 12px 20px;
+  box-shadow: inset 0 -0.325vw #a82f07, 3px 3px 15px rgba(0, 0, 0, 0.6);
+  font-family: 'Pixelify Sans', sans-serif;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.tradeUser:hover {
+  transform: translateY(-2px);
+  background: #EB6133;
+  box-shadow: inset 0 -3px #a82f07, 0 4px 10px rgba(0,0,0,0.2);
+}
+
 .view-profile-btn,
 .cancel-profile-btn {
   transition: transform 0.2s ease,

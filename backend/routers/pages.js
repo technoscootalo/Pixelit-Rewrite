@@ -53,6 +53,10 @@ router.get("/credits", requireLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
 });
 
+router.get("/trade", requireLoggedIn, requireNotBanned, (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/trade.html"));
+});
+
 const { requirePanelAccess, requireDeveloperAccess } = require("../middleware/panelAuth");
 
 router.get("/panel", requirePanelAccess(), (req, res) => {

@@ -143,8 +143,8 @@ function renderLeaderboard(users) {
         ? "#cd7f32"
         : "white";
 
-    const value = isMessagesView
-      ? user.messages || 0
+const value = isMessagesView
+      ? (user.sent ?? user.messages ?? 0)
       : user.tokens || 0;
 
     const valueColor = isMessagesView ? "#4fc3f7" : "gold";

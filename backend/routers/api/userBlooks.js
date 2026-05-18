@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
       });
     }
 
-    const user = await User.findOne({
-      id: req.session.userId
-    });
+    const user =
+      (await User.findOne({ id: req.session.userId })) ||
+      (await User.findById(req.session.userId));
 
     if (!user) {
       return res.status(404).json({
@@ -23,20 +23,29 @@ router.get("/", async (req, res) => {
       });
     }
 
-    const packs = await Pack.find({})
-      .populate("blooks");
+    const packs = await Pack.find({}).populate("blooks");
 
     console.log("USER BLOOKS:", user.blooks);
-    console.log("PACKS FOUND:", packs);
 
-    const formattedPacks = packs.map(pack => ({
+    const formattedPacks = packs.map((pack) => ({
       name: pack.name,
-      blooks: pack.blooks.map(blook => ({
-        name: blook.name,
-        rarity: blook.rarity,
-        imageUrl: blook.imageUrl,
-        owned: user.blooks?.[blook.name] || 0
-      }))
+
+      blooks: pack.blooks.map((blook) => {
+        const ownedAmount = user.blooks?.[blook.blookName] || 0;
+
+        console.log({
+          blookName: blook.blookName,
+          owned: ownedAmount
+        });
+
+        return {
+          name: blook.blookName, 
+          rarity: blook.rarity,
+          imageUrl: blook.imageUrl,
+          backgroundUrl: blook.backgroundUrl,
+          owned: ownedAmount
+        };
+      })
     }));
 
     res.json({
@@ -44,7 +53,7 @@ router.get("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("userBlooks error:", err);
 
     res.status(500).json({
       error: "Failed to load blooks"

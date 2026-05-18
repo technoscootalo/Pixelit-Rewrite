@@ -31,8 +31,10 @@ const packRouter = require("./backend/routers/api/pack");
 const moderationReportsRoute = require("./backend/routers/api/moderationReports");
 const articlesRoute = require("./backend/routers/api/articles");
 const blooksRoutes = require("./backend/routers/users/blooks");
-const sellRoutes = require("./backend/routers/users/sell");
-const userBlooksRoutes = require("./backend/routers/api/blooks");
+const userBlooksRoutes = require("./backend/routers/api/userBlooks");
+const executeTradeRoute = require("./backend/routers/api/executeTrade");
+const tradeStore = require("./backend/utils/tradeStore");
+const sellBlookRoute = require("./backend/routers/users/sellBlook");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -78,10 +80,12 @@ app.use("/api/users", usersRoutes);
 app.use("/api/packs", packRouter);
 app.use("/api/articles", articlesRoute);
 app.use("/api/users", blooksRoutes);
-app.use("/api/users", sellRoutes);
-app.use("/api/blooks", userBlooksRoutes);
+app.use("/api/users/sell-blook", sellBlookRoute);
+app.use("/api/userBlooks", userBlooksRoutes);
+app.use("/executeTrade", executeTradeRoute);
 
 app.use("/", pages);
+
 
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
@@ -120,8 +124,96 @@ io.on("connection", async (socket) => {
             .lean();
 
         socket.emit("chatHistory", recentMessages.reverse());
+        
+        socket.on('joinUserRoom', ({ username }) => {
+            if (!username || typeof username !== 'string') return;
+            socket.join(`user:${username}`);
+        });
+
+        socket.on('tradeRequest', ({ sender, recipient }) => {
+            if (!sender || !recipient) return;
+            if (sender === recipient) return;
+
+            const trade = tradeStore.createTrade({ sender, recipient });
+
+            io.to(`user:${recipient}`).emit('tradeRequest', {
+                sender,
+                recipient,
+                tradeId: trade.tradeId,
+            });
+        });
+
+
+
+        socket.on('joinTradeRoom', ({ tradeId, username }) => {
+            if (!tradeId || typeof tradeId !== 'string') return;
+            if (!username || typeof username !== 'string') return;
+            socket.join(`trade:${tradeId}`);
+        });
+
+
+
+        socket.on('tradeResponse', ({ sender, recipient, accepted, tradeId }) => {
+
+            if (!sender || !recipient || typeof accepted !== 'boolean') return;
+
+            const targetTrade = tradeId
+                ? tradeStore.getTrade(tradeId)
+                : null;
+
+            const trade = targetTrade || Array.from((tradeStore.trades || new Map()).values()).find(t => {
+                const a = t.sender === sender && t.recipient === recipient;
+                const b = t.sender === recipient && t.recipient === sender;
+                return a || b;
+            });
+
+            if (!trade) return;
+
+            if (!accepted) {
+                io.to(`user:${sender}`).emit('tradeDeclined', { by: recipient, tradeId: trade.tradeId });
+                tradeStore.deleteTrade(trade.tradeId);
+                return;
+            }
+
+            io.to(`user:${sender}`).emit('tradeAccepted', { tradeId: trade.tradeId });
+            io.to(`user:${recipient}`).emit('tradeAccepted', { tradeId: trade.tradeId });
+
+            io.to(`user:${sender}`).emit('tradeState', trade);
+            io.to(`user:${recipient}`).emit('tradeState', trade);
+
+        });
+
+        socket.on('tradeUpdate', ({ tradeId, username, offer }) => {
+            const trade = tradeStore.updateOffer({ tradeId, username, offer });
+            if (!trade) return;
+            io.to(`trade:${tradeId}`).emit('tradeUpdate', { username, offer });
+
+            io.to(`trade:${tradeId}`).emit('tradeState', trade);
+        });
+
+        socket.on('tradeAccept', ({ tradeId, username }) => {
+            const trade = tradeStore.setReady({ tradeId, username, ready: true });
+            if (!trade) return;
+            io.to(`trade:${tradeId}`).emit('tradeAccept', { username });
+        });
+
+        socket.on('tradeCancel', ({ tradeId, username }) => {
+            const trade = tradeStore.getTrade(tradeId);
+            if (!trade) return;
+            io.to(`trade:${tradeId}`).emit('tradeCancelled', { by: username });
+            tradeStore.deleteTrade(tradeId);
+        });
+
+        socket.on('tradeNotifySuccess', ({ tradeId }) => {
+            io.to(`trade:${tradeId}`).emit('tradeSuccess');
+        });
+
+        socket.on('tradeChat', ({ tradeId, sender, msg }) => {
+            io.to(`trade:${tradeId}`).emit('tradeChat', { sender, msg });
+        });
 
         socket.on("chatMessage", async (payload) => {
+
             if (!payload || typeof payload.content !== "string") {
                 return;
             }

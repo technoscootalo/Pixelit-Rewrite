@@ -1,6 +1,216 @@
 let userTokens = 0;
 let userRole = null;
 
+let phaserGame = null;
+
+function triggerRaritySpecificParticles(rarity) {
+  if (phaserGame) {
+    phaserGame.destroy(true);
+    phaserGame = null;
+  }
+
+  const particleUrls = [];
+
+  const baseConfig = {
+    type: Phaser.WEBGL,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    parent: 'phaser-particle-parent',
+    transparent: true,
+    scene: {
+      preload: function () {
+        for (let i = 0; i < particleUrls.length; i++) {
+          this.load.svg((i + 1).toString(), particleUrls[i], { width: 30, height: 30 });
+        }
+      },
+      create: null
+    }
+  };
+
+  switch (rarity) {
+    case 'Common':
+    case 'Uncommon':
+      particleUrls.push(
+        "https://media.blooket.com/image/upload/v1658567787/Media/market/particles/square_green.svg",
+        "https://media.blooket.com/image/upload/v1658567787/Media/market/particles/square_light_green.svg",
+        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/circle_dark_green.svg",
+        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/serpentine_dark_green.svg",
+        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/triangle_light_green.svg",
+        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/serpentine_light_green.svg",
+        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/triangle_green.svg"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const emitters = particles.map(p =>
+          p.createEmitter({
+            speed: { min: 700, max: 800 },
+            angle: { min: -115, max: -65 },
+            gravityY: 700,
+            frequency: 75,
+            lifespan: 5000,
+            x: { min: window.innerWidth / 2 - 25, max: window.innerWidth / 2 + 25 },
+            y: window.innerHeight / 2 + 25
+          })
+        );
+        setTimeout(() => emitters.forEach(e => e.stop()), 1500);
+      };
+      break;
+    case 'Rare':
+      particleUrls.push(
+        "https://media.blooket.com/image/upload/v1658567765/Media/market/particles/square_light_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567765/Media/market/particles/square_dark_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/triangle_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/serpentine_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/triangle_light_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/serpentine_light_blue.svg",
+        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/circle_dark_blue.svg"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const emitters = [];
+        particles.forEach(p => {
+          emitters.push(
+            p.createEmitter({
+              speed: { min: 700, max: 750 },
+              angle: { min: -70, max: -20 },
+              gravityY: 500,
+              frequency: 75,
+              lifespan: 5000,
+              x: { min: -25, max: 25 },
+              y: window.innerHeight
+            })
+          );
+          emitters.push(
+            p.createEmitter({
+              speed: { min: 700, max: 750 },
+              angle: { min: -160, max: -110 },
+              gravityY: 500,
+              frequency: 75,
+              lifespan: 5000,
+              x: { min: window.innerWidth - 25, max: window.innerWidth + 25 },
+              y: window.innerHeight
+            })
+          );
+        });
+        setTimeout(() => emitters.forEach(e => e.stop()), 1500);
+      };
+      break;
+    case 'Epic':
+      particleUrls.push(
+        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/red.svg",
+        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/light_red.svg",
+        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/serpentine_red.svg",
+        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/serpentine_dark_red.svg",
+        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/triangle_red.svg",
+        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/triangle_light_red.svg",
+        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/circle_dark_red.svg"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        particles.forEach(p => {
+          p.createEmitter({
+            speed: 650,
+            angle: { min: -50, max: 0 },
+            gravityY: 400,
+            frequency: 65,
+            lifespan: 5000,
+            x: 0,
+            y: { min: 0, max: window.innerHeight }
+          });
+          p.createEmitter({
+            speed: 650,
+            angle: { min: -180, max: -130 },
+            gravityY: 400,
+            frequency: 65,
+            lifespan: 5000,
+            x: window.innerWidth,
+            y: { min: 0, max: window.innerHeight }
+          });
+        });
+      };
+      break;
+    case 'Legendary':
+      particleUrls.push(
+        "https://media.blooket.com/image/upload/v1658567740/Media/market/particles/square_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567740/Media/market/particles/square_light_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/circle_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/serpentine_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/serpentine_light_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/circle_dark_orange.svg",
+        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/triangle_dark_orange.svg"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        particles.forEach(p =>
+          p.createEmitter({
+            speed: 500,
+            angle: 90,
+            gravityY: 300,
+            frequency: 65,
+            lifespan: 5000,
+            x: { min: 0, max: window.innerWidth },
+            y: -50
+          })
+        );
+      };
+      break;
+    case 'Chroma':
+    case 'Mystical':
+      particleUrls.push(
+        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_light_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_dark_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/triangle_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/triangle_light_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/circle_dark_turquoise.svg"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        particles.forEach(p => {
+          p.createEmitter({
+            speed: 700,
+            angle: -30,
+            frequency: 350,
+            lifespan: 3000,
+            y: { min: window.innerHeight - 651, max: window.innerHeight },
+            x: 0
+          });
+          p.createEmitter({
+            speed: 700,
+            angle: -150,
+            frequency: 350,
+            lifespan: 3000,
+            y: { min: window.innerHeight - 651, max: window.innerHeight },
+            x: window.innerWidth
+          });
+          p.createEmitter({
+            speed: 700,
+            angle: 30,
+            frequency: 350,
+            lifespan: 3000,
+            y: { min: 0, max: 601 },
+            x: 0
+          });
+          p.createEmitter({
+            speed: 700,
+            angle: -210,
+            frequency: 350,
+            lifespan: 3000,
+            y: { min: 0, max: 601 },
+            x: window.innerWidth
+          });
+        });
+      };
+      break;
+    default:
+      return;
+  }
+
+  phaserGame = new Phaser.Game(baseConfig);
+}
+
+
 function capitalize(str = "") {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
@@ -291,9 +501,7 @@ async function openPack(pack) {
     if (!instantOpen) {
       const confirmed = await confirmPurchase(pack);
 
-      if (!confirmed) {
-        return;
-      }
+      if (!confirmed) return;
     }
 
     const res = await fetch(`/api/packs/open/${encodeURIComponent(pack.name)}`, {
@@ -309,15 +517,20 @@ async function openPack(pack) {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Failed to open pack");
+      const errMsg = data?.error || "Failed to open pack";
+      showModal(errMsg);
+      return;
     }
 
     userTokens = data.tokens;
     updateTokens();
 
     showResult(data.blook, {
-      packBackground: pack.packBackground
+      packBackground: pack.packBackground,
+      phase: "reveal",
+      revealDelayMs: 0,
     });
+
 
   } catch (err) {
     console.error(err);
@@ -325,10 +538,16 @@ async function openPack(pack) {
   }
 }
 
+
+
 function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
 
+  const phase = pack?.phase || "reveal";
+  const revealDelayMs = pack?.revealDelayMs || 0;
+
   const packBg = pack?.packBackground || "";
+
 
   // packBackground can be:
   // a plain color (e.g. #6ea2ca)
@@ -358,6 +577,53 @@ function showResult(blook, pack = null) {
 
 
   const box = document.createElement("div");
+
+  if (phase === "pack") {
+    const bgUrl = blook?.packBackground || "";
+    const packImageUrl = blook?.packImageUrl || "";
+    const packName = blook?.name || "";
+
+    box.style.cssText = `
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:370px;
+      height:385px;
+      border-radius:10px;
+      text-align:center;
+      color:white;
+      padding:20px;
+      background-image: ${bgUrl ? `url(${bgUrl})` : 'radial-gradient(circle, #6f057a, #4a034f)'};
+      background-size: cover;
+      cursor: pointer;
+      background-position: center;
+      box-shadow: rgb(162 140 140 / 55%) 0px 0px 80px inset, rgb(255 255 255 / 35%) 0px 0px 140px inset, rgb(145 137 137 / 40%) 0px -6px inset, rgb(125 120 120 / 60%) 3px 3px 15px
+    `;
+
+    box.innerHTML = `
+      <h1 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${packName}</h1>
+      ${packImageUrl ? `<img src="${packImageUrl}" style="width:165px;height:170px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); object-fit:contain;">` : ""}
+      <p style="margin-top:16px;font-size:20px;font-weight:bold;">Click to open!</p>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    overlay.onclick = () => {
+      overlay.remove();
+
+      if (phaserGame) {
+        phaserGame.destroy(true);
+        phaserGame = null;
+      }
+      const el = document.getElementById('phaser-particle-parent');
+      if (el) el.remove();
+
+    };
+
+    return;
+  }
 
   const rarity = blook.rarity || "unknown";
   const color = rarityColors[rarity.toLowerCase()] || "white";
@@ -394,11 +660,38 @@ function showResult(blook, pack = null) {
     <p style="font-size:30px; font-weight:bold;">${blook.chance}%</p>
   `;
 
+
+  let particleParent = document.getElementById('phaser-particle-parent');
+  if (!particleParent) {
+    particleParent = document.createElement('div');
+    particleParent.id = 'phaser-particle-parent';
+    particleParent.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      pointer-events: none;
+    `;
+    document.body.appendChild(particleParent);
+  }
+
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 
-  overlay.onclick = () => overlay.remove();
+  triggerRaritySpecificParticles(rarity);
+
+  overlay.onclick = () => {
+    overlay.remove();
+
+    if (phaserGame) {
+      phaserGame.destroy(true);
+      phaserGame = null;
+    }
+
+    const el = document.getElementById('phaser-particle-parent');
+    if (el) el.remove();
+  };
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const instantOpenElement = document.getElementById("instantOpen");
