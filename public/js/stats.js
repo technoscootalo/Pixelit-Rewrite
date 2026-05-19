@@ -200,7 +200,7 @@ async function loadUser() {
     user = await res.json();
 
     user.tokens = user.tokens || 0;
-    user.packs = user.packs || 0;
+    user.opened = user.opened || 0;
     user.sent = user.sent || 0;
 
     const pfp = document.getElementById("pfp");
@@ -240,7 +240,7 @@ async function loadUser() {
     const messagesEl = document.getElementById("messages");
 
     if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
-    if (packsEl) packsEl.innerText = user.packs.toLocaleString();
+    if (packsEl) packsEl.innerText = user.opened.toLocaleString();
     if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
 
     checkPanelAccess();
@@ -486,7 +486,7 @@ function openViewUserPopup() {
         username: document.getElementById('username'),
         role: document.getElementById('role'),
         tokens: document.getElementById('tokens'),
-        packs: document.getElementById('packs'),
+        opened: document.getElementById('packs'),
         messages: document.getElementById('messages'),
         spinButton: document.getElementById('spinButton'),
         dailyWheelMessage: document.getElementById('dailyWheelMessage'),
@@ -498,7 +498,7 @@ function openViewUserPopup() {
       if (ui.username) ui.username.innerText = other.username;
       if (ui.role) ui.role.innerText = other.role || 'Player';
       if (ui.tokens) ui.tokens.innerText = (other.tokens ?? 0).toLocaleString();
-      if (ui.packs) ui.packs.innerText = (other.packsOpened ?? 0).toLocaleString();
+      if (ui.opened) ui.opened.innerText = (other.opened ?? 0).toLocaleString();
       if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
 
       if (ui.spinButton) {

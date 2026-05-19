@@ -6,6 +6,7 @@ const container = document.querySelector(".pixelsContainer");
 const detailsPanel = document.querySelector(".blooks-details");
 
 const RARITY_COLORS = {
+  common: "#ffffff",
   uncommon: "#4bc22e",
   rare: "#2f6cff",
   epic: "#be0000",
@@ -72,7 +73,7 @@ function generatePacksHTML(packsData) {
   allBlooksFlat = [];
 
   if (!packsData || !packsData.length) {
-    container.innerHTML += `<div class="no-blooks">No blooks found.</div>`;
+    container.innerHTML += ``;
     return;
   }
 

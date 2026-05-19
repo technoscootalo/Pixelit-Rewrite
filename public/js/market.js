@@ -600,63 +600,91 @@ async function playRarityIntro(box, rarity) {
   box.style.transform = center;
 
   const reveal = () => {
-    box.style.transition = "opacity 300ms ease";
+    box.style.transition = "opacity 250ms ease";
     box.style.opacity = "1";
   };
 
-  const isCommon =
+  const isLow =
     !rarity ||
     rarity === "Common" ||
     rarity === "Uncommon" ||
     rarity === "Rare";
 
-  if (isCommon) {
-    await sleep(600);
+  // ---------------- COMMON / UNCOMMON / RARE (NEW ANIMATION) ----------------
+  if (isLow) {
+    await sleep(500);
     reveal();
 
-    box.style.transition = "transform 400ms ease";
-    box.style.transform = center + " scale(1.02)";
+    // quick pop-in from below
+    box.style.transition = "transform 250ms cubic-bezier(0.2, 0.9, 0.2, 1)";
+    box.style.transform = center + " translateY(30px) scale(0.9)";
 
-    await sleep(400);
-    box.style.transform = center;
+    await sleep(250);
 
-    await sleep(300);
+    // snap up with bounce
+    box.style.transition = "transform 350ms cubic-bezier(0.2, 1.2, 0.2, 1)";
+    box.style.transform = center + " translateY(-10px) scale(1.08)";
+
+    await sleep(350);
+
+    // settle back
+    box.style.transition = "transform 250ms ease-out";
+    box.style.transform = center + " translateY(0px) scale(1)";
+
+    await sleep(250);
+
     return;
   }
 
+  // ---------------- EPIC (IMPROVED IMPACT ANIMATION) ----------------
   if (rarity === "Epic") {
-    await sleep(700);
+    await sleep(650);
     reveal();
 
-    box.style.transform = center + " translateY(20px) scale(0.9)";
+    // punch-in start (small + offset)
+    box.style.transform = center + " scale(0.6) translateY(20px)";
 
     await animateBox(box, [
       {
-        transform: center + " translateY(20px) scale(0.9)"
+        transform: center + " scale(0.6) translateY(20px)"
       },
       {
-        transform: center + " translateY(0px) scale(1.05)"
+        transform: center + " scale(1.15) translateY(-10px)"
       }
     ], {
-      duration: 450,
-      easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"
+      duration: 350,
+      easing: "cubic-bezier(0.2, 0.9, 0.2, 1)"
+    });
+
+    // recoil settle
+    await animateBox(box, [
+      {
+        transform: center + " scale(1.15)"
+      },
+      {
+        transform: center + " scale(0.98)"
+      }
+    ], {
+      duration: 180,
+      easing: "ease-out"
     });
 
     await animateBox(box, [
       {
-        transform: center + " scale(1.05)"
+        transform: center + " scale(0.98)"
       },
       {
         transform: center + " scale(1)"
       }
     ], {
-      duration: 250,
+      duration: 180,
       easing: "ease-out"
     });
 
     return;
   }
 
+  // ---------------- keep your other rarities unchanged ----------------
   if (rarity === "Chroma" || rarity === "Mystical") {
     await sleep(1200);
     reveal();
@@ -691,26 +719,17 @@ async function playRarityIntro(box, rarity) {
     await animateBox(box, [
       { transform: "translate(-160%, -200%)" },
       { transform: "translate(-160%, -50%)" }
-    ], {
-      duration: 900,
-      easing: "ease-in"
-    });
+    ], { duration: 900, easing: "ease-in" });
 
     await animateBox(box, [
       { transform: "translate(160%, -200%)" },
       { transform: "translate(160%, -50%)" }
-    ], {
-      duration: 900,
-      easing: "ease-in"
-    });
+    ], { duration: 900, easing: "ease-in" });
 
     await animateBox(box, [
       { transform: "translate(-50%, -140%) scale(1.15)" },
       { transform: center }
-    ], {
-      duration: 900,
-      easing: "ease-out"
-    });
+    ], { duration: 900, easing: "ease-out" });
 
     await sleep(600);
     return;
