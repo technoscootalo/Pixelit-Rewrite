@@ -227,7 +227,7 @@ function sellBlook() {
   modal.style.cssText = `
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: #00000000;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -236,7 +236,8 @@ function sellBlook() {
 
   const box = document.createElement("div");
   box.style.cssText = `
-    background:#6f057a;
+    background: #5e046e;
+    box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
     padding:20px;
     width:400px;
     text-align:center;

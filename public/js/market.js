@@ -203,13 +203,59 @@ function triggerRaritySpecificParticles(rarity) {
         });
       };
       break;
-    default:
+      default:
       return;
   }
 
   phaserGame = new Phaser.Game(baseConfig);
 }
 
+function createPackElement(pack) {
+  const divBox = document.createElement('div');
+  divBox.className = 'packContainer';
+  divBox.setAttribute('data-pack-name', pack.name);
+
+  if (pack.name === "OG Pack") {
+    divBox.style.background = "radial-gradient(circle, #ADD8E6, #335494)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #335494, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Color Pack") {
+    divBox.style.background = "radial-gradient(circle, #FFFF00, #8B8000)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #8B8000, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Fall Pack") {
+    divBox.style.background = "radial-gradient(circle, #DEB887, #8B4513)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #8B4513, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Halloween Pack") {
+    divBox.style.background = "radial-gradient(circle, #39272d, #67433e)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #39272d, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+  
+  if (pack.name === "Space Pack") {
+    divBox.style.background = "radial-gradient(circle, #808080, #00008B)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #00008B, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Technology Pack") {
+    divBox.style.background = "radial-gradient(circle, #346136, #2faa34)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #346136, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "School Pack") {
+    divBox.style.background = "radial-gradient(circle, #836048, #66423a)";
+    divBox.style.boxShadow = "inset 0 -0.365vw #66423a, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Miscellaneous") {
+    divBox.style.background = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
+    divBox.style.boxShadow = "inset 0 -0.365vw rgba(0, 0, 0, 0.6), 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+}
 
 function capitalize(str = "") {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -538,133 +584,248 @@ async function openPack(pack) {
   }
 }
 
+function sleep(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
 
+function animateBox(box, keyframes, options) {
+  return box.animate(keyframes, options).finished;
+}
 
-function showResult(blook, pack = null) {
+async function playRarityIntro(box, rarity) {
+  const center = "translate(-50%, -50%)";
+
+  box.style.transition = "none";
+  box.style.opacity = "0";
+  box.style.transform = center;
+
+  const reveal = () => {
+    box.style.transition = "opacity 300ms ease";
+    box.style.opacity = "1";
+  };
+
+  const isCommon =
+    !rarity ||
+    rarity === "Common" ||
+    rarity === "Uncommon" ||
+    rarity === "Rare";
+
+  if (isCommon) {
+    await sleep(600);
+    reveal();
+
+    box.style.transition = "transform 400ms ease";
+    box.style.transform = center + " scale(1.02)";
+
+    await sleep(400);
+    box.style.transform = center;
+
+    await sleep(300);
+    return;
+  }
+
+  if (rarity === "Epic") {
+    await sleep(700);
+    reveal();
+
+    box.style.transform = center + " translateY(20px) scale(0.9)";
+
+    await animateBox(box, [
+      {
+        transform: center + " translateY(20px) scale(0.9)"
+      },
+      {
+        transform: center + " translateY(0px) scale(1.05)"
+      }
+    ], {
+      duration: 450,
+      easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"
+    });
+
+    await animateBox(box, [
+      {
+        transform: center + " scale(1.05)"
+      },
+      {
+        transform: center + " scale(1)"
+      }
+    ], {
+      duration: 250,
+      easing: "ease-out"
+    });
+
+    return;
+  }
+
+  if (rarity === "Chroma" || rarity === "Mystical") {
+    await sleep(1200);
+    reveal();
+
+    box.style.transform = center + " scale(0.3) rotate(0deg)";
+
+    await animateBox(box, [
+      {
+        transform: center + " scale(0.3) rotate(0deg)"
+      },
+      {
+        transform: center + " scale(1.05) rotate(1080deg)"
+      }
+    ], {
+      duration: 2500,
+      easing: "linear"
+    });
+
+    box.style.transition = "transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+    box.style.transform = center + " scale(1) rotate(0deg)";
+
+    await sleep(500);
+    box.style.transition = "none";
+
+    return;
+  }
+
+  if (rarity === "Legendary") {
+    await sleep(1500);
+    reveal();
+
+    await animateBox(box, [
+      { transform: "translate(-160%, -200%)" },
+      { transform: "translate(-160%, -50%)" }
+    ], {
+      duration: 900,
+      easing: "ease-in"
+    });
+
+    await animateBox(box, [
+      { transform: "translate(160%, -200%)" },
+      { transform: "translate(160%, -50%)" }
+    ], {
+      duration: 900,
+      easing: "ease-in"
+    });
+
+    await animateBox(box, [
+      { transform: "translate(-50%, -140%) scale(1.15)" },
+      { transform: center }
+    ], {
+      duration: 900,
+      easing: "ease-out"
+    });
+
+    await sleep(600);
+    return;
+  }
+
+  await sleep(500);
+  reveal();
+
+  box.style.transition = "transform 400ms ease";
+  box.style.transform = center;
+  await sleep(400);
+}
+
+async function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
 
   const phase = pack?.phase || "reveal";
-  const revealDelayMs = pack?.revealDelayMs || 0;
-
   const packBg = pack?.packBackground || "";
 
-
-  // packBackground can be:
-  // a plain color (e.g. #6ea2ca)
-  // a CSS gradient (linear-gradient(...), radial-gradient(...))
-  // an image url stored in Mongo
-  // we detect URL-ish strings and apply as background-image: url(...);
-  // otherwise we treat it as a raw CSS background string.
-  const isImageUrl = (value) => {
-    if (!value) return false;
-    const v = String(value).trim();
-    return /^(https?:\/\/|\/|data:image\/)/i.test(v);
-  };
+  const isImageUrl = (v) =>
+    v && /^(https?:\/\/|\/|data:image\/)/i.test(String(v).trim());
 
   const overlayBg = packBg
     ? (isImageUrl(packBg) ? `url(${packBg})` : packBg)
     : "radial-gradient(circle, rgb(51, 8, 56), rgb(74, 3, 79))";
 
   overlay.style.cssText = `
-    position:fixed;
-    inset:0;
-    z-index:999;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
     background-image: ${overlayBg};
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
   `;
-
 
   const box = document.createElement("div");
 
+  const baseStyle = `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 370px;
+    height: 385px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    padding: 20px;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    text-shadow:
+      -1px -1px 0 black,
+       1px -1px 0 black,
+      -1px  1px 0 black,
+       1px  1px 0 black;
+  `;
+
+  const boxShadowStyle = `
+    box-shadow:
+      inset 0 0 80px rgba(0,0,0,0.55),
+      inset 0 0 140px rgba(0,0,0,0.35),
+      inset 0 -6px rgba(0,0,0,0.4),
+      3px 3px 15px rgba(0,0,0,0.6);
+  `;
+
   if (phase === "pack") {
-    const bgUrl = blook?.packBackground || "";
-    const packImageUrl = blook?.packImageUrl || "";
-    const packName = blook?.name || "";
+    box.style.cssText = baseStyle + boxShadowStyle;
 
-    box.style.cssText = `
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      width:370px;
-      height:385px;
-      border-radius:10px;
-      text-align:center;
-      color:white;
-      padding:20px;
-      background-image: ${bgUrl ? `url(${bgUrl})` : 'radial-gradient(circle, #6f057a, #4a034f)'};
-      background-size: cover;
-      cursor: pointer;
-      background-position: center;
-      box-shadow: rgb(162 140 140 / 55%) 0px 0px 80px inset, rgb(255 255 255 / 35%) 0px 0px 140px inset, rgb(145 137 137 / 40%) 0px -6px inset, rgb(125 120 120 / 60%) 3px 3px 15px
-    `;
+    box.style.backgroundImage = pack?.packBackground
+      ? (isImageUrl(pack.packBackground)
+          ? `url(${pack.packBackground})`
+          : pack.packBackground)
+      : "radial-gradient(circle, #6f057a, #4a034f)";
 
-    box.innerHTML = `
-      <h1 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${packName}</h1>
-      ${packImageUrl ? `<img src="${packImageUrl}" style="width:165px;height:170px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); object-fit:contain;">` : ""}
-      <p style="margin-top:16px;font-size:20px;font-weight:bold;">Click to open!</p>
-    `;
+    box.innerHTML = `<h1>${blook?.name || ""}</h1>`;
 
     overlay.appendChild(box);
     document.body.appendChild(overlay);
 
-    overlay.onclick = () => {
-      overlay.remove();
-
-      if (phaserGame) {
-        phaserGame.destroy(true);
-        phaserGame = null;
-      }
-      const el = document.getElementById('phaser-particle-parent');
-      if (el) el.remove();
-
-    };
-
+    overlay.onclick = () => overlay.remove();
     return;
   }
 
-  const rarity = blook.rarity || "unknown";
-  const color = rarityColors[rarity.toLowerCase()] || "white";
+  const rarity = blook.rarity || "Common";
+  const color = rarityColors?.[rarity?.toLowerCase?.()] || "white";
 
-  const bg = blook.backgroundUrl || "";
-
-  box.style.cssText = `
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:370px;
-    height:385px;
-    border-radius:10px;
-    text-align:center;
-    color:white;
-    padding:20px;
-    background-image: ${bg ? `url(${bg})` : 'radial-gradient(circle, #6f057a, #4a034f)'};
-    background-size: cover;
-    cursor: pointer;
-    background-position: center;
-    box-shadow: rgb(162 140 140 / 55%) 0px 0px 80px inset, rgb(255 255 255 / 35%) 0px 0px 140px inset, rgb(145 137 137 / 40%) 0px -6px inset, rgb(125 120 120 / 60%) 3px 3px 15px
-  `;
+  box.style.cssText =
+    baseStyle +
+    boxShadowStyle +
+    `
+      background-image: ${
+        blook.backgroundUrl
+          ? `url(${blook.backgroundUrl})`
+          : "radial-gradient(circle, #6f057a, #4a034f)"
+      };
+    `;
 
   box.innerHTML = `
-    <h1 style=font-weight:bold;font-size: 34px; text-shadow: -1px -1px 0 black,1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; " >${blook.blookName}</h1>
-    <p style="color:${color}; font-weight:bold; font-size: 20px; text-shadow: -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black; ">
+    <h1 style="font-size:34px;font-weight:bold;">${blook.blookName}</h1>
+    <p style="color:${color};font-size:26px;font-weight:bold;">
       ${capitalize(rarity)}
     </p>
-    <img src="${blook.imageUrl}" style="width:165px;height:170px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); object-fit:contain;">
-    <p style="font-size:30px; font-weight:bold;">${blook.chance}%</p>
+    <img src="${blook.imageUrl}" style="width:165px;height:170px;object-fit:contain;">
+    <p style="font-size:30px;font-weight:bold;">${blook.chance}%</p>
   `;
 
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 
-  let particleParent = document.getElementById('phaser-particle-parent');
+  let particleParent = document.getElementById("phaser-particle-parent");
   if (!particleParent) {
-    particleParent = document.createElement('div');
-    particleParent.id = 'phaser-particle-parent';
+    particleParent = document.createElement("div");
+    particleParent.id = "phaser-particle-parent";
     particleParent.style.cssText = `
       position: fixed;
       inset: 0;
@@ -674,21 +835,18 @@ function showResult(blook, pack = null) {
     document.body.appendChild(particleParent);
   }
 
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-
   triggerRaritySpecificParticles(rarity);
+
+  await playRarityIntro(box, rarity);
 
   overlay.onclick = () => {
     overlay.remove();
+    document.getElementById("phaser-particle-parent")?.remove();
 
     if (phaserGame) {
       phaserGame.destroy(true);
       phaserGame = null;
     }
-
-    const el = document.getElementById('phaser-particle-parent');
-    if (el) el.remove();
   };
 }
 
