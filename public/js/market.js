@@ -536,6 +536,7 @@ function confirmPurchase(pack) {
 }
 
 async function openPack(pack) {
+  if (typeof window.showLoader === "function") window.showLoader();
   try {
     const instantOpen = localStorage.getItem("instantOpen") === "On";
 
@@ -562,25 +563,30 @@ async function openPack(pack) {
 
     const data = await res.json();
 
-    if (!res.ok) {
+if (!res.ok) {
       const errMsg = data?.error || "Failed to open pack";
       showModal(errMsg);
+      if (typeof window.hideLoader === "function") window.hideLoader();
       return;
     }
 
     userTokens = data.tokens;
     updateTokens();
 
-    showResult(data.blook, {
+showResult(data.blook, {
       packBackground: pack.packBackground,
       phase: "reveal",
       revealDelayMs: 0,
+      skipIntro: true,
     });
+
+    if (typeof window.hideLoader === "function") window.hideLoader();
 
 
   } catch (err) {
     console.error(err);
     showModal(err.message || "Something went wrong");
+    if (typeof window.hideLoader === "function") window.hideLoader();
   }
 }
 
@@ -610,24 +616,20 @@ async function playRarityIntro(box, rarity) {
     rarity === "Uncommon" ||
     rarity === "Rare";
 
-  // ---------------- COMMON / UNCOMMON / RARE (NEW ANIMATION) ----------------
   if (isLow) {
     await sleep(500);
     reveal();
 
-    // quick pop-in from below
     box.style.transition = "transform 250ms cubic-bezier(0.2, 0.9, 0.2, 1)";
     box.style.transform = center + " translateY(30px) scale(0.9)";
 
     await sleep(250);
 
-    // snap up with bounce
     box.style.transition = "transform 350ms cubic-bezier(0.2, 1.2, 0.2, 1)";
     box.style.transform = center + " translateY(-10px) scale(1.08)";
 
     await sleep(350);
 
-    // settle back
     box.style.transition = "transform 250ms ease-out";
     box.style.transform = center + " translateY(0px) scale(1)";
 
@@ -636,12 +638,10 @@ async function playRarityIntro(box, rarity) {
     return;
   }
 
-  // ---------------- EPIC (IMPROVED IMPACT ANIMATION) ----------------
   if (rarity === "Epic") {
     await sleep(650);
     reveal();
 
-    // punch-in start (small + offset)
     box.style.transform = center + " scale(0.6) translateY(20px)";
 
     await animateBox(box, [
@@ -656,7 +656,6 @@ async function playRarityIntro(box, rarity) {
       easing: "cubic-bezier(0.2, 0.9, 0.2, 1)"
     });
 
-    // recoil settle
     await animateBox(box, [
       {
         transform: center + " scale(1.15)"
@@ -684,7 +683,6 @@ async function playRarityIntro(box, rarity) {
     return;
   }
 
-  // ---------------- keep your other rarities unchanged ----------------
   if (rarity === "Chroma" || rarity === "Mystical") {
     await sleep(1200);
     reveal();
@@ -745,6 +743,7 @@ async function playRarityIntro(box, rarity) {
 
 async function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
+  const skipIntro = !!pack?.skipIntro;
 
   const phase = pack?.phase || "reveal";
   const packBg = pack?.packBackground || "";
@@ -856,7 +855,13 @@ async function showResult(blook, pack = null) {
 
   triggerRaritySpecificParticles(rarity);
 
-  await playRarityIntro(box, rarity);
+  if (!skipIntro) {
+    await playRarityIntro(box, rarity);
+  } else {
+    box.style.opacity = "1";
+    box.style.transform = "translate(-50%, -50%)";
+  }
+
 
   overlay.onclick = () => {
     overlay.remove();
@@ -895,3 +900,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateText();
   });
 });
+
+if (typeof window.showLoader === "function") window.showLoader();
+
+loadUser()
+  .catch(() => {})
+  .finally(() => {
+    if (typeof window.hideLoader === "function") window.hideLoader();
+  });

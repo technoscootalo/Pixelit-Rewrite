@@ -7,8 +7,14 @@ goLogin.addEventListener("click", () => {
     window.location.href = "/login";
 });
 
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (typeof window.showLoader === "function") {
+        window.showLoader();
+    }
+
 
     errorEl.textContent = "";
     submitBtn.disabled = true;
@@ -60,7 +66,7 @@ form.addEventListener("submit", async (e) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ username, password }),
-            credentials: "include" // for cookies/sessions
+            credentials: "include"
         });
 
         const logData = await logRes.json();
@@ -74,6 +80,9 @@ form.addEventListener("submit", async (e) => {
     } catch (err) {
         errorEl.textContent = err.message;
     } finally {
+        if (typeof window.hideLoader === "function") {
+            window.hideLoader();
+        }
         submitBtn.disabled = false;
         submitBtn.textContent = "Register";
     }

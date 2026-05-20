@@ -11,25 +11,28 @@ router.post("/", async (req, res) => {
 
         if (!username || !password) {
             return res.status(400).json({
-                error: "Missing fields"
+                error: "Username or password incorrect"
             });
         }
+
 
         const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(400).json({
-                error: "Invalid credentials"
+                error: "Username or password incorrect"
             });
         }
+
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res.status(400).json({
-                error: "Invalid credentials"
+                error: "Username or password incorrect"
             });
         }
+
 
         if (user.banned) {
             let banMessage = `You have been banned from Pixelit\nReason: ${user.banReason || "No reason provided"}`;

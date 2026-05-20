@@ -47,7 +47,7 @@ function rateLimit({ max = 30, windowMs = WINDOW_MS } = {}) {
       bucket.count += 1;
 
       if (bucket.count > max) {
-        res.status(429).json({ error: "Too many requests" });
+        res.status(429).json({ error: "You are being ratelimited" });
         return;
       }
 

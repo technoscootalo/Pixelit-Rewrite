@@ -8,6 +8,19 @@ goHome.addEventListener("click", () => {
     window.location.href = "/";
 });
 
+(async function autoLoginIfAlreadyLoggedIn() {
+    try {
+        const res = await fetch("/api/loggedin", { credentials: "include" });
+        const data = await res.json();
+
+        if (data?.loggedIn) {
+            window.location.href = "/stats";
+        }
+    } catch {
+    }
+})();
+
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 

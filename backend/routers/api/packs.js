@@ -3,6 +3,8 @@ const router = express.Router();
 
 const Pack = require("../../models/Pack");
 const User = require("../../models/User");
+const { rateLimit } = require("../../middleware/rateLimit");
+
 
 router.get("/", async (req, res) => {
   try {
@@ -19,7 +21,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/open/:packName", async (req, res) => {
+router.post(
+  "/open/:packName",
+  rateLimit({ max: 3, windowMs: 8 * 1000 }),
+  async (req, res) => {
   try {
     if (!req.session.userId) {
       return res.status(401).json({

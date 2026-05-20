@@ -17,6 +17,8 @@ const loggedinRoute = require("./backend/routers/auth/loggedin");
 const logoutRoute = require("./backend/routers/auth/logout");
 const userRoutes = require("./backend/routers/user");
 const packsRouter = require("./backend/routers/api/packs");
+const changePfpRoute = require("./backend/routers/api/changePfp");
+
 const messagesRoute = require("./backend/routers/api/messages");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
@@ -72,6 +74,8 @@ app.use("/api/messages", messagesRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
+app.use("/api/user", changePfpRoute);
+
 app.use("/api/reportUser", reportUserRoute);
 app.use("/api/moderationReports", moderationReportsRoute);
 app.use("/api/badges", badgeRoutes);

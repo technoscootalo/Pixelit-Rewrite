@@ -221,62 +221,86 @@ function updateBlookInfo(blook) {
 function sellBlook() {
   const blookName = document.getElementById("blookName").textContent;
   const ownedEl = document.getElementById("amountOwned");
-
   const owned = parseInt(ownedEl.textContent.split(" ")[0], 10);
 
+  const existing = document.getElementById("sell-blook-modal");
+  if (existing) existing.remove();
+
   const modal = document.createElement("div");
-  modal.style.cssText = `
-    position: fixed;
-    inset: 0;
-    background: #00000000;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-  `;
+  modal.id = "sell-blook-modal";
+  modal.className = "sell-blook-modal-overlay";
 
   const box = document.createElement("div");
-  box.style.cssText = `
-    background: #5e046e;
-    box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
-    padding:20px;
-    width:400px;
-    text-align:center;
-    color:white;
-    border-radius:8px;
-  `;
+  box.className = "sell-blook-modal-box";
 
-  const text = document.createElement("p");
-  text.textContent = `Sell ${blookName}?`;
-  box.appendChild(text);
+  const title = document.createElement("h3");
+  title.className = "sell-blook-modal-title";
+  title.textContent = `Sell ${blookName}?`;
+
+  const subtitle = document.createElement("div");
+  subtitle.className = "sell-blook-modal-subtitle";
+  subtitle.textContent = `Owned: ${owned}`;
+
+  const inputRow = document.createElement("div");
+  inputRow.className = "sell-blook-modal-input-row";
+
+  const label = document.createElement("label");
+  label.className = "sell-blook-modal-label";
+  label.textContent = "Amount";
 
   const input = document.createElement("input");
+  input.className = "sell-blook-modal-amount";
   input.type = "number";
   input.min = "1";
-  input.max = owned;
+  input.max = String(owned);
   input.value = "1";
-  input.style.cssText = "font-size:20px;width:80px;text-align:center;";
 
-  const wrap = document.createElement("div");
-  wrap.style.margin = "10px";
-  wrap.appendChild(input);
-  box.appendChild(wrap);
+  inputRow.appendChild(label);
+  inputRow.appendChild(input);
 
   const error = document.createElement("div");
-  error.style.color = "red";
-  box.appendChild(error);
+  error.className = "sell-blook-modal-error";
+
+  const actions = document.createElement("div");
+  actions.className = "sell-blook-modal-actions";
 
   const sellBtn = document.createElement("button");
+  sellBtn.type = "button";
+  sellBtn.className = "sell-blook-modal-btn sell-blook-modal-btn-primary";
   sellBtn.textContent = "Sell";
-  sellBtn.style.margin = "10px";
 
   const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "sell-blook-modal-btn sell-blook-modal-btn-secondary";
   cancelBtn.textContent = "Cancel";
 
-  box.appendChild(sellBtn);
-  box.appendChild(cancelBtn);
+  actions.appendChild(sellBtn);
+  actions.appendChild(cancelBtn);
+
+  box.appendChild(title);
+  box.appendChild(subtitle);
+  box.appendChild(inputRow);
+  box.appendChild(error);
+  box.appendChild(actions);
+
   modal.appendChild(box);
   document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+
+  cancelBtn.onclick = close;
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape") close();
+    },
+    { once: true }
+  );
 
   sellBtn.onclick = async () => {
     const quantity = parseInt(input.value, 10);
@@ -286,14 +310,29 @@ function sellBlook() {
       return;
     }
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    if (typeof window.showLoader === "function") window.showLoader();
 
     try {
+      // Always use the session user; do not rely on client-side userId.
+      const logged = await fetch("/api/loggedin", { credentials: "include" });
+      const loggedData = await logged.json();
+      if (!logged.ok || !loggedData.loggedIn || !loggedData.user?.id) {
+        error.textContent = "Not logged in";
+        return;
+      }
+
+      const userId = loggedData.user.id;
+
+      sellBtn.disabled = true;
+      cancelBtn.disabled = true;
+      error.textContent = "";
+
       const res = await fetch("/api/users/sell-blook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
-          userId: user.id,
+          userId: userId,
           blookName,
           quantity
         })
@@ -301,30 +340,58 @@ function sellBlook() {
 
       const data = await res.json();
 
-      if (!data.success) {
-        error.textContent = data.error;
+      if (!res.ok || !data.success) {
+        error.textContent = data?.error || "Failed to sell blook";
         return;
       }
 
       ownedEl.textContent = `${owned - quantity} Owned`;
-
-      document.body.removeChild(modal);
+      close();
 
     } catch (err) {
       console.error(err);
       error.textContent = "Server error";
+    } finally {
+      if (typeof window.hideLoader === "function") window.hideLoader();
+      sellBtn.disabled = false;
+      cancelBtn.disabled = false;
     }
-  };
-
-  cancelBtn.onclick = () => {
-    document.body.removeChild(modal);
   };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelector(".sellBtn").addEventListener("click", sellBlook);
+  const sellBtnEl = document.querySelector(".sellBtn");
+  if (sellBtnEl) sellBtnEl.addEventListener("click", sellBlook);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
   loadBlooks();
+
+  const btn = document.querySelector('.changePfpBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    if (!selectedBlook || !selectedBlook.imageUrl) {
+      window.location.href = '/stats';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/user/changePfp', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pfp: selectedBlook.imageUrl })
+      });
+
+      window.location.href = '/stats';
+    } catch (e) {
+      console.error(e);
+      window.location.href = '/stats';
+    }
+  });
 });
+
+

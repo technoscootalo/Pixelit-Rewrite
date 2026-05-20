@@ -868,4 +868,10 @@ if (viewUserButton) {
   }, 0);
 })();
 
-loadUser();
+if (typeof window.showLoader === "function") window.showLoader();
+
+loadUser()
+  .catch(() => {})
+  .finally(() => {
+    if (typeof window.hideLoader === "function") window.hideLoader();
+  });
