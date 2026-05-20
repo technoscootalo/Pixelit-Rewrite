@@ -42,12 +42,35 @@ main {
 .pixelsContainer {
   width: 1200px;
   height: 825px;
-  flex-direction: column; 
-  align-items: center;   
+  flex-direction: column;
+  align-items: center;
   background: #5e046e;
   box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
   padding: 10px 20px;
   overflow-y: auto;
+
+  scrollbar-width: thin;             
+  scrollbar-color: #8c099a #6f057a;  
+}
+
+.pixelsContainer::-webkit-scrollbar {
+  width: 8px; 
+}
+
+.pixelsContainer::-webkit-scrollbar-track {
+  background: #6f057a;
+  border-radius: 0px;
+  margin: 6px 0;
+}
+
+.pixelsContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b10ec2, #8c099a);
+  border-radius: 10px;
+  border: 2px solid #6f057a;
+}
+
+.pixelsContainer::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c21ad6, #9d0ab0);
 }
 
 .items {

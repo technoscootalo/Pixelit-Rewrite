@@ -17,8 +17,8 @@ const loggedinRoute = require("./backend/routers/auth/loggedin");
 const logoutRoute = require("./backend/routers/auth/logout");
 const userRoutes = require("./backend/routers/user");
 const packsRouter = require("./backend/routers/api/packs");
+const weeklyMarketRoute = require("./backend/routers/api/weeklyMarket");
 const changePfpRoute = require("./backend/routers/api/changePfp");
-
 const messagesRoute = require("./backend/routers/api/messages");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
@@ -34,9 +34,8 @@ const moderationReportsRoute = require("./backend/routers/api/moderationReports"
 const articlesRoute = require("./backend/routers/api/articles");
 const blooksRoutes = require("./backend/routers/users/blooks");
 const userBlooksRoutes = require("./backend/routers/api/userBlooks");
-const executeTradeRoute = require("./backend/routers/api/executeTrade");
-const tradeStore = require("./backend/utils/tradeStore");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
+const weeklyMarketRoutes = require("./backend/routers/api/weeklyMarket");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -66,6 +65,7 @@ app.use("/api/blooks", blookRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/user/daily-wheel", dailyWheelRoute);
 app.use("/api/packs", packsRouter);
+app.use("/api/weekly/market", weeklyMarketRoute);
 app.use("/api/register", registerRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
@@ -86,8 +86,7 @@ app.use("/api/articles", articlesRoute);
 app.use("/api/users", blooksRoutes);
 app.use("/api/users/sell-blook", sellBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
-app.use("/executeTrade", executeTradeRoute);
-
+app.use("/api/weekly", weeklyMarketRoutes);
 app.use("/", pages);
 
 

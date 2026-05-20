@@ -6,12 +6,22 @@ const User = require("../../models/User");
 const { rateLimit } = require("../../middleware/rateLimit");
 
 
+const { getWeekWindowUTC, isPackActiveThisWeek } = require("../../utils/weeklyMarket");
+
 router.get("/", async (req, res) => {
   try {
-    const packs = await Pack.find({ visible: true })
-      .populate("blooks");
+    const { weekKey } = getWeekWindowUTC(new Date());
 
-    res.json(packs);
+    const packs = await Pack.find({ visible: true }).populate("blooks");
+
+    // Keep non-weekly packs always; filter weekly packs by active window.
+    const filtered = packs.filter((p) => {
+      // Non-weekly packs (rotation !== "weekly") show normally.
+      if (!p || p.rotation !== "weekly") return true;
+      return isPackActiveThisWeek(p, weekKey);
+    });
+
+    res.json(filtered);
 
   } catch (err) {
     console.error(err);
@@ -56,6 +66,19 @@ router.post(
       });
     }
 
+    // Weekly-exclusive enforcement: even if someone tries to open an inactive weekly pack directly.
+    if (pack.rotation === "weekly") {
+      const { weekKey } = getWeekWindowUTC(new Date());
+
+      if (!isPackActiveThisWeek(pack, weekKey)) {
+        return res.status(403).json({
+          error: "Pack unavailable"
+        });
+      }
+    }
+
+
+
     if (!Array.isArray(pack.blooks) || pack.blooks.length === 0) {
       return res.status(400).json({
         error: "Pack has no blooks"
@@ -79,9 +102,11 @@ router.post(
       {
         $inc: {
           tokens: -pack.cost,
-          packs: 1
+          packs: 1,
+          opened: 1
         }
       },
+
       {
         new: true
       }

@@ -15,6 +15,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         profileName.textContent = data.username;
+
+        const roleColors = {
+          Owner: "#020202",
+          Veteran: "#969a5c",
+          Verified: "#5ab65b",
+          Plus: "#5657d3",
+          Tester: "#80a1d3",
+          Helper: "#4b69c3",
+          Moderator: "#ab53c4",
+          Admin: "#dc6dc1",
+          "Community Manager": "#69c95d",
+          Developer: "#6a76c7",
+          Artist: "#ca964c",
+        };
+
+        if (data.role && roleColors[data.role]) {
+          profileName.style.color = roleColors[data.role];
+        }
       }
     } catch (error) {
       console.error('Error loading profile data:', error);

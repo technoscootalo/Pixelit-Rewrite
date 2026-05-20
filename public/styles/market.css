@@ -34,6 +34,113 @@ main {
   padding: 100px 16px 110px;
 }
 
+.weeklyBlookContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 180px));
+  gap: 16px;
+  align-items: start;
+  justify-content: end;
+  width: 100%;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: 0;
+  padding-right: 16px;
+  padding-bottom: 20px;
+}
+
+.weeklyBlookCard {
+  width: 180px;
+  height: 210px;
+  border-radius: 12px;
+  padding: 14px 12px;
+  box-sizing: border-box;
+  background: rgba(94, 4, 110, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 -0.365vw rgba(83, 5, 92, 0.35), 0 10px 25px rgba(0,0,0,0.25);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.weeklyBlookImage {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.5));
+}
+
+.weeklyBlookName {
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.weeklyBlookCost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.weeklyBuyBtn {
+  background: #5e046e;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 800;
+  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.weeklyBuyBtn:hover {
+  transform: translateY(-2px);
+  background: #6f057a;
+}
+
+.weeklyBuyBtn:active {
+  transform: scale(0.97);
+}
+
+
+.weeklyHeader {
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 18px 240px;
+  width: 1000px;
+  border-radius: 14px;
+}
+
+.weeklyTitle {
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  font-weight: 800;
+  color: #ffe66d;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+.weeklyCountdown {
+  font-size: clamp(0.95rem, 2vw, 1.25rem);
+  font-weight: 700;
+  color: white;
+  opacity: 0.95;
+}
+
+#weeklyCountdownText {
+  color: #7dff6b;
+  text-shadow: 0 0 10px rgba(125, 255, 107, 0.35);
+}
+
 main h1 {
   color: white;
   margin: 0 0 14px 0;
@@ -42,21 +149,50 @@ main h1 {
 
 #packContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  justify-content: end;
+
+  grid-template-columns: repeat(auto-fill, minmax(250px, 250px));
   gap: 16px;
   align-items: stretch;
-  width: min(100%, 1120px);
-  margin: 0 auto;
+
+  width: 100%;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: 0;
+
+  margin-top: -275px;
+
   padding-bottom: 20px;
 }
-
 .box {
-  width: 12%;
-  min-height: 200px;
+  width: 250px;
+  height: 250px;
+
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: 25px;
 }
+
+.box > img {
+  width: 135px !important;
+  height: 135px !important;
+  margin: 0;
+}
+
+.box > p {
+  margin: 6px 0 0 0 !important;
+}
+
+
 
 .box:hover {
   transform: translateY(-4px);
@@ -212,6 +348,58 @@ main h1 {
   filter:
     drop-shadow(0 0 6px rgba(255, 215, 0, 0.45))
     drop-shadow(0 2px 2px rgba(0,0,0,0.45));
+}
+
+.weeklyBlookContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 35px;
+}
+
+.weeklyBlookCard {
+  width: 220px;
+  background: #6f057a;
+  box-shadow:
+    inset 0 -0.365vw #61056b,
+    3px 3px 15px rgba(0,0,0,0.6);
+
+  border-radius: 12px;
+
+  padding: 18px;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: transform 0.15s ease;
+}
+
+.weeklyBlookCard:hover {
+  transform: scale(1.04);
+}
+
+.weeklyBlookImage {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,0.5));
+}
+
+.weeklyBlookName {
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+
+  margin-top: 10px;
+}
+
+.weeklyBlookCost {
+  color: gold;
+  font-size: 22px;
+  margin-top: 8px;
+  font-weight: bold;
 }
 
 @keyframes packOpening {

@@ -210,53 +210,6 @@ function triggerRaritySpecificParticles(rarity) {
   phaserGame = new Phaser.Game(baseConfig);
 }
 
-function createPackElement(pack) {
-  const divBox = document.createElement('div');
-  divBox.className = 'packContainer';
-  divBox.setAttribute('data-pack-name', pack.name);
-
-  if (pack.name === "OG Pack") {
-    divBox.style.background = "radial-gradient(circle, #ADD8E6, #335494)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #335494, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Color Pack") {
-    divBox.style.background = "radial-gradient(circle, #FFFF00, #8B8000)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #8B8000, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Fall Pack") {
-    divBox.style.background = "radial-gradient(circle, #DEB887, #8B4513)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #8B4513, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Halloween Pack") {
-    divBox.style.background = "radial-gradient(circle, #39272d, #67433e)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #39272d, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-  
-  if (pack.name === "Space Pack") {
-    divBox.style.background = "radial-gradient(circle, #808080, #00008B)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #00008B, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Technology Pack") {
-    divBox.style.background = "radial-gradient(circle, #346136, #2faa34)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #346136, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "School Pack") {
-    divBox.style.background = "radial-gradient(circle, #836048, #66423a)";
-    divBox.style.boxShadow = "inset 0 -0.365vw #66423a, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Miscellaneous") {
-    divBox.style.background = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
-    divBox.style.boxShadow = "inset 0 -0.365vw rgba(0, 0, 0, 0.6), 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-}
-
 function capitalize(str = "") {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
@@ -313,8 +266,56 @@ function showModal(message, redirectToLogin = false) {
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
+  initWeeklyCountdown();
+  fetchWeeklyBlooks();
   fetchPacks();
 });
+
+function formatRemaining(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+async function initWeeklyCountdown() {
+  try {
+    const el = document.getElementById("weeklyCountdownText");
+    if (!el) return;
+
+    const res = await fetch("/api/weekly/market", { method: "GET" });
+    const text = await res.text();
+
+    if (!res.ok) {
+      console.error("Failed to load weekly window:", text);
+      return;
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error("Failed to parse weekly window JSON:", text);
+      return;
+    }
+
+    const weekEndsAt = new Date(data.weekEndsAt);
+
+
+    const tick = () => {
+      const remaining = weekEndsAt.getTime() - Date.now();
+      el.textContent = formatRemaining(remaining);
+    };
+
+    tick();
+    setInterval(tick, 1000);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 async function fetchUser() {
   try {
@@ -352,9 +353,13 @@ async function fetchPacks() {
   try {
     const res = await fetch("/api/packs");
 
-    if (!res.ok) throw new Error("Failed to load packs");
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("Failed to load packs:", text);
+      throw new Error("Failed to load packs");
+    }
 
-    const packs = await res.json();
+    const packs = JSON.parse(text);
     displayPacks(packs);
 
   } catch (err) {
@@ -374,10 +379,153 @@ function displayPacks(packs) {
   });
 }
 
+function createWeeklyBlookCard(blook) {
+  const card = document.createElement("div");
+  card.className = "weeklyBlookCard";
+  card.setAttribute("data-blook-id", String(blook.blookId || ""));
+
+  card.innerHTML = `
+    <img class="weeklyBlookImage" src="${blook.imageUrl || ""}" alt="${blook.BlookName || ""}" />
+    <div class="weeklyBlookName">${blook.BlookName || ""}</div>
+    <div class="weeklyBlookCost">
+      <img
+        src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png"
+        style="width:20px;height:20px;filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));"
+      />
+      <span>${blook.cost ?? 0}</span>
+    </div>
+    <button class="weeklyBuyBtn" type="button">Buy</button>
+  `;
+
+  const btn = card.querySelector(".weeklyBuyBtn");
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    buyWeeklyBlook(blook.blookId);
+  });
+
+  return card;
+}
+
+async function fetchWeeklyBlooks() {
+  try {
+    const res = await fetch("/api/weekly/blooks", { method: "GET" });
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("Failed to load weekly blooks:", text);
+      return;
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { blooks: [] };
+    }
+
+    const container = document.getElementById("weeklyBlookContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+    const blooks = Array.isArray(data?.blooks) ? data.blooks : [];
+    blooks.forEach(b => container.appendChild(createWeeklyBlookCard(b)));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function buyWeeklyBlook(blookId) {
+  if (!blookId) return;
+  if (typeof window.showLoader === "function") window.showLoader();
+
+  try {
+    if (userTokens <= 0) {
+      showModal("Not enough tokens!");
+      return;
+    }
+
+    const res = await fetch(`/api/weekly/blooks/buy/${encodeURIComponent(blookId)}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+
+    if (res.status === 401) {
+      showModal("Not logged in", true);
+      return;
+    }
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      showModal(data?.error || "Failed to buy");
+      return;
+    }
+
+    userTokens = data.tokens;
+    updateTokens();
+
+    if (typeof data?.blook) {
+      showResult(data.blook, { phase: "reveal", skipIntro: true });
+    }
+  } catch (err) {
+    console.error(err);
+    showModal(err.message || "Something went wrong");
+  } finally {
+    if (typeof window.hideLoader === "function") window.hideLoader();
+  }
+}
+
 function createPack(pack) {
   const div = document.createElement("div");
   div.className = "box";
   div.setAttribute("data-pack-name", pack.name);
+
+  if (pack.name === "OG Pack") {
+    div.style.background = "radial-gradient(circle, #ADD8E6, #335494)";
+    div.style.boxShadow = "inset 0 -0.365vw #335494, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Color Pack") {
+    div.style.background = "radial-gradient(circle, #FFFF00, #8B8000)";
+    div.style.boxShadow = "inset 0 -0.365vw #8B8000, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Fall Pack") {
+    div.style.background = "radial-gradient(circle, #DEB887, #8B4513)";
+    div.style.boxShadow = "inset 0 -0.365vw #8B4513, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Halloween Pack") {
+    div.style.background = "radial-gradient(circle, #39272d, #67433e)";
+    div.style.boxShadow = "inset 0 -0.365vw #39272d, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Christmas Pack") {
+    div.style.background = "radial-gradient(circle, rgb(46, 139, 87), rgb(30, 86, 49), rgb(12, 45, 28), rgb(5, 20, 11))";
+    div.style.boxShadow = "inset 0 -0.365vw rgba(13, 115, 45, 0.17), 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Space Pack") {
+    div.style.background = "radial-gradient(circle, #808080, #00008B)";
+    div.style.boxShadow = "inset 0 -0.365vw #00008B, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Technology Pack") {
+    div.style.background = "radial-gradient(circle, #346136, #2faa34)";
+    div.style.boxShadow = "inset 0 -0.365vw #346136, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "School Pack") {
+    div.style.background = "radial-gradient(circle, #836048, #66423a)";
+    div.style.boxShadow = "inset 0 -0.365vw #66423a, 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
+  if (pack.name === "Miscellaneous") {
+    div.style.background = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
+    div.style.boxShadow = "inset 0 -0.365vw rgba(0, 0, 0, 0.6), 3px 3px 15px rgba(0, 0, 0, 0.6)";
+  }
+
 
   const img = document.createElement("img");
 
@@ -903,8 +1051,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 if (typeof window.showLoader === "function") window.showLoader();
 
-loadUser()
-  .catch(() => {})
-  .finally(() => {
-    if (typeof window.hideLoader === "function") window.hideLoader();
-  });
+if (typeof window.hideLoader === "function") window.hideLoader();

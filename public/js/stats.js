@@ -8,29 +8,11 @@ function formatRemaining(ms) {
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 
-let dailyWheelInterval = null;
-
-function startDailyWheelCountdown() {
-  if (dailyWheelInterval) {
-    clearInterval(dailyWheelInterval);
-  }
-
-  dailyWheelInterval = setInterval(() => {
-    updateDailyWheelState();
-  }, 1000);
-}
-
 function updateDailyWheelState() {
   const button = document.getElementById("spinButton");
   const messageEl = document.getElementById("dailyWheelMessage");
 
   if (!button || !messageEl) return;
-
-  if (window.__profileViewMode === 'other') {
-    button.style.display = 'none';
-    messageEl.innerText = '';
-    return;
-  }
 
   if (user && user.lastClaim) {
     const lastClaimDate = new Date(user.lastClaim);
@@ -44,15 +26,9 @@ function updateDailyWheelState() {
     }
   }
 
-
   button.style.display = "inline-flex";
   button.disabled = false;
   messageEl.innerText = "";
-
-  if (dailyWheelInterval) {
-  clearInterval(dailyWheelInterval);
-  dailyWheelInterval = null;
-}
 }
 
 function showClaimModal(reward) {
@@ -160,15 +136,14 @@ inboxButton.addEventListener("click", () => {
   `;
 
   const empty = document.createElement("div");
-  empty.textContent = "No messages.";
+  empty.textContent = "No messages";
   empty.style.cssText = `
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 18px;
     opacity: 0.9;
     text-align: center;
   `;
@@ -208,44 +183,46 @@ async function loadUser() {
     const usernameEl = document.getElementById("username");
     const roleEl = document.getElementById("role");
 
+    const roleColors = {
+      Owner: "#020202",
+      Veteran: "#969a5c",
+      Verified: "#5ab65b",
+      Plus: "#5657d3",
+      Tester: "#80a1d3",
+      Helper: "#4b69c3",
+      Moderator: "#ab53c4",
+      Admin: "#dc6dc1",
+      "Community Manager": "#69c95d",
+      Developer: "#6a76c7",
+      Artist: "#ca964c",
+      Player: "#FFFFFF",
+    };
+
     if (pfp) pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
     if (banner) banner.src = user.banner || "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
 
-    if (usernameEl) usernameEl.innerText = user.username;
-    if (roleEl) roleEl.innerText = user.role || "Player";
-
-    const usernameElement = usernameEl;
-    const roleColors = {
-      "Owner": "#020202",
-      "Veteran": "#969a5c",
-      "Verified": "#5ab65b",
-      "Plus": "#5657d3",
-      "Tester": "#80a1d3",
-      "Helper": "#4b69c3",
-      "Moderator": "#ab53c4",
-      "Admin": "#dc6dc1",
-      "Community Manager": "#69c95d",
-      "Developer": "#6a76c7",
-      "Artist": "#ca964c"
-    };
-
-    if (roleColors[user.role]) {
-      if (usernameElement) usernameElement.style.color = roleColors[user.role];
-      if (roleEl) roleEl.style.color = roleColors[user.role];
+    if (usernameEl) {
+      usernameEl.innerText = user.username;
+      const color = roleColors[user.role];
+      if (color) usernameEl.style.color = color;
+    }
+    if (roleEl) {
+      roleEl.innerText = user.role || "Player";
+      const color = roleColors[user.role];
+      if (color) roleEl.style.color = color;
     }
 
 
     const tokensEl = document.getElementById("tokens");
-    const packsEl = document.getElementById("packs");
+    const openedEl = document.getElementById("opened");
     const messagesEl = document.getElementById("messages");
 
     if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
-    if (packsEl) packsEl.innerText = user.opened.toLocaleString();
+    if (openedEl) openedEl.innerText = user.opened.toLocaleString();
     if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
 
     checkPanelAccess();
     updateDailyWheelState();
-    startDailyWheelCountdown();
   } catch (err) {
     console.error("Failed to load user data:", err);
   }
@@ -289,7 +266,6 @@ async function claimDailyWheel() {
     showClaimModal(data.reward);
     messageEl.innerText = `You won ${data.reward.toLocaleString()} tokens! Next claim in 4h.`;
     updateDailyWheelState();
-    startDailyWheelCountdown();
   } catch (err) {
     console.error("Claim failed:", err);
     button.disabled = false;
@@ -401,7 +377,6 @@ function openViewUserPopup() {
   });
   cancelButton.textContent = 'Cancel';
 
-
   const restoreMyProfile = () => {
     const orig = window.__profileViewOriginal;
     if (!orig) return;
@@ -415,7 +390,7 @@ function openViewUserPopup() {
       username: document.getElementById('username'),
       role: document.getElementById('role'),
       tokens: document.getElementById('tokens'),
-      packs: document.getElementById('packs'),
+      opened: document.getElementById('opened'),
       messages: document.getElementById('messages'),
       spinButton: document.getElementById('spinButton')
     };
@@ -425,7 +400,7 @@ function openViewUserPopup() {
     if (elements.username) elements.username.innerText = orig.username;
     if (elements.role) elements.role.innerText = orig.role || 'Player';
     if (elements.tokens) elements.tokens.innerText = (orig.tokens ?? 0).toLocaleString();
-    if (elements.packs) elements.packs.innerText = (orig.packs ?? 0).toLocaleString();
+    if (elements.opened) elements.opened.innerText = (orig.opened ?? 0).toLocaleString();
     if (elements.messages) elements.messages.innerText = (orig.sent ?? 0).toLocaleString();
 
     if (elements.spinButton) {
@@ -486,7 +461,7 @@ function openViewUserPopup() {
         username: document.getElementById('username'),
         role: document.getElementById('role'),
         tokens: document.getElementById('tokens'),
-        opened: document.getElementById('packs'),
+        opened: document.getElementById('opened'),
         messages: document.getElementById('messages'),
         spinButton: document.getElementById('spinButton'),
         dailyWheelMessage: document.getElementById('dailyWheelMessage'),
@@ -495,11 +470,36 @@ function openViewUserPopup() {
 
       if (ui.pfp) ui.pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
       if (ui.banner) ui.banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
-      if (ui.username) ui.username.innerText = other.username;
-      if (ui.role) ui.role.innerText = other.role || 'Player';
+      const roleColors = {
+        Owner: "#020202",
+        Veteran: "#969a5c",
+        Verified: "#5ab65b",
+        Plus: "#5657d3",
+        Tester: "#80a1d3",
+        Helper: "#4b69c3",
+        Moderator: "#ab53c4",
+        Admin: "#dc6dc1",
+        "Community Manager": "#69c95d",
+        Developer: "#6a76c7",
+        Artist: "#ca964c",
+        Player: "#FFFFFF"
+      };
+
+      if (ui.username) {
+        ui.username.innerText = other.username;
+        const color = roleColors[other.role];
+        if (color) ui.username.style.color = color;
+      }
+      if (ui.role) {
+        ui.role.innerText = other.role || "Player";
+        const color = roleColors[other.role];
+        if (color) ui.role.style.color = color;
+      }
+
       if (ui.tokens) ui.tokens.innerText = (other.tokens ?? 0).toLocaleString();
       if (ui.opened) ui.opened.innerText = (other.opened ?? 0).toLocaleString();
       if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
+
 
       if (ui.spinButton) {
         ui.spinButton.style.display = 'none';
@@ -510,9 +510,6 @@ function openViewUserPopup() {
         ui.viewUserBtn.innerHTML = '<i class="fa-solid fa-reply"></i> Back to my profile';
         ui.viewUserBtn.onclick = restoreMyProfile;
 
-        const existingTrade = document.querySelector('.tradeUser');
-        if (existingTrade) existingTrade.remove();
-
         const existingReport = document.querySelector('.report-user-btn');
         if (existingReport) existingReport.remove();
 
@@ -521,8 +518,6 @@ function openViewUserPopup() {
         reportBtn.innerHTML = '<i class="fa-solid fa-flag"></i> Report';
 
         reportBtn.onclick = () => {
-
-
           const modal = createElement('div', {}, {
             position: 'fixed',
             inset: '0',
@@ -619,29 +614,20 @@ function openViewUserPopup() {
           modal.appendChild(box);
           document.body.appendChild(modal);
 
-          const close = () => modal.remove();
-
-          const cancelBtn = createElement('button', { type: 'button' }, {
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            color: 'white',
-            fontSize: '24px',
-            cursor: 'pointer',
-          });
-          cancelBtn.textContent = '×';
-          cancelBtn.onclick = close;
-
-          modal.appendChild(cancelBtn);
-
-          if (typeof cancelBtn !== 'undefined') {
-          }
+          const close = () => {
+            document.body.onclick = null;
+            modal.remove();
+          };
 
           modal.addEventListener('click', (e) => {
-            if (e.target === modal) close();
+            if (e.target === modal || e.currentTarget === modal) close();
           });
+
+          document.body.addEventListener('click', (e) => {
+            if (modal.contains(e.target)) return;
+            close();
+          }, { once: true });
+
 
           input.focus();
 
@@ -686,134 +672,8 @@ function openViewUserPopup() {
           });
         };
 
-        const tradeBtn = document.createElement('button');
-        tradeBtn.className = 'button tradeUser trade-user-btn';
-        tradeBtn.style.marginLeft = '10px';
-        tradeBtn.innerHTML = '<i class="fa-solid fa-right-left"></i> Trade';
-
-
-        tradeBtn.onclick = () => {
-          if (!user || !user.username) {
-            alert('Not logged in');
-            return;
-          }
-          const sender = user.username;
-          const recipient = other.username;
-
-          const existing = document.getElementById('trade-toast');
-          if (existing) existing.remove();
-
-          const toast = document.createElement('div');
-          toast.id = 'trade-toast';
-          toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #6f057a;
-            box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            font-family: 'Pixelify Sans';
-            font-size: 16px;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-          `;
-          toast.innerHTML = `<i class="fa-solid fa-spinner" style="font-size:20px;"></i><span>Sending trade request to ${recipient}...</span>`;
-          document.body.appendChild(toast);
-
-          setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.5s';
-            setTimeout(() => toast.remove(), 500);
-          }, 3000);
-
-
-
-          if (!window.__tradeSocket) {
-            window.__tradeSocket = io();
-          }
-          const socket = window.__tradeSocket;
-          socket.off('tradeRequest');
-          socket.off('tradeAccepted');
-          socket.off('tradeDeclined');
-
-          socket.on('tradeAccepted', (data) => {
-            if (!data || !data.tradeId) return;
-            window.location.href = `/trade?id=${encodeURIComponent(data.tradeId)}`;
-          });
-
-
-          socket.emit('joinUserRoom', { username: sender });
-          socket.emit('tradeRequest', { sender, recipient });
-
-          socket.on('tradeRequest', (data) => {
-
-            if (!data || data.recipient !== sender) return;
-
-            const requestSender = data.sender;
-
-            const existingToast = document.getElementById('trade-request-toast');
-            if (existingToast) existingToast.remove();
-
-            const toast = document.createElement('div');
-            toast.id = 'trade-request-toast';
-            toast.style.cssText = `
-              position: fixed;
-              top: 20px;
-              right: 20px;
-              background-color: #6f057a;
-              box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
-              color: white;
-              padding: 20px;
-              border-radius: 5px;
-              font-family: 'Pixelify Sans';
-              font-size: 16px;
-              z-index: 9999;
-              width: 300px;
-            `;
-
-            toast.innerHTML = `
-              <div style="font-weight:bold;margin-bottom:15px;">${requestSender} sent you a trade request!</div>
-              <div style="display:flex;gap:10px;">
-                <button style="flex:1;background-color:green;border:none;color:white;padding:14px;border-radius:5px;font-family:'Pixelify Sans';font-size:18px;font-weight:bold;cursor:pointer;" id="trade-accept-btn">Accept</button>
-                <button style="flex:1;background-color:#b30000;border:none;color:white;padding:14px;border-radius:5px;font-family:'Pixelify Sans';font-size:18px;font-weight:bold;cursor:pointer;" id="trade-decline-btn">Decline</button>
-              </div>
-            `;
-
-            document.body.appendChild(toast);
-
-            const acceptBtn = document.getElementById('trade-accept-btn');
-            const declineBtn = document.getElementById('trade-decline-btn');
-
-            acceptBtn.onclick = () => {
-              socket.emit('tradeResponse', {
-                sender: requestSender,
-                recipient: sender,
-                accepted: true
-              });
-              toast.remove();
-            };
-
-            declineBtn.onclick = () => {
-              socket.emit('tradeResponse', {
-                sender: requestSender,
-                recipient: sender,
-                accepted: false
-              });
-              toast.remove();
-            };
-          });
-
-        };
-
         ui.viewUserBtn.parentNode.insertBefore(reportBtn, ui.viewUserBtn.nextSibling);
-        ui.viewUserBtn.parentNode.insertBefore(tradeBtn, ui.viewUserBtn.nextSibling);
       }
-
 
       modal.remove();
     } catch (error) {
@@ -839,39 +699,4 @@ if (viewUserButton) {
   viewUserButton.onclick = openViewUserPopup;
 }
 
-(function initStatsViewFromQuery() {
-  const url = new URL(window.location.href);
-  const requested = (url.searchParams.get('name') || '').trim();
-  if (!requested) return;
-
-  setTimeout(() => {
-    const openBtn = document.querySelector('.viewUser');
-    if (!openBtn || typeof openBtn.onclick !== 'function') return;
-
-    openBtn.onclick();
-
-    const input = document.getElementById('viewUsernameInput');
-    if (!input) return;
-
-    input.value = requested;
-
-    const errorEl = document.getElementById('viewUserError');
-    if (errorEl) {
-      errorEl.textContent = '';
-      errorEl.style.display = 'none';
-    }
-
-    const viewProfileBtn = [...document.querySelectorAll('button')]
-      .find((b) => (b.textContent || '').trim() === 'View Profile');
-
-    viewProfileBtn?.click();
-  }, 0);
-})();
-
-if (typeof window.showLoader === "function") window.showLoader();
-
-loadUser()
-  .catch(() => {})
-  .finally(() => {
-    if (typeof window.hideLoader === "function") window.hideLoader();
-  });
+loadUser();
