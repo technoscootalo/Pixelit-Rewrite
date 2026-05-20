@@ -160,10 +160,11 @@ main h1 {
   margin-left: auto;
   margin-right: 0;
 
-  margin-top: -275px;
+  margin-top: -495px;
 
   padding-bottom: 20px;
 }
+
 .box {
   width: 250px;
   height: 250px;
@@ -348,58 +349,6 @@ main h1 {
   filter:
     drop-shadow(0 0 6px rgba(255, 215, 0, 0.45))
     drop-shadow(0 2px 2px rgba(0,0,0,0.45));
-}
-
-.weeklyBlookContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 35px;
-}
-
-.weeklyBlookCard {
-  width: 220px;
-  background: #6f057a;
-  box-shadow:
-    inset 0 -0.365vw #61056b,
-    3px 3px 15px rgba(0,0,0,0.6);
-
-  border-radius: 12px;
-
-  padding: 18px;
-
-  text-align: center;
-
-  cursor: pointer;
-
-  transition: transform 0.15s ease;
-}
-
-.weeklyBlookCard:hover {
-  transform: scale(1.04);
-}
-
-.weeklyBlookImage {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-
-  filter: drop-shadow(0 8px 10px rgba(0,0,0,0.5));
-}
-
-.weeklyBlookName {
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
-
-  margin-top: 10px;
-}
-
-.weeklyBlookCost {
-  color: gold;
-  font-size: 22px;
-  margin-top: 8px;
-  font-weight: bold;
 }
 
 @keyframes packOpening {
