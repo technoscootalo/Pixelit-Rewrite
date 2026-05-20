@@ -42,7 +42,7 @@ main {
   justify-content: end;
   width: 100%;
   max-width: 520px;
-  margin-left: auto;
+  margin-left: -130px;
   margin-right: 0;
   padding-right: 16px;
   padding-bottom: 20px;
@@ -51,18 +51,49 @@ main {
 .weeklyBlookCard {
   width: 180px;
   height: 210px;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px 12px;
   box-sizing: border-box;
-  background: rgba(94, 4, 110, 0.25);
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 -0.365vw rgba(83, 5, 92, 0.35), 0 10px 25px rgba(0,0,0,0.25);
+
+  transform: translateX(-10px);
+
+  /* cleaner rainbow gradient */
+  background: linear-gradient(
+    145deg,
+    #ff004c,
+    #ff7a00,
+    #ffe600,
+    #2bff00,
+    #00d4ff,
+    #7a00ff
+  );
+
+  position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow:
+    inset 0 -0.365vw rgba(0, 0, 0, 0.25),
+    inset 0 1px 10px rgba(255, 255, 255, 0.15),
+    0 12px 28px rgba(0, 0, 0, 0.35);
+
   text-align: center;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 6px;
+}
+
+/* subtle shine layer */
+.weeklyBlookCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.25), transparent 60%);
+  pointer-events: none;
 }
 
 .weeklyBlookImage {
@@ -70,46 +101,56 @@ main {
   height: 120px;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,0.55));
+  z-index: 1;
 }
 
 .weeklyBlookName {
   font-weight: 800;
   color: white;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
-  font-size: 16px;
-  line-height: 1.1;
+  font-size: 15px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  z-index: 1;
 }
 
 .weeklyBlookCost {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: white;
-  font-weight: 800;
-  font-size: 20px;
+  font-weight: 900;
+  font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  z-index: 1;
 }
 
 .weeklyBuyBtn {
-  background: #5e046e;
+  background: rgba(94, 4, 110, 0.9);
   color: white;
-  border: none;
-  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+
+  padding: 7px 14px;
   border-radius: 10px;
+
   cursor: pointer;
+
   font-family: 'Pixelify Sans', sans-serif;
   font-weight: 800;
-  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
-  transition: transform 0.15s ease, background 0.2s ease;
+
+  box-shadow:
+    inset 0 -3px rgba(0,0,0,0.25),
+    0 6px 14px rgba(0,0,0,0.35);
+
+  transition: transform 0.15s ease, filter 0.2s ease;
 }
 
 .weeklyBuyBtn:hover {
   transform: translateY(-2px);
-  background: #6f057a;
+  filter: brightness(1.1);
 }
 
 .weeklyBuyBtn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 
@@ -118,7 +159,6 @@ main {
   justify-content: space-between;
   gap: 16px;
   margin: 0 0 18px 240px;
-  width: 1000px;
   border-radius: 14px;
 }
 
