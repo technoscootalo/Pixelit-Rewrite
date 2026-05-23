@@ -1,14 +1,14 @@
 {
   "name": "pixelit-rewrite",
   "version": "1.0.0",
-  "description": "",
+  "description": "The very first BPS with pixels. Rewritten entirely in Node JS",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "IzumiiHD, Lemon, Iamgamedude, SOUNDGOD, Packman28, Dylanee300, Hjr, Buenar",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
