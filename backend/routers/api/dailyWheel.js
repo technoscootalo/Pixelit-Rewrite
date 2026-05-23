@@ -90,8 +90,8 @@ router.post("/", async (req, res) => {
                 },
                 body: JSON.stringify({
                     content:
-                        `${user.username} has claimed ` +
-                        `${reward.toLocaleString()} tokens on Pixelit v3`
+                        `**${user.username}** has claimed ` +
+                        `**${reward.toLocaleString()}** tokens in Pixelit v3`
                 }),
             });
         } catch (webhookError) {
