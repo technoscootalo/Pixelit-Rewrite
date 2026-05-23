@@ -55,22 +55,15 @@ body {
   left: 220px;
   top: 0;
   bottom: 0;
-
   width: calc(100vw - 220px);
   height: 100vh;
-
   background: transparent;
   border-radius: 0;
-
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  /* ensure header/messages/input layout uses full height */
   min-height: 0;
-
   box-shadow: none;
-
   z-index: 1;
 }
 
@@ -81,8 +74,6 @@ body {
     width: calc(100vw - 220px - min(420px, 90vw));
   }
 }
-
-
 
 .chat-header {
   height: 65px;
@@ -101,25 +92,17 @@ body {
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-
   padding: 20px;
   background: rgba(0,0,0,0.12);
   display: flex;
   flex-direction: column;
   gap: 14px;
-
-  /* keep newest at bottom but never hide behind the sticky input */
   padding-bottom: 16px;
-
 }
-
-
-
 
 .chat-messages::-webkit-scrollbar {
   width: 8px;
 }
-
 
 .chat-messages::-webkit-scrollbar-thumb {
   background: #8f11a5;
@@ -292,7 +275,13 @@ body {
   .chat-messages::-webkit-scrollbar {
     display: none;
   }
-/* HJr's group messaging please dont edit, im also praying it works */
+
+  message-header {
+    display: flex;
+    gap: 4px;
+  }
+  
+/* HJr's group messaging please dont edit, im also praying it works */ /* didnt work LOL (izumiihd)*/
   .message.grouped {
     margin-top: -8px;
     padding-top: 4px;
