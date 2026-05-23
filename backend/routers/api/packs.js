@@ -1,7 +1,7 @@
 const express = require("express");
-const fetch = require("node-fetch");
-
 const router = express.Router();
+
+const fetch = require("node-fetch");
 
 const Pack = require("../../models/Pack");
 const User = require("../../models/User");
@@ -14,7 +14,7 @@ const {
 } = require("../../utils/weeklyMarket");
 
 const DISCORD_WEBHOOK =
-  "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
+  "https:discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
 
 router.get("/", async (req, res) => {
 
@@ -27,17 +27,14 @@ router.get("/", async (req, res) => {
       visible: true
     }).populate("blooks");
 
-    const filtered = packs.filter((pack) => {
+    const filtered = packs.filter((p) => {
 
-      if (
-        !pack ||
-        pack.rotation !== "weekly"
-      ) {
+      if (!p || p.rotation !== "weekly") {
         return true;
       }
 
       return isPackActiveThisWeek(
-        pack,
+        p,
         weekKey
       );
 
@@ -56,6 +53,7 @@ router.get("/", async (req, res) => {
   }
 
 });
+
 
 router.post(
   "/open/:packName",
@@ -100,6 +98,7 @@ router.post(
         });
       }
 
+       Weekly pack check
       if (pack.rotation === "weekly") {
 
         const { weekKey } =
@@ -124,15 +123,6 @@ router.post(
       ) {
         return res.status(400).json({
           error: "Pack has no blooks"
-        });
-      }
-
-      if (
-        typeof pack.cost !== "number" ||
-        pack.cost <= 0
-      ) {
-        return res.status(500).json({
-          error: "Invalid pack cost"
         });
       }
 
@@ -174,10 +164,7 @@ router.post(
 
       for (const blook of pack.blooks) {
 
-        const chance =
-          Number(blook.chance) || 0;
-
-        current += chance;
+        current += Number(blook.chance) || 0;
 
         if (roll <= current) {
 
@@ -199,12 +186,6 @@ router.post(
         wonBlook.name ||
         wonBlook.title ||
         wonBlook.blookName;
-
-      if (!blookName) {
-        return res.status(500).json({
-          error: "Blook missing name"
-        });
-      }
 
       await User.updateOne(
 
@@ -238,19 +219,17 @@ router.post(
           body: JSON.stringify({
 
             content:
-              `**${updatedUser.username}** ` +
-              `has opened **${pack.name}** ` +
-              `and pulled a **${blookName}**`
+              `${updatedUser.username} has opened ${pack.name} and got a ${blookName}`
 
           })
 
         });
 
-      } catch (webhookError) {
+      } catch (err) {
 
         console.error(
-          "Discord webhook failed:",
-          webhookError
+          "Webhook error:",
+          err
         );
 
       }
@@ -258,9 +237,13 @@ router.post(
       return res.json({
 
         success: true,
+
         blook: wonBlook,
+
         tokens: updatedUser.tokens,
+
         packs: updatedUser.packs,
+
         blooks: updatedUser.blooks
 
       });
