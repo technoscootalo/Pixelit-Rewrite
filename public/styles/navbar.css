@@ -155,6 +155,7 @@ body.panel-allowed #panelLink {
   top: 0px;
   right: 0px;
   min-width: 205px;
+  max-width: 265px;
   height: 60px;
   border-radius: 0px;
   border-bottom-left-radius: 10px;
@@ -249,7 +250,7 @@ body.panel-allowed #panelLink {
 .inboxButton {
   position: fixed;
   top: 0px;
-  right: 220px; 
+  right: 300px; 
   width: 55px;
   height: 55px;
   display: flex;
