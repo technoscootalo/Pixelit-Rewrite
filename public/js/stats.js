@@ -229,48 +229,83 @@ async function loadUser() {
 }
 
 async function claimDailyWheel() {
-  const button = document.getElementById("spinButton");
-  const messageEl = document.getElementById("dailyWheelMessage");
-
-  if (!button || !messageEl) return;
-
-  button.disabled = true;
-  messageEl.innerText = "Claiming...";
-
-  try {
-    const res = await fetch("/api/user/daily-wheel", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" }
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      button.disabled = false;
-      if (data && data.nextClaim) {
-        const remaining = new Date(data.nextClaim) - new Date();
-        messageEl.innerText = `Next wheel in ${formatRemaining(remaining)}`;
-        button.style.display = "none";
-      } else {
-        messageEl.innerText = data.error || "Unable to claim reward.";
-      }
-      return;
-    }
-
-    user.tokens = data.tokens;
-    user.lastClaim = new Date().toISOString();
-
+    const button = document.getElementById("spinButton");
+    const messageEl = document.getElementById("dailyWheelMessage");
     const tokensEl = document.getElementById("tokens");
-    if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
 
-    showClaimModal(data.reward);
-    messageEl.innerText = `You won ${data.reward.toLocaleString()} tokens! Next claim in 4h.`;
-    updateDailyWheelState();
-  } catch (err) {
-    console.error("Claim failed:", err);
-    button.disabled = false;
-    messageEl.innerText = "Claim failed. Try again later.";
-  }
+    if (!button || !messageEl) return;
+
+    button.disabled = true;
+
+    messageEl.innerText = "Claiming your reward...";
+
+    try {
+
+        const response = await fetch("/api/user/daily-wheel", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            button.disabled = false;
+
+            if (data.nextClaim) {
+
+                const remaining =
+                    new Date(data.nextClaim) - new Date();
+
+                messageEl.innerText =
+                    `Next wheel in ${formatRemaining(remaining)}`;
+
+                button.style.display = "none";
+
+            } else {
+
+                messageEl.innerText =
+                    data.error || "Unable to claim reward.";
+
+            }
+
+            return;
+        }
+
+        user.tokens = data.tokens;
+        user.lastClaim = new Date().toISOString();
+
+        if (tokensEl) {
+            tokensEl.innerText =
+                user.tokens.toLocaleString();
+        }
+
+        if (typeof showClaimModal === "function") {
+            showClaimModal(data.reward);
+        }
+
+        messageEl.innerText =
+            `You won ${data.reward.toLocaleString()} tokens!`;
+
+        if (typeof updateDailyWheelState === "function") {
+            updateDailyWheelState();
+        }
+
+    } catch (err) {
+
+        console.error(
+            "Daily wheel claim failed:",
+            err
+        );
+
+        button.disabled = false;
+
+        messageEl.innerText =
+            "Claim failed. Please try again later.";
+    }
 }
 
 const spinButton = document.getElementById("spinButton");
