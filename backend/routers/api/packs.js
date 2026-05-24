@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const fetch = require("node-fetch");
-
 const Pack = require("../../models/Pack");
 const User = require("../../models/User");
 
