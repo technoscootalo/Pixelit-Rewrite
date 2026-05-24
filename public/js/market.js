@@ -406,7 +406,7 @@ function createWeeklyBlookCard(blook) {
   return card;
 }
 
-async function fetchWeeklyBlooks() {
+/*async function fetchWeeklyBlooks() {
   try {
     const res = await fetch("/api/weekly/blooks", { method: "GET" });
     const text = await res.text();
@@ -431,9 +431,9 @@ async function fetchWeeklyBlooks() {
   } catch (err) {
     console.error(err);
   }
-}
+}*/
 
-async function buyWeeklyBlook(blookId) {
+/*async function buyWeeklyBlook(blookId) {
   if (!blookId) return;
   if (typeof window.showLoader === "function") window.showLoader();
 
@@ -474,7 +474,7 @@ async function buyWeeklyBlook(blookId) {
   } finally {
     if (typeof window.hideLoader === "function") window.hideLoader();
   }
-}
+}*/
 
 function createPack(pack) {
   const div = document.createElement("div");
