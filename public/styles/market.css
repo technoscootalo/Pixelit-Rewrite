@@ -69,6 +69,14 @@ main {
   gap: 6px;
 }
 
+.weeklyBlookCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.25), transparent 60%);
+  pointer-events: none;
+}
+
 .weeklyBlookImage {
   width: 120px;
   height: 120px;
