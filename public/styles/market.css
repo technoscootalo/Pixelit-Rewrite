@@ -56,27 +56,10 @@ main {
 
   transform: translateX(-10px);
 
-  /* cleaner rainbow gradient */
-  background: linear-gradient(
-    145deg,
-    #ff004c,
-    #ff7a00,
-    #ffe600,
-    #2bff00,
-    #00d4ff,
-    #7a00ff
-  );
-
   position: relative;
   overflow: hidden;
 
   border: 1px solid rgba(255, 255, 255, 0.25);
-
-  box-shadow:
-    inset 0 -0.365vw rgba(0, 0, 0, 0.25),
-    inset 0 1px 10px rgba(255, 255, 255, 0.15),
-    0 12px 28px rgba(0, 0, 0, 0.35);
-
   text-align: center;
 
   display: flex;
@@ -84,15 +67,6 @@ main {
   align-items: center;
   justify-content: flex-start;
   gap: 6px;
-}
-
-/* subtle shine layer */
-.weeklyBlookCard::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top, rgba(255,255,255,0.25), transparent 60%);
-  pointer-events: none;
 }
 
 .weeklyBlookImage {
