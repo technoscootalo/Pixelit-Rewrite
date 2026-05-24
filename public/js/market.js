@@ -394,7 +394,7 @@ function createWeeklyBlookCard(blook) {
       />
       <span>${blook.cost ?? 0}</span>
     </div>
-    <button class="weeklyBuyBtn" type="button">Buy</button>
+    /*<button class="weeklyBuyBtn" type="button">Buy</button>*/
   `;
 
   const btn = card.querySelector(".weeklyBuyBtn");
