@@ -26,26 +26,6 @@ const packSchema = new mongoose.Schema({
         default: true
     },
 
-    rotation: {
-        type: String,
-        default: "none"
-    },
-
-    weeklyGroup: {
-        type: String,
-        default: "market"
-    },
-
-    weeklySlot: {
-        type: Number,
-        default: null
-    },
-
-    weeklySlotsCount: {
-        type: Number,
-        default: null
-    },
-
     blooks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Blook"
