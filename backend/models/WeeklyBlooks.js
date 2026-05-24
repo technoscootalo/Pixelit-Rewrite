@@ -23,7 +23,7 @@ const WeeklyBlooksSchema = new mongoose.Schema({
       cost: {
         type: Number,
         required: true,
-        default: 500
+        default: 5000
       }
     }
   ]
