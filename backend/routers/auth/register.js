@@ -1,8 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto"); 
 const { v4: uuidv4 } = require("uuid");
-const { Address6 } = require("ip-address"); // Library to normalize IPv6 formatting
 
 const User = require("../../models/User");
 const AccessKey = require("../../models/AccessKey");
@@ -12,31 +10,9 @@ const router = express.Router();
 const DISCORD_WEBHOOK =
     "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
 
-const IP_PEPPER = process.env.IP_HASH_SECRET || "PixelitGameSecureIpPepper2026!";
-
-function hashIP(rawIp) {
-    if (!rawIp) return null;
-    let normalizedIp = rawIp.trim();
-
-    try {
-        if (normalizedIp.includes(":") || Address6.isValid(normalizedIp)) {
-            const address = new Address6(normalizedIp);
-            normalizedIp = address.correctForm(); 
-        } else {
-            normalizedIp = normalizedIp.toLowerCase(); 
-        }
-    } catch (error) {
-        normalizedIp = normalizedIp.toLowerCase();
-    }
-
-    return crypto
-        .createHash("sha256")
-        .update(normalizedIp + IP_PEPPER)
-        .digest("hex");
-}
-
 router.post("/", async (req, res) => {
     try {
+
         let {
             username,
             password,
@@ -86,10 +62,6 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const clientIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || req.ip;
-        
-        const secureIpHash = hashIP(clientIp);
-
         const hashedPassword =
             await bcrypt.hash(password, 10);
 
@@ -97,14 +69,14 @@ router.post("/", async (req, res) => {
             username,
             password: hashedPassword,
             accessKey,
-            id: uuidv4(),
-            ipHash: secureIpHash
+            id: uuidv4()
         });
 
         keyDoc.used = true;
         await keyDoc.save();
 
         try {
+
             await fetch(DISCORD_WEBHOOK, {
                 method: "POST",
                 headers: {
@@ -112,14 +84,17 @@ router.post("/", async (req, res) => {
                 },
                 body: JSON.stringify({
                     content:
-                        `**${username}** has just created a Pixelit V3 account`
+                        `**${username}** has created a Pixelit account`
                 })
             });
+
         } catch (webhookError) {
+
             console.error(
                 "Discord webhook failed:",
                 webhookError
             );
+
         }
 
         return res.status(201).json({
@@ -131,10 +106,13 @@ router.post("/", async (req, res) => {
         });
 
     } catch (err) {
+
         console.error("Register error:", err);
+
         return res.status(500).json({
             error: "Server error"
         });
+
     }
 });
 
