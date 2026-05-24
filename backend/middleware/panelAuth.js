@@ -1,6 +1,6 @@
 const User = require("../models/User");
 
-const PANEL_ROLES = ["Owner", "Developer", "Community Manager"];
+const PANEL_ROLES = ["Owner", "Developer", "Community Manager", "Admin"];
 const DEVELOPER_ROLES = ["Owner", "Developer"];
 
 function requireLogin(req, res, next) {
