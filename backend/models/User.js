@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
     required: true
   },
 
+  ipHash: {
+    type: String,
+    required: true,
+    index: true
+  },
+
   pfp: {
     type: String,
     default:
@@ -30,8 +36,8 @@ const userSchema = new mongoose.Schema({
   sent: { type: Number, default: 0 },
 
   blooks: {
-  type: Object,
-  default: {}
+    type: Object,
+    default: {}
   },
 
   muted: { type: Boolean, default: false },
@@ -42,7 +48,7 @@ const userSchema = new mongoose.Schema({
 
   badges: {
     type: [String],
-   default: []
+    default: []
   },
 
   banDuration: { type: Number, default: 0 },
