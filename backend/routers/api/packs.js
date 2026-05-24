@@ -98,7 +98,6 @@ router.post(
         });
       }
 
-       Weekly pack check
       if (pack.rotation === "weekly") {
 
         const { weekKey } =
