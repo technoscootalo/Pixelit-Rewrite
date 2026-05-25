@@ -18,7 +18,11 @@ router.delete("/:id", async (req, res) => {
       return res.status(400).json({ error: "Invalid id" });
     }
 
-    const del = await Message.findOneAndDelete({ _id: id, userId: recipient.id });
+    const del = await Message.findOneAndDelete({
+      _id: id,
+      userId: recipient.id,
+      content: { $regex: "gifted you" },
+    });
     if (!del) return res.status(404).json({ error: "Notification not found" });
 
     return res.json({ success: true });

@@ -305,26 +305,24 @@ inboxButton && inboxButton.addEventListener("click", async () => {
   `;
 
   const title = document.createElement("div");
-  title.textContent = "Inbox";
+  title.innerHTML = '<i class="fa-solid fa-inbox"></i> Inbox'
   title.style.cssText = `
     position: absolute;
     top: 14px;
     left: 16px;
-    font-size: 32px;
+    font-size: 42px !important;
     font-weight: bold;
-    opacity: 0.8;
   `;
 
   const empty = document.createElement("div");
-  empty.textContent = "No messages";
+  empty.textContent = "No messages.";
   empty.style.cssText = `
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 18px;
-    opacity: 0.9;
+    font-size: 24px;
     text-align: center;
   `;
 

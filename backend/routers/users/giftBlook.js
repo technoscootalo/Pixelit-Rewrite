@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
     await sender.save();
     await recipient.save();
 
-    const content = `**${sender.username}** gifted you ${qty} **${blook.blookName}'s**!`;
+    const content = `${sender.username} gifted you ${qty} ${blook.blookName} x${qty}!`;
 
     const notification = await Message.create({
       userId: recipient.id,

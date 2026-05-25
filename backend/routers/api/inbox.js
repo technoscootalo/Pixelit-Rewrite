@@ -16,7 +16,10 @@ router.get("/", async (req, res) => {
       return res.status(401).json({ error: "Not logged in" });
     }
 
-    const messages = await Message.find({ userId: recipient.id })
+    const messages = await Message.find({
+      userId: recipient.id,
+      content: { $regex: "gifted you" },
+    })
       .sort({ createdAt: -1 })
       .limit(20)
       .lean();
