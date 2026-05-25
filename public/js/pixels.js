@@ -98,6 +98,11 @@ function generatePacksHTML(packsData) {
     const packTitle = document.createElement("h2");
     packTitle.className = "pack-title";
     packTitle.textContent = pack.name;
+
+    if (pack.name === "Miscellaneous") {
+      packTitle.style.color = "#ffe66d";
+    }
+
     packDiv.appendChild(packTitle);
 
     const itemsDiv = document.createElement("div");
