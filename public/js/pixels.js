@@ -1,4 +1,4 @@
-let allPacks = [];
+let allpacks = [];
 let selectedBlook = null;
 let allBlooksFlat = [];
 
@@ -354,7 +354,7 @@ function sellBlook() {
         return;
       }
 
-      ownedEl.textContent = `${owned - quantity} Owned`;
+      await loadBlooks();
       close();
 
     } catch (err) {

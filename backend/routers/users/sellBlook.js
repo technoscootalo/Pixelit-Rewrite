@@ -9,24 +9,29 @@ router.post("/", async (req, res) => {
     const { userId, blookName, quantity } = req.body;
 
     const user = await User.findOne({ id: userId });
+
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const blook = await Blook.findOne({ blookName });
 
+    if (!blook) return res.status(404).json({ error: "Blook not found" });
+
+    const canonicalKey = blook.blookName;
+
     console.log('[sell-blook] before:', {
       userId: user.id,
-      blookName,
+      inputBlookName: blookName,
+      canonicalKey,
       qty: Number(quantity),
-      ownedRaw: user.blooks?.[blookName]
+      ownedRaw: user.blooks?.[canonicalKey]
     });
-    if (!blook) return res.status(404).json({ error: "Blook not found" });
 
     const qty = Number.isFinite(Number(quantity)) ? Math.floor(Number(quantity)) : 0;
     if (qty <= 0) {
       return res.status(400).json({ error: "Invalid quantity" });
     }
 
-    const ownedObj = user.blooks?.[blookName];
+    const ownedObj = user.blooks?.[canonicalKey];
     const owned = typeof ownedObj === 'number'
       ? ownedObj
       : Number(ownedObj?.amount ?? 0);
@@ -41,21 +46,27 @@ router.post("/", async (req, res) => {
 
     if (typeof ownedObj === 'number') {
       const next = owned - qty;
-      if (next <= 0) delete user.blooks[blookName];
-      else user.blooks[blookName] = next;
+
+      user.blooks.set ? user.blooks.set(canonicalKey, next) : (user.blooks[canonicalKey] = next);
+
+      if (next <= 0) delete user.blooks[canonicalKey];
     } else {
-      if (!user.blooks[blookName]) {
+      if (!user.blooks[canonicalKey]) {
         return res.status(400).json({ error: "Blook not owned" });
       }
-      const next = Number(user.blooks[blookName].amount) - qty;
-      if (!Number.isFinite(next) || next <= 0) delete user.blooks[blookName];
-      else user.blooks[blookName].amount = next;
+
+      const next = Number(user.blooks[canonicalKey].amount) - qty;
+      if (!Number.isFinite(next) || next <= 0) delete user.blooks[canonicalKey];
+      else user.blooks[canonicalKey].amount = next;
     }
+
+    user.markModified("blooks");
 
     console.log('[sell-blook] after:', {
       userId: user.id,
-      blookName,
-      ownedAfter: user.blooks?.[blookName]
+      inputBlookName: blookName,
+      canonicalKey,
+      ownedAfter: user.blooks?.[canonicalKey]
     });
 
     await user.save();
@@ -63,8 +74,9 @@ router.post("/", async (req, res) => {
     const verify = await User.findOne({ id: user.id }).lean();
     console.log('[sell-blook] verify:', {
       userId: user.id,
-      blookName,
-      ownedPersisted: verify?.blooks?.[blookName]
+      inputBlookName: blookName,
+      canonicalKey,
+      ownedPersisted: verify?.blooks?.[canonicalKey]
     });
 
     res.json({
