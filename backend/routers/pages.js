@@ -93,6 +93,10 @@ router.get("/newseditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/newseditor.html"));
 });
 
+router.get("/notifications", requireDeveloperAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/notifications.html"));
+});
+
 router.get("/reports", requirePanelAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/reports.html"));
 });
