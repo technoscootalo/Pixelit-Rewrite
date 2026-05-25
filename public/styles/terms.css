@@ -21,13 +21,6 @@ body {
 	opacity: 0.1;
 }
 
-main {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .terms {
   position: fixed;
   bottom: 2rem;
@@ -36,35 +29,10 @@ main {
   font-weight: bold;
 }
 
-.tosPage {
-  width: 100%;
-  min-height: 100vh;
-
-  display: flex;
-  justify-content: center;
-
-  padding: 40px 20px;
-
-  background:
-    radial-gradient(circle at top,
-      #7d0f93 0%,
-      #5e046e 35%,
-      #3d0248 100%);
-}
-
 .tosContainer {
   width: 100%;
   max-width: 1000px;
-
-  background: rgba(94, 4, 110, 0.96);
-
-  border-radius: 16px;
-
   padding: 40px;
-
-  box-shadow:
-    inset 0 -0.365vw #53055c,
-    0 0 0 2px rgba(255,255,255,0.05),
     3px 3px 15px rgba(0,0,0,0.6);
 }
 
