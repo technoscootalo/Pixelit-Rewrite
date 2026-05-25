@@ -41,3 +41,205 @@ main {
   justify-content: center;
   align-items: flex-start;
 }
+
+.testInboxSection {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 35px auto;
+  padding: 22px;
+
+  border-radius: 8px;
+
+  background: #5e046e;
+
+  box-shadow:
+    inset 0 -0.365vw #53055c,
+    3px 3px 15px rgba(0, 0, 0, 0.6);
+
+  font-family: 'Pixelify Sans', sans-serif;
+  color: white;
+}
+
+.testInboxTitle {
+  margin: 0 0 18px;
+
+  font-size: 34px;
+  font-weight: bold;
+
+  border-bottom: 4px solid white;
+  border-radius: 3px;
+
+  padding-bottom: 8px;
+
+  text-shadow: #000 1px 0 13px;
+}
+
+.testInboxForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.testInboxRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.testInboxField {
+  flex: 1;
+  min-width: 260px;
+}
+
+.testInboxLabel {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  text-shadow: #000 1px 0 13px;
+}
+
+.testInboxInput {
+  width: 100%;
+  height: 56px;
+
+  padding: 0 16px;
+
+  border-radius: 10px;
+  border: 3px solid white;
+
+  background: #4f0462;
+  color: white;
+
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+
+  outline: none;
+
+  box-shadow:
+    inset 0 -4px rgba(0, 0, 0, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.12s ease,
+    filter 0.15s ease;
+}
+
+.testInboxInput:focus {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.testInboxInput::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.testInboxCheckbox {
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 16px;
+
+  border-radius: 10px;
+
+  background: #4f0462;
+
+  box-shadow:
+    inset 0 -4px rgba(0, 0, 0, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.testInboxCheckbox input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.testInboxCheckbox span {
+  font-size: 16px;
+  font-weight: bold;
+
+  text-shadow: #000 1px 0 13px;
+}
+
+.testInboxButton {
+  width: 150px;
+  height: 56px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #5e046e;
+  color: white;
+
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 -0.265vw #53055c,
+    3px 3px 15px rgba(0, 0, 0, 0.6);
+  text-shadow: #000 1px 0 13px;
+  transition:
+    transform 0.1s ease,
+    filter 0.15s ease;
+}
+
+.testInboxButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.testInboxButton:active {
+  transform: translateY(2px);
+}
+
+.testInboxStatus {
+  margin-top: 8px;
+  min-height: 24px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: #000 1px 0 13px;
+}
+
+
+
+@media (max-width: 700px) {
+  .testInboxSection {
+    width: calc(100% - 20px);
+    padding: 16px;
+  }
+
+  .testInboxRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .testInboxButton {
+    width: 100%;
+  }
+
+  .testInboxCheckbox {
+    justify-content: center;
+  }
+
+  .testInboxTitle {
+    font-size: 28px;
+  }
+
+  .testInboxInput {
+    font-size: 18px;
+  }
+}

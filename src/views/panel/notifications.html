@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Developer</title>
+  <title>Notifications</title>
 
   <link rel="stylesheet" href="/styles/panel/notifications.css">
   <link rel="stylesheet" href="/styles/navbar.css">
@@ -83,6 +83,58 @@
 </aside>
 
 <main>
+  <section class="testInboxSection">
+    <h2 class="testInboxTitle"> <i class="fa-solid fa-inbox"></i>  Send Notification</h2>
+
+    <div class="testInboxForm">
+      <div class="testInboxRow">
+        <div class="testInboxField">
+          <label class="testInboxLabel">
+            Recipient Username
+          </label>
+
+          <input
+            id="testInboxRecipient"
+            class="testInboxInput"
+            type="text"
+            placeholder="Username"
+          />
+        </div>
+
+        <label class="testInboxCheckbox">
+          <input id="testInboxAll" type="checkbox" />
+          <span>Send to ALL users</span>
+        </label>
+      </div>
+
+      <div class="testInboxRow">
+        <div class="testInboxField">
+          <label class="testInboxLabel">
+            Message
+          </label>
+
+          <input
+            id="testInboxMessage"
+            class="testInboxInput"
+            type="text"
+            placeholder="Type a message..."
+          />
+        </div>
+
+        <button id="testInboxSend" class="testInboxButton">
+          Send
+        </button>
+      </div>
+    </div>
+
+    <br>
+
+    <div
+      id="testInboxStatus"
+      class="testInboxStatus"
+      aria-live="polite"
+    ></div>
+  </section>
 </main>
 
 <div class="mobile_nav">
@@ -131,6 +183,7 @@
 <script src="/js/auth/checkSession.js"></script>
 <script src="/js/auth/panelAuth.js"></script>
 <script src="/js/auth/developerAuth.js"></script>
+<script src="/js/panel/notifications.js"></script>
 
 </body>
 </html>
