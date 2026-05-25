@@ -19,6 +19,8 @@ const packsRouter = require("./backend/routers/api/packs");
 const weeklyMarketRoute = require("./backend/routers/api/weeklyMarket");
 const changePfpRoute = require("./backend/routers/api/changePfp");
 const messagesRoute = require("./backend/routers/api/messages");
+const inboxRoute = require("./backend/routers/api/inbox");
+const inboxDeleteRoute = require("./backend/routers/api/inboxDelete");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
@@ -71,6 +73,8 @@ app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
 app.use("/api/logout", logoutRoute);
 app.use("/api/messages", messagesRoute);
+app.use("/api/inbox", inboxRoute);
+app.use("/api/inbox", inboxDeleteRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
@@ -103,6 +107,8 @@ const io = new SocketIOServer(httpServer, {
         credentials: true,
     },
 });
+
+app.locals.io = io;
 
 io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);

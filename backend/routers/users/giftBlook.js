@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require("../../models/User");
 const Blook = require("../../models/Blook");
+const Message = require("../../models/Messages");
 
 router.post("/", async (req, res) => {
   try {
@@ -95,6 +96,33 @@ router.post("/", async (req, res) => {
 
     await sender.save();
     await recipient.save();
+
+    const content = `**${sender.username}** gifted you ${qty} **${blook.blookName}'s**!`;
+
+    const notification = await Message.create({
+      userId: recipient.id,
+      username: sender.username,
+      pfp: sender.pfp,
+      badges: sender.badges || [],
+      content,
+    });
+
+    try {
+      const ioInstance = req.app?.locals?.io;
+      if (ioInstance) {
+        ioInstance.to(`user:${recipient.username}`).emit("inbox:new", {
+          userId: notification.userId,
+          username: notification.username,
+          pfp: notification.pfp,
+          badges: notification.badges || [],
+          content: notification.content,
+          createdAt: notification.createdAt,
+          _id: notification._id,
+        });
+      }
+    } catch (e) {
+      console.error("Failed to emit inbox:new:", e);
+    }
 
     return res.json({
       success: true,

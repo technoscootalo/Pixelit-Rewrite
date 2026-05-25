@@ -91,7 +91,187 @@ function showClaimModal(reward) {
 
 const inboxButton = document.querySelector(".inboxButton");
 
-inboxButton.addEventListener("click", () => {
+let inboxModal = null;
+let inboxListEl = null;
+let socket = null;
+
+function renderInboxMessage(msg) {
+  const row = document.createElement("div");
+  row.style.cssText = `
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:12px 10px;
+    border-radius:10px;
+    background: rgba(0,0,0,0.18);
+    margin:10px 0;
+    box-shadow: inset 0 -2px rgba(0,0,0,0.15);
+  `;
+
+  const img = document.createElement("img");
+  img.src = msg.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+  img.alt = `${msg.username || "User"} avatar`;
+  img.style.cssText = `width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 2px 10px rgba(0,0,0,0.35);`;
+
+  const content = document.createElement("div");
+  content.style.cssText = `flex:1; text-align:left;`;
+
+  const top = document.createElement("div");
+  top.style.cssText = `font-size:16px;font-weight:800;opacity:0.95;`;
+  top.textContent = msg.username ? msg.username : "Someone";
+
+  const text = document.createElement("div");
+  text.style.cssText = `margin-top:4px;font-size:14px;opacity:0.9;line-height:1.3;`;
+  text.textContent = msg.content || "";
+
+  const time = document.createElement("small");
+  time.style.cssText = `display:block;margin-top:6px;opacity:0.65;`;
+  time.textContent = msg.createdAt ? new Date(msg.createdAt).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
+
+  content.appendChild(top);
+  content.appendChild(text);
+  content.appendChild(time);
+
+  row.appendChild(img);
+  row.appendChild(content);
+  return row;
+}
+
+async function fetchInbox() {
+  const res = await fetch("/api/inbox", { credentials: "include" });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.messages || [];
+}
+
+function ensureInboxUI() {
+  if (!inboxButton) return;
+  if (inboxModal) return;
+}
+
+async function loadInboxIntoModal() {
+  if (!inboxModal || !inboxListEl) return;
+
+
+
+  inboxListEl.innerHTML = "";
+
+  const messages = await fetchInbox();
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    const empty = document.createElement("div");
+    empty.textContent = "No messages";
+    empty.style.cssText = `display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:18px;opacity:0.9;text-align:center;`;
+    inboxListEl.appendChild(empty);
+    return;
+  }
+
+  messages.forEach((m) => {
+    const row = renderInboxMessage(m);
+
+    const del = document.createElement("button");
+    del.textContent = "✕";
+    del.style.cssText = `
+      background: transparent;
+      border: none;
+      color: white;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-size: 26px;
+      font-weight: 900;
+    `;
+    del.title = "Delete notification";
+    del.onclick = async () => {
+      try {
+        const id = m._id || m.id;
+        if (id) {
+          await fetch(`/api/inbox/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+        }
+      } catch (e) {
+        console.error("failed to delete inbox item:", e);
+      }
+      row.remove();
+    };
+
+    row.appendChild(del);
+    inboxListEl.appendChild(row);
+  });
+}
+
+function showGiftToast(msg) {
+  const toast = document.createElement("div");
+  toast.style.cssText = `
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 100000;
+    background: rgba(111, 5, 122, 0.98);
+    border-radius: 12px;
+    box-shadow: inset 0 -0.365vw #61056b, 0 10px 30px rgba(0,0,0,0.45);
+    padding: 14px 16px;
+    width: 360px;
+    color: white;
+    font-family: Pixelify Sans, sans-serif;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  `;
+
+  const title = document.createElement("div");
+  title.style.cssText = `font-weight:900; font-size:16px; opacity:0.95;`;
+  title.textContent = msg.username ? `${msg.username}` : "Gift";
+
+  const body = document.createElement("div");
+  body.style.cssText = `margin-top:6px; font-size:14px; opacity:0.9; line-height:1.3;`;
+  body.textContent = msg.content || "";
+
+  toast.appendChild(title);
+  toast.appendChild(body);
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0px)";
+  });
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    setTimeout(() => toast.remove(), 220);
+  }, 3200);
+}
+
+inboxButton && inboxButton.addEventListener("click", async () => {
+  if (!socket && typeof io === "function") {
+    try {
+      socket = io();
+      socket.on("connect", () => {
+        if (user && user.username) socket.emit("joinUserRoom", { username: user.username });
+      });
+
+      socket.on("inbox:new", (msg) => {
+        if (!msg) return;
+        showGiftToast(msg);
+        if (inboxModal && inboxListEl) {
+          loadInboxIntoModal();
+        }
+      });
+    } catch (e) {
+      console.error("inbox socket init failed:", e);
+    }
+  }
+
+  if (inboxModal) {
+    inboxModal.remove();
+    inboxModal = null;
+    inboxListEl = null;
+    return;
+  }
+
   const modal = document.createElement("div");
 
   modal.style.cssText = `
@@ -156,8 +336,32 @@ inboxButton.addEventListener("click", () => {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) {
       modal.remove();
+      inboxModal = null;
+      inboxListEl = null;
     }
   });
+
+  inboxModal = modal;
+
+  const boxStyle = box.style;
+  box.innerHTML = "";
+  box.appendChild(title);
+
+  const list = document.createElement("div");
+  list.style.cssText = `
+    position: absolute;
+    inset: 70px 14px 14px 14px;
+    overflow: auto;
+    padding-right: 6px;
+  `;
+  inboxListEl = list;
+  box.appendChild(list);
+
+  await loadInboxIntoModal();
+
+  document.body.appendChild(modal);
+  inboxModal = null;
+  inboxListEl = null;
 });
 
 async function loadUser() {
