@@ -27,19 +27,49 @@ router.get("/", async (req, res) => {
 
     console.log("USER BLOOKS:", user.blooks);
 
+    const WeeklyBlooks = require("../../models/WeeklyBlooks");
+
+    const weekKey = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
+    let weekly = await WeeklyBlooks
+      .findOne({ weekKey })
+      .populate("blooks.blookId");
+
+    let mergedMisc = false;
+
+    if (weekly?.blooks?.length) {
+      let miscPack = packs.find((p) => p?.name === "Miscellaneous");
+
+      if (!miscPack) {
+        miscPack = {
+          name: "Miscellaneous",
+          blooks: []
+        };
+        packs.push(miscPack);
+      }
+
+      const existingIds = new Set((miscPack.blooks || []).map((b) => String(b._id)));
+
+      for (const entry of weekly.blooks) {
+        const b = entry?.blookId;
+        if (!b) continue;
+        const idStr = String(b._id);
+        if (!existingIds.has(idStr)) {
+          miscPack.blooks.push(b);
+          existingIds.add(idStr);
+        }
+      }
+
+      mergedMisc = true;
+    }
+
+
     const formattedPacks = packs.map((pack) => ({
       name: pack.name,
-
-      blooks: pack.blooks.map((blook) => {
+      blooks: (pack.blooks || []).map((blook) => {
         const ownedAmount = user.blooks?.[blook.blookName] || 0;
 
-        console.log({
-          blookName: blook.blookName,
-          owned: ownedAmount
-        });
-
         return {
-          name: blook.blookName, 
+          name: blook.blookName,
           rarity: blook.rarity,
           imageUrl: blook.imageUrl,
           backgroundUrl: blook.backgroundUrl,
@@ -47,6 +77,7 @@ router.get("/", async (req, res) => {
         };
       })
     }));
+
 
     res.json({
       packs: formattedPacks

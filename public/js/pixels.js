@@ -51,6 +51,7 @@ async function loadBlooks() {
     allPacks = data.packs || [];
     generatePacksHTML(allPacks);
 
+
   } catch (err) {
     console.error("loadBlooks error:", err);
   }
@@ -81,9 +82,18 @@ function generatePacksHTML(packsData) {
     (a?.name || "").toLowerCase().localeCompare((b?.name || "").toLowerCase())
   );
 
-  sortedPacks.forEach((pack) => {
+  const sortedPacksWithMiscLast = sortedPacks.slice().sort((a, b) => {
+    const aMisc = a?.name === "Miscellaneous";
+    const bMisc = b?.name === "Miscellaneous";
+    if (aMisc && !bMisc) return 1;
+    if (!aMisc && bMisc) return -1;
+    return 0;
+  });
+
+  sortedPacksWithMiscLast.forEach((pack) => {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
+
 
     const packTitle = document.createElement("h2");
     packTitle.className = "pack-title";
@@ -313,7 +323,6 @@ function sellBlook() {
     if (typeof window.showLoader === "function") window.showLoader();
 
     try {
-      // Always use the session user; do not rely on client-side userId.
       const logged = await fetch("/api/loggedin", { credentials: "include" });
       const loggedData = await logged.json();
       if (!logged.ok || !loggedData.loggedIn || !loggedData.user?.id) {

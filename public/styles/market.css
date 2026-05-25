@@ -49,17 +49,22 @@ main {
 
 .weeklyBlookCard {
   width: 180px;
-  height: 210px;
-  border-radius: 14px;
+  height: 220px;
   padding: 14px 12px;
   box-sizing: border-box;
 
   transform: translateX(-10px);
+  background-color: #5e046e;
+  color: white;
+
+  border-radius: 8px;
+  padding: 6px 10px;
+
+  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
 
   position: relative;
   overflow: hidden;
 
-  border: 1px solid rgba(255, 255, 255, 0.25);
   text-align: center;
 
   display: flex;
@@ -73,7 +78,6 @@ main {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top, rgba(255,255,255,0.25), transparent 60%);
   pointer-events: none;
 }
 
@@ -108,30 +112,18 @@ main {
 .weeklyBuyBtn {
   background: rgba(94, 4, 110, 0.9);
   color: white;
-  border: 1px solid rgba(255,255,255,0.2);
-
   padding: 7px 14px;
-  border-radius: 10px;
-
+  border-radius: 5px;
   cursor: pointer;
-
   font-family: 'Pixelify Sans', sans-serif;
   font-weight: 800;
+  border: none;
 
   box-shadow:
-    inset 0 -3px rgba(0,0,0,0.25),
-    0 6px 14px rgba(0,0,0,0.35);
-
-  transition: transform 0.15s ease, filter 0.2s ease;
-}
-
-.weeklyBuyBtn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-
-.weeklyBuyBtn:active {
-  transform: scale(0.96);
+    inset 0 -0.165vw #53055c,
+    inset 0 2px rgba(255,255,255,0.12),
+    3px 3px 15px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, background 0.2s ease;
 }
 
 

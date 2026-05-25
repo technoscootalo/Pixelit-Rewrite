@@ -9,12 +9,6 @@ const userSchema = new mongoose.Schema({
     required: true
   },
 
-  ipHash: {
-    type: String,
-    required: true,
-    index: true
-  },
-
   pfp: {
     type: String,
     default:
