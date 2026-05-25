@@ -347,7 +347,7 @@ function openViewUserPopup() {
   });
 
   const title = createElement('h2');
-  title.textContent = 'View User';
+  title.textContent = 'View Player';
   modalContent.appendChild(title);
 
   const input = createElement('input', {

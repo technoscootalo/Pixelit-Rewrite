@@ -1,28 +1,28 @@
 body {
-    margin: 0;
-    padding: 0;
-    background: #6f0083;
-    color: white;
-    font-family: Pixelify Sans;
+  margin: 0;
+  padding: 0;
+  background: #6f0083;
+  color: white;
+  font-family: Pixelify Sans;
 }    
 
-.body::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px; 
 }
 
-.body::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: #6f057a;
   border-radius: 0px;
   margin: 6px 0;
 }
 
-.body::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #b10ec2, #8c099a);
   border-radius: 10px;
   border: 2px solid #6f057a;
 }
 
-.body::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #c21ad6, #9d0ab0);
 }
 
@@ -52,7 +52,7 @@ body {
   width: 100%;
   max-width: 1000px;
   padding: 40px;
-  text-align: center;
+  margin: 0 auto;  
 }
 
 .title {

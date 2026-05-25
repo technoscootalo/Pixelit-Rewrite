@@ -9,7 +9,6 @@ const session = require("express-session");
 const connectDB = require("./backend/utils/db");
 const User = require("./backend/models/User");
 const Message = require("./backend/models/Messages");
-
 const pages = require("./backend/routers/pages");
 const registerRoute = require("./backend/routers/auth/register");
 const loginRoute = require("./backend/routers/auth/login");
@@ -35,6 +34,7 @@ const articlesRoute = require("./backend/routers/api/articles");
 const blooksRoutes = require("./backend/routers/users/blooks");
 const userBlooksRoutes = require("./backend/routers/api/userBlooks");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
+const giftBlookRoute = require("./backend/routers/users/giftBlook");
 const weeklyMarketRoutes = require("./backend/routers/api/weeklyMarket");
 
 const app = express();
@@ -75,7 +75,6 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/user", changePfpRoute);
-
 app.use("/api/reportUser", reportUserRoute);
 app.use("/api/moderationReports", moderationReportsRoute);
 app.use("/api/badges", badgeRoutes);
@@ -85,9 +84,11 @@ app.use("/api/packs", packRouter);
 app.use("/api/articles", articlesRoute);
 app.use("/api/users", blooksRoutes);
 app.use("/api/users/sell-blook", sellBlookRoute);
+app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
 app.use("/api/weekly", weeklyMarketRoutes);
 app.use("/", pages);
+
 
 
 app.get("/*path", (req, res) => {

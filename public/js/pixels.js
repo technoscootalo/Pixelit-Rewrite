@@ -254,7 +254,7 @@ function sellBlook() {
 
   const subtitle = document.createElement("div");
   subtitle.className = "sell-blook-modal-subtitle";
-  subtitle.textContent = `Owned: ${owned}`;
+  subtitle.textContent = `${owned} Owned`;
 
   const inputRow = document.createElement("div");
   inputRow.className = "sell-blook-modal-input-row";
@@ -360,7 +360,23 @@ function sellBlook() {
       }
 
       await loadBlooks();
+
+      const amtEl = document.getElementById("amountOwned");
+      if (amtEl && selectedBlook?.name) {
+        const fresh = allBlooksFlat.find(
+          (b) => (b?.name || "") === selectedBlook.name
+        );
+
+        const updated = Number(fresh?.owned ?? fresh?.owned?.amount ?? 0);
+
+        amtEl.textContent = `${updated} Owned`;
+        selectedBlook.owned = updated;
+      }
+
+
       close();
+
+
 
     } catch (err) {
       console.error(err);
@@ -376,7 +392,224 @@ function sellBlook() {
 document.addEventListener("DOMContentLoaded", () => {
   const sellBtnEl = document.querySelector(".sellBtn");
   if (sellBtnEl) sellBtnEl.addEventListener("click", sellBlook);
+
+  const giftBtnEl = document.querySelector(".giftBtn");
+  if (!giftBtnEl) return;
+
+  giftBtnEl.addEventListener("click", giftBlook);
 });
+
+function giftBlook() {
+  if (!selectedBlook || !selectedBlook.name) {
+    showModal("Select a blook first");
+    return;
+  }
+
+  const blookName = selectedBlook.name;
+  const ownedEl = document.getElementById("amountOwned");
+  const owned = ownedEl ? parseInt(ownedEl.textContent.split(" ")[0], 10) : Number(selectedBlook.owned ?? 0);
+
+  const existing = document.getElementById("gift-blook-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "gift-blook-modal";
+  modal.className = "sell-blook-modal-overlay";
+
+  const box = document.createElement("div");
+  box.className = "sell-blook-modal-box";
+
+  const title = document.createElement("h3");
+  title.className = "sell-blook-modal-title";
+  title.textContent = `Gift ${blookName}?`;
+
+  const subtitle = document.createElement("div");
+  subtitle.className = "sell-blook-modal-subtitle";
+  subtitle.textContent = `${owned} Owned`;
+
+  const inputRowUser = document.createElement("div");
+  inputRowUser.className = "sell-blook-modal-input-row";
+
+  const userLabel = document.createElement("label");
+  userLabel.className = "sell-blook-modal-label";
+  userLabel.textContent =  "Player";
+
+  const userInput = document.createElement("input");
+  userInput.className = "sell-blook-modal-amount";
+  userInput.type = "text";
+  userInput.placeholder = "Username";
+  userInput.style = "font-size: 16px;";
+
+
+  inputRowUser.appendChild(userLabel);
+  inputRowUser.appendChild(userInput);
+
+  const inputRowQty = document.createElement("div");
+  inputRowQty.className = "sell-blook-modal-input-row";
+
+  const qtyLabel = document.createElement("label");
+  qtyLabel.className = "sell-blook-modal-label";
+  qtyLabel.textContent = "Amount";
+
+  const qtyInput = document.createElement("input");
+  qtyInput.className = "sell-blook-modal-amount";
+  qtyInput.type = "number";
+  qtyInput.min = "1";
+  qtyInput.max = String(owned);
+  qtyInput.value = "1";
+
+  inputRowQty.appendChild(qtyLabel);
+  inputRowQty.appendChild(qtyInput);
+
+  const error = document.createElement("div");
+  error.className = "sell-blook-modal-error";
+
+  const actions = document.createElement("div");
+  actions.className = "sell-blook-modal-actions";
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.type = "button";
+  confirmBtn.className = "sell-blook-modal-btn sell-blook-modal-btn-primary";
+  confirmBtn.textContent = "Gift";
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "sell-blook-modal-btn sell-blook-modal-btn-secondary";
+  cancelBtn.textContent = "Cancel";
+
+  actions.appendChild(confirmBtn);
+  actions.appendChild(cancelBtn);
+
+  box.appendChild(title);
+  box.appendChild(subtitle);
+  box.appendChild(inputRowUser);
+  box.appendChild(inputRowQty);
+  box.appendChild(error);
+  box.appendChild(actions);
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+  cancelBtn.onclick = close;
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape") close();
+    },
+    { once: true }
+  );
+
+  confirmBtn.onclick = async () => {
+    const recipientUsername = userInput.value.trim();
+    const quantity = parseInt(qtyInput.value, 10);
+
+    if (!recipientUsername) {
+      error.textContent = "Enter a recipient username";
+      return;
+    }
+
+    if (!quantity || quantity < 1 || quantity > owned) {
+      error.textContent = "Invalid amount";
+      return;
+    }
+
+    if (typeof window.showLoader === "function") window.showLoader();
+
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    error.textContent = "";
+
+    try {
+      const logged = await fetch("/api/loggedin", { credentials: "include" });
+      const loggedData = await logged.json();
+      if (!logged.ok || !loggedData.loggedIn || !loggedData.user?.id) {
+        error.textContent = "Not logged in";
+        return;
+      }
+
+      const userId = loggedData.user.id;
+
+      const res = await fetch("/api/users/gift-blook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userId: userId,
+          blookName,
+          quantity,
+          recipientUsername,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        error.textContent = data?.error || "Failed to gift blook";
+        return;
+      }
+
+      await loadBlooks();
+
+      const amtEl = document.getElementById("amountOwned");
+      if (amtEl && selectedBlook?.name) {
+        const fresh = allBlooksFlat.find(
+          (b) => (b?.name || "") === selectedBlook.name
+        );
+
+        const updated = Number(fresh?.owned ?? fresh?.owned?.amount ?? 0);
+        amtEl.textContent = `${updated} Owned`;
+        selectedBlook.owned = updated;
+      }
+
+      close();
+    } catch (err) {
+      console.error(err);
+      error.textContent = "Server error";
+    } finally {
+      if (typeof window.hideLoader === "function") window.hideLoader();
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+    }
+  };
+}
+
+function showModal(message) {
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  `;
+
+  const box = document.createElement("div");
+  box.style.cssText = `
+    background-color: #6f057a;
+    box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 280px;
+    color: white;
+    font-family: Pixelify Sans;
+    font-size: 18px;
+  `;
+
+  box.innerText = message;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  modal.onclick = () => modal.remove();
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
   loadBlooks();

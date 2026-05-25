@@ -224,26 +224,25 @@ main {
   transform: translateY(-50%);
 }
 
+.giftBtn,
 .sellBtn,
 .changePfpBtn {
-  width: 180px;
+  width: 115px;
   height: 60px;
-
   padding: 12px;
   border: none;
   border-radius: 5px;
-
   color: white;
   font-family: 'Pixelify Sans', sans-serif;
   font-size: 26px;
   font-weight: bold;
   cursor: pointer;
-
   background: #5e046e;
   box-shadow: inset 0 -0.265vw #53055c,
               3px 3px 15px rgba(0, 0, 0, 0.6);
 }
 
+.giftBtn,
 .sellBtn:hover,
 .changePfpBtn:hover {
   filter: brightness(1.1);
