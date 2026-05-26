@@ -590,27 +590,15 @@ function openViewUserPopup() {
     marginTop: '10px',
   });
 
-  const viewButton = createElement('button', { type: 'button' }, {
-    backgroundColor: 'green',
-    boxShadow: 'inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-    fontFamily: 'Pixelify Sans, sans-serif',
-    color: 'white',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+  const viewButton = createElement('button', { 
+    type: 'button',
+    className: 'viewUser-modal-btn viewUser-modal-btn-primary'
   });
   viewButton.textContent = 'View Profile';
 
-  const cancelButton = createElement('button', { type: 'button' }, {
-    backgroundColor: 'red',
-    boxShadow: 'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-    fontFamily: 'Pixelify Sans, sans-serif',
-    color: 'white',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+  const cancelButton = createElement('button', { 
+    type: 'button',
+    className: 'viewUser-modal-btn viewUser-modal-btn-secondary'
   });
   cancelButton.textContent = 'Cancel';
 
@@ -736,7 +724,6 @@ function openViewUserPopup() {
       if (ui.tokens) ui.tokens.innerText = (other.tokens ?? 0).toLocaleString();
       if (ui.opened) ui.opened.innerText = (other.opened ?? 0).toLocaleString();
       if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
-
 
       if (ui.spinButton) {
         ui.spinButton.style.display = 'none';
@@ -864,7 +851,6 @@ function openViewUserPopup() {
             if (modal.contains(e.target)) return;
             close();
           }, { once: true });
-
 
           input.focus();
 

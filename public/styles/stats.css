@@ -329,6 +329,39 @@ body {
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
+.viewUser-modal-btn {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.viewUser-modal-btn-primary {
+  background: #3aab3a;
+  color: white;
+  box-shadow: inset 0 -0.265vw rgba(0, 0, 0, 0.25), 3px 3px 14px rgba(0,0,0,0.5);
+}
+
+.viewUser-modal-btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.viewUser-modal-btn-secondary {
+  background: #5e046e;
+  color: white;
+  box-shadow: inset 0 -0.265vw #53055c, 3px 3px 14px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.viewUser-modal-btn-secondary:hover {
+  filter: brightness(1.08);
+}
+
+
 @media screen and (max-width: 840px) {
   .main_container {
     padding: 100px 16px 120px;

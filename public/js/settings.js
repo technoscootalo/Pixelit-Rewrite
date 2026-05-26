@@ -77,12 +77,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
-/* 
 document.getElementById('changePassword').addEventListener('click', function() {
     const modal = createPasswordChangeModal();
     document.body.appendChild(modal);
 });
-*/
 
 function createPasswordChangeModal() {
     const modal = document.createElement('div');
@@ -108,7 +106,7 @@ function createPasswordChangeModal() {
         text-align: center;
         font-size: 26px;
         width: 420px;
-    `
+    `;
     const title = document.createElement('h2');
     title.textContent = "Change Password";
     modalContent.appendChild(title);
@@ -117,21 +115,18 @@ function createPasswordChangeModal() {
     currentPasswordInput.type = 'password';
     currentPasswordInput.placeholder = 'Old Password';
     currentPasswordInput.style.cssText = `
-    width: 60%;
-    height: 50px;
-    margin-bottom: 10px;
-    display: inline;
-    font-family: 'pixelify sans';
-    font-size: 28px;
-    text-align: center;
-    border: 3px solid #5e046e;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: transparent;
-    color: white;
-    margin-right: 5px;
-    appearance: textfield;
-    -webkit-appearance: none;
+        width: 70%;
+        background: transparent;
+        padding: 10px 14px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 10px;
+        border: 3px solid white;
+        color: white;
+        font-size: 24px;
+        font-family: "Pixelify Sans";
+        outline: none;
+        margin-bottom: 10px;
     `;
     modalContent.appendChild(currentPasswordInput);
     
@@ -139,89 +134,52 @@ function createPasswordChangeModal() {
     newPasswordInput.type = 'password';
     newPasswordInput.placeholder = 'New Password';
     newPasswordInput.style.cssText = `
-    width: 60%;
-    height: 50px;
-    margin-bottom: 10px;
-    display: inline;
-    font-family: 'pixelify sans';
-    font-size: 28px;
-    text-align: center;
-    border: 3px solid #5e046e;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: transparent;
-    color: white;
-    margin-right: 5px;
-    appearance: textfield;
-    -webkit-appearance: none;
+        width: 70%;
+        background: transparent;
+        padding: 10px 14px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 10px;
+        border: 3px solid white;
+        color: white;
+        font-size: 24px;
+        font-family: "Pixelify Sans";
+        outline: none;
+        margin-bottom: 10px;
     `;
     modalContent.appendChild(newPasswordInput);
 
     const warningText = document.createElement('div');
     warningText.id = 'error-message';
-    warningText.innerHTML = "If you change your username, someone else can snipe your old password.";
+    warningText.innerHTML = "";
     warningText.style.cssText = `
         color: red;
         font-size: 16px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         font-weight: bold;
     `;
     modalContent.appendChild(warningText);
 
-    const changeButton = document.createElement('button');
-    changeButton.textContent = 'Change';
-    changeButton.style.cssText = `
-        background-color: green;
-        box-shadow: inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6);
-        font-family: 'pixelify sans';
-        color: white;
-        padding: 10px 20px;
-        margin: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: box-shadow 0.3s ease;
-        margin-left: 60px;
+    const buttonWrap = document.createElement("div");
+    buttonWrap.style.cssText = `
+        display: flex;
+        justify-content: center;
+        gap: 20px;
     `;
 
-    changeButton.onmouseover = () => {
-        changeButton.style.boxShadow = 'inset 0 -0.5vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)';
-    };
-
-    changeButton.onmouseout = () => {
-        changeButton.style.boxShadow = 'inset 0 -0.365vw #006400, 3px 3px 15px rgba(0, 0, 0, 0.6)';
-    };
-    modalContent.appendChild(changeButton);
+    const changeButton = document.createElement('button');
+    changeButton.type = 'button';
+    changeButton.textContent = 'Change';
+    changeButton.className = 'change-password-modal-btn change-password-modal-btn-primary';
 
     const cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
     cancelButton.textContent = 'Cancel';
-    cancelButton.style.cssText = `
-        background-color: red;
-        box-shadow: inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6);
-        font-family: 'pixelify sans';
-        color: white;
-        padding: 10px 20px;
-        margin: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: box-shadow 0.3s ease;
-        margin-right: 60px;
-    `;
-
-    cancelButton.onmouseover = () => {
-        cancelButton.style.boxShadow = 'inset 0 -0.5vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)';
-    };
-
-    cancelButton.onmouseout = () => {
-        cancelButton.style.boxShadow = 'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)';
-    };
+    cancelButton.className = 'change-password-modal-btn change-password-modal-btn-secondary';
 
     cancelButton.onclick = () => {
         document.body.removeChild(modal);
     };
-
-    modalContent.appendChild(cancelButton);
     
     changeButton.onclick = async () => {
         const currentPassword = currentPasswordInput.value.trim();
@@ -229,22 +187,16 @@ function createPasswordChangeModal() {
 
         if (!currentPassword || !newPassword) {
             warningText.textContent = "Please fill in all fields.";
-            setTimeout(() => {
-                warningText.textContent = "If you change your username, someone else can snipe your old password.";
-            }, 2000);
             return;
         }
 
         const forbiddenChars = /[^a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/;
         if (forbiddenChars.test(newPassword) || newPassword.length < 8 || newPassword.length > 32) {
             warningText.textContent = "New password must be 8-32 characters long and contain only letters, numbers, and common symbols.";
-            setTimeout(() => {
-                warningText.textContent = "If you change your username, someone else can snipe your old password.";
-            }, 2000);
             return;
         }
 
-        const response = await fetch('/changePassword', {
+        const response = await fetch('/api/changePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -256,7 +208,7 @@ function createPasswordChangeModal() {
             window.location.href = '../login';
         } else {
             const errorText = await response.text();
-            document.getElementById('error-message').textContent = `Error: ${errorText}`; 
+            warningText.textContent = `Error: ${errorText}`; 
         }
     };
 
@@ -266,7 +218,10 @@ function createPasswordChangeModal() {
         }
     });
     
-    modalContent.appendChild(changeButton);
+    buttonWrap.appendChild(changeButton);
+    buttonWrap.appendChild(cancelButton);
+    modalContent.appendChild(buttonWrap);
+    
     modal.appendChild(modalContent);
     return modal;
 }
@@ -302,6 +257,10 @@ document.getElementById("changeUsername").addEventListener("click", function () 
 
     const title = document.createElement("h2");
     title.textContent = "Change Username";
+    title.style.cssText = `
+        font-size: 39px;
+    `;
+
     modalContent.appendChild(title);
 
     const usernameInput = document.createElement("input");
@@ -310,15 +269,16 @@ document.getElementById("changeUsername").addEventListener("click", function () 
 
     usernameInput.style.cssText = `
         width: 70%;
-        height: 50px;
-        margin-bottom: 10px;
-        font-family: 'Pixelify Sans', sans-serif;
-        font-size: 24px;
-        text-align: center;
-        border: 3px solid #5e046e;
-        border-radius: 4px;
         background: transparent;
+        padding: 10px 14px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 10px;
+        border: 3px solid white;
         color: white;
+        font-size: 24px;
+        font-family: "Pixelify Sans";
+        margin-bottom: 15px;
         outline: none;
     `;
 
@@ -331,16 +291,17 @@ document.getElementById("changeUsername").addEventListener("click", function () 
 
     passwordInput.style.cssText = `
         width: 70%;
-        height: 50px;
-        margin-bottom: 10px;
-        font-family: 'Pixelify Sans', sans-serif;
-        font-size: 24px;
-        text-align: center;
-        border: 3px solid #5e046e;
-        border-radius: 4px;
         background: transparent;
+        padding: 10px 14px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 10px;
+        border: 3px solid white;
         color: white;
+        font-size: 24px;
+        font-family: "Pixelify Sans";
         outline: none;
+        margin-bottom: 10px;
     `;
 
     modalContent.appendChild(passwordInput);
@@ -366,48 +327,15 @@ document.getElementById("changeUsername").addEventListener("click", function () 
         gap: 20px;
     `;
 
-    function createButton(text, color, hoverColor) {
+    function createButton(text, exactTypeClass) {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.textContent = text;
-
-        btn.style.cssText = `
-            background: ${color};
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Pixelify Sans', sans-serif;
-            box-shadow: inset 0 -3px #0003;
-            transition: 0.15s ease;
-        `;
-
-        btn.onmouseenter = () => {
-            btn.style.transform = "translateY(-2px)";
-            btn.style.background = hoverColor;
-        };
-
-        btn.onmouseleave = () => {
-            btn.style.transform = "translateY(0px)";
-            btn.style.background = color;
-        };
-
-        btn.onmousedown = () => {
-            btn.style.transform = "translateY(1px) scale(0.98)";
-        };
-
-        btn.onmouseup = () => {
-            btn.style.transform = "translateY(-2px) scale(1)";
-        };
-
+        btn.className = `change-username-modal-btn ${exactTypeClass}`;
         return btn;
     }
 
-    const changeButton = createButton(
-        "Change",
-        "green",
-        "#006400"
-    );
+    const changeButton = createButton("Change", "change-username-modal-btn-primary");
 
     changeButton.onclick = async () => {
         const newUsername = usernameInput.value.trim();
@@ -457,11 +385,7 @@ document.getElementById("changeUsername").addEventListener("click", function () 
         }
     };
 
-    const cancelButton = createButton(
-        "Cancel",
-        "red",
-        "#b30000"
-    );
+    const cancelButton = createButton("Cancel", "change-username-modal-btn-secondary");
 
     cancelButton.onclick = () => {
         modal.remove();

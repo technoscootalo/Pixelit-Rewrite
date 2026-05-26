@@ -27,6 +27,7 @@ const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
 const blookRoutes = require("./backend/routers/api/blooks");
 const changeUsernameRoute = require("./backend/routers/api/changeUsername");
+const changePasswordRouter = require("./backend/routers/api/changePassword"); 
 const reportUserRoute = require("./backend/routers/api/reportUser");
 const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
@@ -78,6 +79,7 @@ app.use("/api/inbox", inboxRoute);
 app.use("/api/viewUser", viewUserRoute);
 app.use("/api/inbox/test", inboxTestRoute);
 app.use("/api/leaderboard", leaderboardRoute);
+app.use("/api/changePassword", changePasswordRouter);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/user", changePfpRoute);
 app.use("/api/reportUser", reportUserRoute);
@@ -93,8 +95,6 @@ app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
 app.use("/api/weekly", weeklyMarketRoutes);
 app.use("/", pages);
-
-
 
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
