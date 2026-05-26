@@ -559,18 +559,18 @@ function openViewUserPopup() {
   }, {
     width: '60%',
     height: '50px',
-    marginBottom: '10px',
-    fontFamily: 'Pixelify Sans, sans-serif',
-    fontSize: '20px',
+    backgroundColor: 'transparent',
+    padding: '10px 14px',
     fontWeight: 'bold',
     textAlign: 'center',
-    border: '3px solid #5e046e',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    backgroundColor: 'transparent',
+    borderRadius: '10px',
+    border: '3px solid white',
     color: 'white',
-    marginRight: '5px',
+    fontSize: '24px',
+    fontFamily: 'Pixelify Sans, sans-serif',
     outline: 'none',
+    marginBottom: '10px',
+    boxSizing: 'border-box'
   });
   modalContent.appendChild(input);
 
@@ -594,7 +594,7 @@ function openViewUserPopup() {
     type: 'button',
     className: 'viewUser-modal-btn viewUser-modal-btn-primary'
   });
-  viewButton.textContent = 'View Profile';
+  viewButton.textContent = 'Search';
 
   const cancelButton = createElement('button', { 
     type: 'button',
