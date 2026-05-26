@@ -75,7 +75,7 @@ form.addEventListener("submit", async (e) => {
             throw new Error(logData.error || "Login failed after registration");
         }
 
-        window.location.href = "/Stats";
+        window.location.href = "/stats";
 
     } catch (err) {
         errorEl.textContent = err.message;
