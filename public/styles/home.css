@@ -35,6 +35,10 @@ h2 {
 	box-sizing: border-box;
 }
 
+color {
+	color: #6CC24A;
+}
+
 .background {
 	position: fixed;
 	width: 250%;
