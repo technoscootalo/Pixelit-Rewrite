@@ -8,6 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 
     <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
@@ -20,15 +27,26 @@
 <div class="background"></div>
 
 <main>
-    <div class="store-container" style="display: flex; flex-direction: column; align-items: center; min-height: 70vh; padding: 40px 20px;">
+    <button class="backButton" onclick="history.back()">
+        <i class="fa-solid fa-reply"></i>
+    </button>
+
+    <div class="store-container">
+
+        <div class="store-item">
+            <div class="item-name">Booster</div>
+            <div class="price">$1.99</div>
+            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png" alt="booster" class="plus-badge">
+            <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">Purchase</div>
+            <p>Boost your luck. Increase your drop chance rates for rare pixels when opening packs in the market.</p>
+            <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
+        </div>
       
         <div class="store-item">
             <div class="item-name">Pixelit Plus</div>
-            <div class="price">$3.99</div>
-            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/badges/Plus.png" alt="Plus" class="plus" style="width: 200px; margin: 15px 0;">
-            
-            <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">BUY NOW</div>
-            
+            <div class="price">$2.75</div>
+            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/badges/Plus.png" alt="Plus" class="plus-badge">
+            <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">Purchase</div>
             <p>Unlock premium, exclusive features and help fuel the growth of the Pixelit community!</p>
             <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
         </div>
@@ -36,10 +54,8 @@
         <div class="donation-item">
             <div class="item-name">Donate</div>
             <div class="price">Custom</div>
-            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/moneyBag.png" alt="Donate" class="donate" style="width: 200px; margin: 15px 0;">
-            
+            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/moneyBag.png" alt="Donate" class="donate-badge">
             <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">DONATE</div>
-            
             <p>Every contribution helps! Support our project directly by donating an amount of your choice.</p>
             <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
         </div>
@@ -51,7 +67,7 @@
     </div>
 </main>
 
-<script src="/js/login.js"></script>
+<script src="/js/store.js"></script>
 <script src="/js/loadingModal.js"></script>
 
 </body>
