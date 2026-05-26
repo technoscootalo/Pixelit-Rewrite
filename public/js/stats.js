@@ -111,7 +111,7 @@ function renderInboxMessage(msg) {
   const img = document.createElement("img");
   img.src = msg.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
   img.alt = `${msg.username || "User"} avatar`;
-  img.style.cssText = `width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 2px 10px rgba(0,0,0,0.35);`;
+  img.style.cssText = `width:55px;height:55px;object-fit:cover;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.87));border-radius:40%;`;
 
   const content = document.createElement("div");
   content.style.cssText = `flex:1; text-align:left;`;
@@ -210,7 +210,7 @@ function showGiftToast(msg) {
     bottom: 18px;
     z-index: 100000;
     background: rgba(111, 5, 122, 0.98);
-    border-radius: 12px;
+    border-radius: 0px;
     box-shadow: inset 0 -0.365vw #61056b, 0 10px 30px rgba(0,0,0,0.45);
     padding: 14px 16px;
     width: 360px;

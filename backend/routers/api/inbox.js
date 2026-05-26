@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 
     const messages = await Message.find({
       userId: recipient.id,
-      content: { $regex: "gifted you" },
+      content: { $regex: "" },
     })
       .sort({ createdAt: -1 })
       .limit(20)
