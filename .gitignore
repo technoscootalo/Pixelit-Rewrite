@@ -1,5 +1,4 @@
 node_modules/
-bot/
-.vscode/
 .env
-.hash.js
+.vscode/
+hash.js
