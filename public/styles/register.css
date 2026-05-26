@@ -46,26 +46,25 @@ main {
 }
 
 .animated-blook {
-  width: 300px;
-  height: 300px;
+  width: 320px;
+  height: 320px;
   object-fit: contain;
   cursor: pointer;
-  /* animation: spinBob 4s ease-in-out infinite, fadeInScale 1s ease-out; */
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3));
+  animation: cleanFloat 4s ease-in-out infinite;
+  transition: filter 0.3s ease, transform 0.2s ease;
 }
 
-@keyframes spinBob {
+.animated-blook:hover {
+  transform: translateY(-5px);
+}
+
+@keyframes cleanFloat {
   0%, 100% {
-    transform: rotate(0deg) translateY(0px);
-  }
-  25% {
-    transform: rotate(90deg) translateY(-20px);
+    transform: translateY(0);
   }
   50% {
-    transform: rotate(180deg) translateY(0px);
-  }
-  75% {
-    transform: rotate(270deg) translateY(-20px);
+    transform: translateY(-10px);
   }
 }
 
@@ -87,7 +86,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 440px;
-  height: 440px;
+  height: 460px;
   background-color: #6f057a;
   color: white;
   border: none;
@@ -105,16 +104,18 @@ main {
 }
 
 .register-form-container input {
-  font-family: 'Pixelify Sans', sans-serif;
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: none;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 20px;
-  text-align: center;
+  background: transparent;
+  padding: 10px 14px;
   font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  border: 3px solid white;
+  color: white;
+  font-size: 24px;
+  font-family: "Pixelify Sans";
+  outline: none;
+  margin-bottom: 10px;
 }
 
 .register-form-container button {
@@ -190,43 +191,40 @@ main {
   color: rgb(230, 230, 230);
 }
 
-/* ... Your desktop styles stay exactly the same ... */
 
 @media (max-width: 768px) {
-  /* Prevent the entire page from breaking or scrolling sideways */
   body, html {
     overflow-x: hidden;
   }
 
   .register-wrapper {
     flex-direction: column;
-    gap: 40px; /* Reduced gap so users don't have to scroll forever */
+    gap: 40px; 
     padding: 20px;
     align-items: center;
   }
 
   .animated-blook {
-    width: 180px; /* Scaled down slightly more for small phone screens */
+    width: 180px; 
     height: 180px;
   }
 
   .register-form-container {
-    width: 100%; /* Changed from 110% to prevent horizontal scrolling */
-    max-width: 400px; /* Keeps it clean on tablets/larger phones */
+    width: 100%; 
+    max-width: 400px;
     height: auto;
     padding: 25px 20px;
     margin: 0 auto;
-    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+    box-sizing: border-box; 
   }
 
-  /* Fix the Discord Link on Mobile */
   .accessKeyDiscord {
-    position: relative; /* Removes it from the floating corner */
+    position: relative; 
     bottom: auto;
     left: auto;
     display: block;
     text-align: center;
-    margin-top: 2rem; /* Pushes it cleanly below the login/register card */
+    margin-top: 2rem; 
     font-size: 0.9rem;
   }
 

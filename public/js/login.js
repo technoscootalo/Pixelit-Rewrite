@@ -48,11 +48,9 @@ form.addEventListener("submit", async (e) => {
             throw new Error(data.error || "Login failed");
         }
 
-        redirectEl.style.display = "block";
-
         setTimeout(() => {
             window.location.href = "/stats";
-        }, 1500);
+        }, 0);
 
     } catch (err) {
         errorEl.textContent = err.message;
