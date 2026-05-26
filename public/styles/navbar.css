@@ -49,30 +49,47 @@ nav {
   opacity: 0.75;
 }
 
-.bottomIcons {
+.buttonGap {
   flex-direction: row;
   justify-content: space-evenly;
   width: 100%;
-  height: 100%;
+  height: 35%;
   margin-top: auto;
 }
 
-.bottomIcons a {
-  display: flex;
-  align-items: center;
+.bottomIcons {
+  display: flex;            
+  flex-direction: row;       
+  justify-content: center;   
+  gap: 24px;           
+  margin-top: auto;       
+  padding-bottom: 10px;   
 }
 
 .bottomIcons a {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  height: 40px;
-  padding-left: 20px;
-  border-radius: 5px;
-  color: #5865F2;
+    text-shadow: #000 1px 0 13px;
+  justify-content: center;
+  font-size: 22px;    
+  color: rgb(255, 255, 255); 
   text-decoration: none;
-  font-size: 24px;
-  transition: 0.2s linear;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bottomIcons a.discord {
+  color: #5865F2;         
+  transform: scale(1.1);   
+}
+
+.bottomIcons a.github {
+  color: #ffffff;           
+  transform: scale(1.1);
+}
+
+
+.bottomIcons a.store {
+  color: #ffffff;           
+  transform: scale(1.1);
 }
 
 .logo {

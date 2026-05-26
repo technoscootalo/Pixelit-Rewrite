@@ -158,35 +158,79 @@ main {
   font-weight: bold;
 }
 
+.accessKeyDiscord {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .terms a {
   color: white;
   text-decoration: underline;
 }
 
-.accessKeyDiscord {
-  color: white;
-  text-decoration: underline;
+.tosaccept {
+  color: rgb(197, 196, 196);
+  font-size: 10px;
+  text-align: center;
+  display: block;
 }
 
+.tos-link {
+  color: rgb(197, 196, 196);
+  text-decoration: underline; 
+  cursor: pointer;
+}
+
+.tos-link:hover {
+  color: rgb(230, 230, 230);
+}
+
+/* ... Your desktop styles stay exactly the same ... */
+
 @media (max-width: 768px) {
+  /* Prevent the entire page from breaking or scrolling sideways */
+  body, html {
+    overflow-x: hidden;
+  }
+
   .register-wrapper {
     flex-direction: column;
-    gap: 70px;
+    gap: 40px; /* Reduced gap so users don't have to scroll forever */
+    padding: 20px;
+    align-items: center;
   }
 
   .animated-blook {
-    width: 250px;
-    height: 250px;
+    width: 180px; /* Scaled down slightly more for small phone screens */
+    height: 180px;
   }
 
   .register-form-container {
-    width: 110%;
+    width: 100%; /* Changed from 110% to prevent horizontal scrolling */
+    max-width: 400px; /* Keeps it clean on tablets/larger phones */
     height: auto;
-    padding: 20px;
-    margin: 0;
+    padding: 25px 20px;
+    margin: 0 auto;
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+  }
+
+  /* Fix the Discord Link on Mobile */
+  .accessKeyDiscord {
+    position: relative; /* Removes it from the floating corner */
+    bottom: auto;
+    left: auto;
+    display: block;
+    text-align: center;
+    margin-top: 2rem; /* Pushes it cleanly below the login/register card */
+    font-size: 0.9rem;
   }
 
   .terms {
-    display: none;
+    display: none; 
   }
 }
