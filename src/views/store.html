@@ -38,11 +38,30 @@
             <div class="price">$1.99</div>
             <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png" alt="booster" class="plus-badge">
             <div>
-                <style>.pp-ZF2UU4EC9KAGL{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}</style>
-                <form action="https://www.paypal.com/ncp/payment/ZF2UU4EC9KAGL" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
-                <input class="pp-ZF2UU4EC9KAGL" type="submit" value="PURCHASE" />
-                </form>
+                <style>
+                    .boosterPurchaseBtn{
+                      text-align:center;
+                      border:none;
+                      border-radius:0.25rem;
+                      min-width:11.625rem;
+                      padding:0 2rem;
+                      height:2.625rem;
+                      font-weight:bold;
+                      background-color:#FFD140;
+                      color:#000000;
+                      font-family:"Helvetica Neue",Arial,sans-serif;
+                      font-size:1rem;
+                      line-height:1.25rem;
+                      cursor:pointer;
+                      display:flex;
+                      align-items:center;
+                      justify-content:center;
+                    }
+                </style>
+
+                <div class="boosterPurchaseBtn" onclick="purchaseBooster('3_hour_booster')">PURCHASE</div>
             </div>
+
             <p>Boost your luck. Increase your drop chance rates for rare pixels when opening packs in the market.</p>
             <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
         </div>
@@ -74,6 +93,8 @@
 
 <script src="/js/store.js"></script>
 <script src="/js/loadingModal.js"></script>
+<script src="/js/boosterPayPal.js"></script>
+
 
 </body>
 </html>

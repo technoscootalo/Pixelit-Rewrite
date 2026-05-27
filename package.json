@@ -11,6 +11,7 @@
   "author": "IzumiiHD, Lemon, Iamgamedude, SOUNDGOD, Packman28, Dylanee300, Hjr, Buenar",
   "license": "ISC",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "bcrypt": "^6.0.0",
     "discord.js": "^14.26.4",
     "dotenv": "^17.4.2",

@@ -32,6 +32,8 @@ const boosterSchema = new mongoose.Schema(
     multiplier: { type: Number, required: true, min: 0, default: 2 },
     durationMs: { type: Number, required: true, min: 0, default: 3 * 60 * 60 * 1000 },
 
+    price: { type: Number, required: true, min: 0, default: 1.99 },
+
     visible: { type: Boolean, default: true }
   },
   { timestamps: true }
