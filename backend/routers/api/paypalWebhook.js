@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Booster = require("../../models/Booster"); 
+const Booster = require("../../models/Booster");
 const UserBooster = require("../../models/UserBooster");
 
 function verifyWebhookOrReject(req, res) {
@@ -15,7 +15,7 @@ function verifyWebhookOrReject(req, res) {
     req.headers["authorization"]?.toString().replace(/^Bearer\s+/i, "");
 
   if (!provided || provided !== secret) {
-    return res.status(401).json({ error: "Invalid webhook secret" });
+    return res.status(401).json({ error: "Invalid webhook secret authorization token" });
   }
   return null;
 }
@@ -23,8 +23,7 @@ function verifyWebhookOrReject(req, res) {
 router.post("/", async (req, res) => {
   try {
     const guard = verifyWebhookOrReject(req, res);
-    if (guard) return;
-
+    if (guard) return; 
     const payload = req.body || {};
 
     const customId =
@@ -41,28 +40,28 @@ router.post("/", async (req, res) => {
       payload?.id;
 
     if (!customId || typeof customId !== "string") {
-      return res.status(400).json({ error: "Missing custom_id" });
+      return res.status(400).json({ error: "Missing custom_id payload metadata" });
     }
 
     if (!paypalTxnId || typeof paypalTxnId !== "string") {
-      return res.status(400).json({ error: "Missing PayPal transaction id" });
+      return res.status(400).json({ error: "Missing PayPal transaction confirmation identifier" });
     }
 
     const parts = customId.split("|");
     if (parts.length < 2) {
-      return res.status(400).json({ error: "custom_id must be '<userId>|<boosterCode>'" });
+      return res.status(400).json({ error: "Malformed custom_id formatting string structure" });
     }
 
     const userId = parts[0];
     const boosterCode = parts[1];
 
     if (!userId || !boosterCode) {
-      return res.status(400).json({ error: "Invalid custom_id data values" });
+      return res.status(400).json({ error: "Invalid parsed data keys" });
     }
 
     const booster = await Booster.findOne({ code: boosterCode, visible: true });
     if (!booster) {
-      return res.status(404).json({ error: "Booster not found" });
+      return res.status(404).json({ error: "Booster definition not found in database collection" });
     }
 
     const existing = await UserBooster.findOne({
@@ -92,9 +91,10 @@ router.post("/", async (req, res) => {
       success: true,
       activated: created,
     });
+
   } catch (err) {
-    console.error("boosterWebhook error:", err);
-    return res.status(500).json({ error: "Webhook process failed" });
+    console.error("boosterWebhook processing error trace:", err);
+    return res.status(500).json({ error: "Internal Webhook logic operation failure" });
   }
 });
 

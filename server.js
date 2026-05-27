@@ -40,7 +40,6 @@ const userBlooksRoutes = require("./backend/routers/api/userBlooks");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
 const weeklyMarketRoutes = require("./backend/routers/api/weeklyMarket");
-const paypalCreateRouter = require('./backend/routers/api/paypalCreate'); // Update to your actual file path
 const paypalWebhookRouter = require('./backend/routers/api/paypalWebhook')
 
 const app = express();
@@ -96,7 +95,6 @@ app.use("/api/users/sell-blook", sellBlookRoute);
 app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
 app.use("/api/weekly", weeklyMarketRoutes);
-app.use('/api/boosters/paypal', paypalCreateRouter); 
 app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
 app.use("/", pages);
 

@@ -2,28 +2,14 @@ async function purchaseBooster(boosterCode) {
   try {
     if (!boosterCode) return;
 
-    const res = await fetch("/api/boosters/paypal/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ boosterCode }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      alert((data?.error || "Failed to start PayPal checkout") + (data?.details ? `: ${data.details}` : ""));
+    if (boosterCode === "3_hour_booster") {
+      window.open("https://www.paypal.com/ncp/payment/ZF2UU4EC9KAGL", "_blank");
       return;
     }
 
-    if (data?.approvalUrl) {
-      window.open(data.approvalUrl, "_blank");
-      return;
-    }
-
-    alert(data?.error || "PayPal order creation failed. Check server logs.");
+    alert("Unknown or unconfigured booster item.");
   } catch (err) {
     console.error(err);
-    alert("Network error starting checkout");
+    alert("Error executing checkout redirect.");
   }
 }
