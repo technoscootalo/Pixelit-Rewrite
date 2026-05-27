@@ -49,6 +49,9 @@ router.get("/settings", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/settings.html"));
 });
 
+router.get("/inventory", requireLoggedIn, requireNotBanned, (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/inventory.html"));
+});
 
 /* 
 router.get("/store", requireLoggedIn, requireNotBanned, (req, res) => {

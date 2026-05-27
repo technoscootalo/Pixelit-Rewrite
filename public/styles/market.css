@@ -9,6 +9,7 @@ body {
   overflow-x: hidden;
 }
 
+
 body {
   font-family: 'Pixelify Sans', sans-serif;
   color: white;
@@ -34,98 +35,97 @@ main {
   padding: 100px 16px 110px;
 }
 
-.weeklyBlookContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 180px));
-  gap: 16px;
-  align-items: start;
-  justify-content: end;
-  width: 100%;
-  margin-left: -70px;
-  margin-right: 0;
-  padding-right: 16px;
-  padding-bottom: 20px;
-}
 
 .weeklyBlookCard {
   width: 180px;
   height: 220px;
-  padding: 14px 12px;
   box-sizing: border-box;
-
   transform: translateX(-10px);
-  background-color: #5e046e;
+  
+  background: #5e046e;
   color: white;
-
-  border-radius: 8px;
-  padding: 6px 10px;
-
-  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
+  
+  border-radius: 10px;
+  padding: 14px 12px;
+  box-shadow: 
+    inset 0 -4px 0 rgba(0, 0, 0, 0.35), 
+    0 10px 20px rgba(0, 0, 0, 0.4);
 
   position: relative;
   overflow: hidden;
-
   text-align: center;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
+  justify-content: space-between; 
+  
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
 }
 
 .weeklyBlookCard::before {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: 12px;
+  padding: 2px;
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
   pointer-events: none;
 }
 
 .weeklyBlookImage {
-  width: 120px;
-  height: 120px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 8px 10px rgba(0,0,0,0.55));
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6));
+  cursor: pointer;
   z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.weeklyBlookCard:hover .weeklyBlookImage {
+  transform: scale(1.06) rotate(2deg);
 }
 
 .weeklyBlookName {
   font-weight: 800;
   color: white;
   font-size: 15px;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
   z-index: 1;
+  margin-top: 4px;
 }
 
 .weeklyBlookCost {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: white;
+  justify-content: center;
+  gap: 4px;
+  color: #ffd700;
   font-weight: 900;
-  font-size: 18px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  font-size: 17px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
   z-index: 1;
+  margin-bottom: 2px;
 }
 
 .weeklyBuyBtn {
-  background: rgba(94, 4, 110, 0.9);
-  color: white;
-  padding: 7px 14px;
+  background: #ffaa00; 
+  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
+  color: white; 
+  width: 100%; 
+  padding: 8px 0;
   border-radius: 5px;
+  border: none;
   cursor: pointer;
   font-family: 'Pixelify Sans', sans-serif;
-  font-weight: 800;
-  border: none;
-
-  box-shadow:
-    inset 0 -0.165vw #53055c,
-    inset 0 2px rgba(255,255,255,0.12),
-    3px 3px 15px rgba(0, 0, 0, 0.6);
-  transition: transform 0.15s ease, background 0.2s ease;
+  font-weight: 900;
+  font-size: 13
 }
-
 
 .weeklyHeader {
   align-items: baseline;
@@ -133,6 +133,7 @@ main {
   gap: 16px;
   margin: 0 0 18px 240px;
   border-radius: 14px;
+  width:100px;
 }
 
 .weeklyTitle {
@@ -140,6 +141,7 @@ main {
   font-weight: 800;
   color: #ffe66d;
   text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  width:100px;
 }
 
 .weeklyCountdown {
@@ -147,6 +149,7 @@ main {
   font-weight: 700;
   color: white;
   opacity: 0.95;
+  width:170px;
 }
 
 #weeklyCountdownText {
@@ -160,22 +163,39 @@ main h1 {
   font-size: clamp(1.8rem, 4vw, 2.6rem);
 }
 
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: flex-start; 
+  align-items: left;        
+}
+
 #packContainer {
   display: grid;
-  justify-content: end;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 20px;
+  width: 90%;
+  max-width: 800px;
+  aspect-ratio: 1 / 1; 
+  
+  margin-top: -400px;
+  margin-left: 530px;
+  margin-right: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-  grid-template-columns: repeat(auto-fill, minmax(250px, 250px));
-  gap: 16px;
-  align-items: stretch;
-
-  width: 100%;
-  max-width: 520px;
-  margin-left: auto;
-  margin-right: 0;
-
-  margin-top: -425px;
-
-  padding-bottom: 20px;
+#packContainer > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .box {
@@ -205,8 +225,6 @@ main h1 {
 .box > p {
   margin: 6px 0 0 0 !important;
 }
-
-
 
 .box:hover {
   transform: translateY(-4px);
@@ -374,16 +392,52 @@ main h1 {
 
 @media screen and (max-width: 768px) {
   main {
-    padding: 90px 14px 110px;
+    padding: 90px 14px 120px;
+  }
+
+  main h1 {
+    margin-left: 0 !important;
+    font-size: clamp(1.4rem, 4.6vw, 2.1rem);
   }
 
   #packContainer {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 14px;
+    width: 95%;
+    max-width: 520px;
+    margin-top: -340px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .box {
-    min-height: 180px;
+    min-height: 170px;
+    width: auto;
+  }
+
+  .weeklyHeader {
+    margin: 0 auto 18px auto !important;
+    width: calc(100% - 20px);
+  }
+
+  .weeklyTitle,
+  .weeklyCountdown {
+    width: auto;
+  }
+
+  .marketTopBar {
+    left: 50%;
+    top: auto;
+    bottom: 88px;
+    transform: translateX(-50%);
+    font-size: 28px;
+    width: 160px;
+  }
+
+  .marketTokens {
+    padding: 10px 14px;
+    gap: 14px;
+    border-radius: 0 0 16px 16px;
   }
 
   .instantOpen {
@@ -415,10 +469,33 @@ main h1 {
 
 @media screen and (max-width: 480px) {
   main {
-    padding: 90px 12px 120px;
+    padding: 90px 12px 130px;
+  }
+
+  main h1 {
+    font-size: clamp(1.2rem, 6vw, 1.7rem);
   }
 
   #packContainer {
     gap: 12px;
+    max-width: 390px;
+    margin-top: -300px;
+  }
+
+  .box {
+    min-height: 150px;
+  }
+
+  .marketTopBar {
+    bottom: 78px;
+    width: 150px;
+    height: 46px;
+    font-size: 26px;
+  }
+
+  .marketTokens {
+    padding: 9px 12px;
+    gap: 12px;
   }
 }
+
