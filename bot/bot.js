@@ -15,8 +15,8 @@ const {
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 
+const User = require("../backend/models/User"); 
 const AccessKey = require("../backend/models/AccessKey");
-const User = require("../backend/models/User");
 const Blook = require("../backend/models/Blook");
 
 mongoose.set("strictQuery", true);
