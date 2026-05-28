@@ -335,9 +335,9 @@ function parseBodyText(bodyElement, text, isEdited, parentRow) {
     bodyElement.appendChild(media);
   }
   else {
-    let escapedBase = safeEscapeText(cleanText);
-    bodyElement.innerHTML = parseMentions(renderChatContentWithEmoji(escapedBase), parentRow);
-  }
+    const emojiProcessed = renderChatContentWithEmoji(cleanText);
+    bodyElement.innerHTML = parseMentions(emojiProcessed, parentRow);
+}
 
   if (isEdited) appendEditedTag(bodyElement);
 }
@@ -797,5 +797,28 @@ sendButton.onmousedown = () => {
 sendButton.onmouseup = () => {
   sendButton.style.transform = "translateY(-2px) scale(1)";
 };
+
+emojiButton.style.cssText = `
+  width: 60px; border: none; border-radius: 6px; font-size: 20px;
+  background: #6f057a; box-shadow: inset 0 -3px #0003; color: white;
+  font-family: 'Pixelify Sans', sans-serif; cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+  display: flex; align-items: center; justify-content: center;
+`;
+
+emojiButton.onmouseenter = () => {
+  emojiButton.style.transform = "translateY(-2px)";
+  emojiButton.style.background = "#7c068d";
+  emojiButton.style.boxShadow = "inset 0 -3px #0005, 0 4px 10px rgba(0,0,0,0.2)";
+};
+
+emojiButton.onmouseleave = () => {
+  emojiButton.style.transform = "translateY(0px)";
+  emojiButton.style.background = "#6f057a";
+  emojiButton.style.boxShadow = "inset 0 -3px #0003";
+};
+
+emojiButton.onmousedown = () => emojiButton.style.transform = "translateY(1px) scale(0.98)";
+emojiButton.onmouseup = () => emojiButton.style.transform = "translateY(-2px) scale(1)";
 
 if (window.twemoji) window.twemoji.parse(messagesEl, { folder: "svg", ext: ".svg" });
