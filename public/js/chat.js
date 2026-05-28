@@ -24,6 +24,8 @@ const ROLE_COLOR_MAP = {
 
 let currentClientUsername = "";
 let currentClientUserId = "";
+
+const onlineUsersCounterEl = document.getElementById("onlineUsersCounter");
 let activeReplyTarget = null;
 let lastMsgUsername = null;
 let lastMsgTime = null;
@@ -626,6 +628,7 @@ socket.on("initClient", ({ username, userId }) => {
   if (userId) currentClientUserId = userId;
 });
 
+
 socket.on("chatHistory", (messages) => {
   messagesEl.innerHTML = "";
 
@@ -714,6 +717,60 @@ socket.on("messageDeleted", ({ messageId }) => {
 socket.on("connect_error", (error) => {
   console.error("Chat socket connect error:", error);
 });
+
+function updateOnlineCounter({ onlineCount, source = "presence:update" } = {}) {
+  if (!onlineUsersCounterEl) return;
+
+  const safeCount = typeof onlineCount === "number" ? onlineCount : 0;
+  const isOnlyMe = safeCount <= 1;
+
+  if (!onlineUsersCounterEl.dataset.initialized) {
+    onlineUsersCounterEl.innerHTML = "";
+
+    const dot = document.createElement("span");
+    dot.className = isOnlyMe ? "dot" : "dot green";
+
+    const label = document.createElement("span");
+    label.className = "online-users-counter-label";
+    label.textContent = source === "loading" ? "Online Users : ..." : `Online Users  : ${safeCount}`;
+
+    onlineUsersCounterEl.appendChild(dot);
+    onlineUsersCounterEl.appendChild(label);
+
+    onlineUsersCounterEl.dataset.initialized = "true";
+    onlineUsersCounterEl.dataset.lastSource = source;
+    return;
+  }
+
+  const dotEl = onlineUsersCounterEl.querySelector("span.dot, span.dot.green");
+  const labelEl = onlineUsersCounterEl.querySelector(".online-users-counter-label");
+
+  if (dotEl) {
+    dotEl.className = isOnlyMe ? "dot" : "dot green";
+  }
+  if (labelEl) {
+    labelEl.textContent = source === "loading" ? "Online Users : ..." : `Online Users  : ${safeCount}`;
+  }
+
+  onlineUsersCounterEl.dataset.lastSource = source;
+}
+
+let presenceLoadingTimeout = setTimeout(() => {
+  if (!onlineUsersCounterEl) return;
+  updateOnlineCounter({ onlineCount: 0, source: "loading" });
+}, 1500);
+
+socket.on("presence:update", ({ onlineCount } = {}) => {
+  if (!onlineUsersCounterEl) return;
+  clearTimeout(presenceLoadingTimeout);
+  updateOnlineCounter({ onlineCount: onlineCount, source: "presence:update" });
+});
+
+if (onlineUsersCounterEl) {
+  updateOnlineCounter({ onlineCount: 0, source: "loading" });
+}
+
+
 
 chatForm.addEventListener("submit", (event) => {
   event.preventDefault();

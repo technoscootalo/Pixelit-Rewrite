@@ -537,6 +537,10 @@ img.emoji,
 }
 
 @media (max-width: 768px) {
+  .mobile_nav{
+    display: none !important;
+  }
+
   .chat-container {
     inset: 0;
     width: 100%;

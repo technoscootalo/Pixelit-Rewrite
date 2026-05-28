@@ -266,56 +266,9 @@ function showModal(message, redirectToLogin = false) {
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
-  initWeeklyCountdown();
-  fetchWeeklyBlooks();
   fetchPacks();
 });
 
-function formatRemaining(ms) {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-}
-
-async function initWeeklyCountdown() {
-  try {
-    const el = document.getElementById("weeklyCountdownText");
-    if (!el) return;
-
-    const res = await fetch("/api/weekly/market", { method: "GET" });
-    const text = await res.text();
-
-    if (!res.ok) {
-      console.error("Failed to load weekly window:", text);
-      return;
-    }
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      console.error("Failed to parse weekly window JSON:", text);
-      return;
-    }
-
-    const weekEndsAt = new Date(data.weekEndsAt);
-
-
-    const tick = () => {
-      const remaining = weekEndsAt.getTime() - Date.now();
-      el.textContent = formatRemaining(remaining);
-    };
-
-    tick();
-    setInterval(tick, 1000);
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 async function fetchUser() {
   try {
@@ -404,76 +357,6 @@ function createWeeklyBlookCard(blook) {
   });
 
   return card;
-}
-
-async function fetchWeeklyBlooks() {
-  try {
-    const res = await fetch("/api/weekly/blooks", { method: "GET" });
-    const text = await res.text();
-    if (!res.ok) {
-      console.error("Failed to load weekly blooks:", text);
-      return;
-    }
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { blooks: [] };
-    }
-
-    const container = document.getElementById("weeklyBlookContainer");
-    if (!container) return;
-
-    container.innerHTML = "";
-    const blooks = Array.isArray(data?.blooks) ? data.blooks : [];
-    blooks.forEach(b => container.appendChild(createWeeklyBlookCard(b)));
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function buyWeeklyBlook(blookId) {
-  if (!blookId) return;
-  if (typeof window.showLoader === "function") window.showLoader();
-
-  try {
-    if (userTokens <= 0) {
-      showModal("Not enough tokens!");
-      return;
-    }
-
-    const res = await fetch(`/api/weekly/blooks/buy/${encodeURIComponent(blookId)}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({})
-    });
-
-    if (res.status === 401) {
-      showModal("Not logged in", true);
-      return;
-    }
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      showModal(data?.error || "Failed to buy");
-      return;
-    }
-
-    userTokens = data.tokens;
-    updateTokens();
-
-    if (typeof data?.blook) {
-      showResult(data.blook, { phase: "reveal", skipIntro: true });
-    }
-  } catch (err) {
-    console.error(err);
-    showModal(err.message || "Something went wrong");
-  } finally {
-    if (typeof window.hideLoader === "function") window.hideLoader();
-  }
 }
 
 function createPack(pack) {

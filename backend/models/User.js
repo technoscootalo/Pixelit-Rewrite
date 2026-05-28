@@ -34,6 +34,16 @@ const userSchema = new mongoose.Schema({
     default: {}
   },
 
+  inbox: {
+    type: [{
+      senderUsername: String,
+      content: String,
+      pfp: String,
+      createdAt: { type: Date, default: Date.now }
+    }],
+    default: []
+  },
+
   muted: { type: Boolean, default: false },
   muteReason: { type: String, default: "No Reason Provided" },
 
@@ -51,13 +61,6 @@ const userSchema = new mongoose.Schema({
   joinDate: {
     type: String,
     default: () => new Date().toISOString(),
-  },
-
-  createdAt: { type: Date, default: Date.now },
-
-  lastClaim: {
-    type: Date,
-    default: null,
   },
 
   discordId: {

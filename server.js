@@ -18,12 +18,9 @@ const loggedinRoute = require("./backend/routers/auth/loggedin");
 const logoutRoute = require("./backend/routers/auth/logout");
 const userRoutes = require("./backend/routers/user");
 const packsRouter = require("./backend/routers/api/packs");
-const weeklyMarketRoute = require("./backend/routers/api/weeklyMarket");
 const changePfpRoute = require("./backend/routers/api/changePfp");
 const messagesRoute = require("./backend/routers/api/messages");
 const inboxRoute = require("./backend/routers/api/inbox");
-const inboxDeleteRoute = require("./backend/routers/api/inboxDelete");
-const inboxTestRoute = require("./backend/routers/api/inboxTest");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const viewUserRoute = require("./backend/routers/api/viewUser");
@@ -41,7 +38,6 @@ const blooksRoutes = require("./backend/routers/users/blooks");
 const userBlooksRoutes = require("./backend/routers/api/userBlooks");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
-const weeklyMarketRoutes = require("./backend/routers/api/weeklyMarket");
 const paypalWebhookRouter = require('./backend/routers/api/paypalWebhook')
 
 const app = express();
@@ -72,7 +68,6 @@ app.use("/api/blooks", blookRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/user/daily-wheel", dailyWheelRoute);
 app.use("/api/packs", packsRouter);
-app.use("/api/weekly/market", weeklyMarketRoute);
 app.use("/api/register", registerRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
@@ -80,7 +75,6 @@ app.use("/api/logout", logoutRoute);
 app.use("/api/messages", messagesRoute);
 app.use("/api/inbox", inboxRoute);
 app.use("/api/viewUser", viewUserRoute);
-app.use("/api/inbox/test", inboxTestRoute);
 app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/changePassword", changePasswordRouter);
 app.use("/api/changeUsername", changeUsernameRoute);
@@ -96,7 +90,6 @@ app.use("/api/users", blooksRoutes);
 app.use("/api/users/sell-blook", sellBlookRoute);
 app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
-app.use("/api/weekly", weeklyMarketRoutes);
 app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
 app.use("/", pages);
 
@@ -119,7 +112,10 @@ io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);
 });
 
+const onlineUsers = new Map();
+
 io.on("connection", async (socket) => {
+
     const session = socket.request.session;
 
     if (!session || !session.userId) {
@@ -135,7 +131,19 @@ io.on("connection", async (socket) => {
 
         socket.user = user;
 
+        if (!onlineUsers.has(user.id.toString())) {
+            onlineUsers.set(user.id.toString(), { username: user.username });
+        }
+
+        const count = onlineUsers.size;
+        io.emit("presence:update", { onlineCount: count });
+
         socket.emit("initClient", { username: user.username, userId: user.id.toString() });
+
+        if (user.username) {
+            socket.join(`user:${user.username}`);
+        }
+
 
         try {
             const currentEmotes = await Emoji.find({}, "name imageUrl");
@@ -147,7 +155,7 @@ io.on("connection", async (socket) => {
 
         const recentMessages = await Message.find({})
             .sort({ createdAt: -1 })
-            .limit(200)
+            .limit(1000)
             .lean();
 
         socket.emit("chatHistory", recentMessages.reverse());
@@ -249,7 +257,20 @@ io.on("connection", async (socket) => {
         console.error("Socket connection error:", err);
         socket.disconnect(true);
     }
+
+    socket.on("disconnect", () => {
+        try {
+            const uid = socket.user?.id?.toString?.() || socket.user?.id;
+            if (uid && onlineUsers.has(uid)) {
+                onlineUsers.delete(uid);
+                io.emit("presence:update", { onlineCount: onlineUsers.size });
+            }
+        } catch (e) {
+            console.error("disconnect presence error:", e);
+        }
+    });
 });
+
 
 httpServer.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

@@ -6,255 +6,95 @@ const User = require("../../models/User");
 
 const { rateLimit } = require("../../middleware/rateLimit");
 
-const {
-  getWeekWindowUTC,
-  isPackActiveThisWeek
-} = require("../../utils/weeklyMarket");
-
-const DISCORD_WEBHOOK =
-  "https:discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
 
 router.get("/", async (req, res) => {
-
   try {
-
-    const { weekKey } =
-      getWeekWindowUTC(new Date());
-
-    const packs = await Pack.find({
-      visible: true
-    }).populate("blooks");
-
-    const filtered = packs.filter((p) => {
-
-      if (!p || p.rotation !== "weekly") {
-        return true;
-      }
-
-      return isPackActiveThisWeek(
-        p,
-        weekKey
-      );
-
-    });
-
-    return res.json(filtered);
-
+    const packs = await Pack.find({ visible: true }).populate("blooks");
+    return res.json(packs);
   } catch (err) {
-
     console.error(err);
-
-    return res.status(500).json({
-      error: "Failed to fetch packs"
-    });
-
+    return res.status(500).json({ error: "Failed to fetch packs" });
   }
-
 });
-
 
 router.post(
   "/open/:packName",
-
   rateLimit({
     max: 3,
     windowMs: 8 * 1000
   }),
-
   async (req, res) => {
-
     try {
-
       if (!req.session.userId) {
-        return res.status(401).json({
-          error: "Not logged in"
-        });
+        return res.status(401).json({ error: "Not logged in" });
       }
 
-      const packName =
-        req.params.packName?.trim();
+      const packName = req.params.packName?.trim();
+      if (!packName) return res.status(400).json({ error: "Invalid pack name" });
 
-      if (!packName) {
-        return res.status(400).json({
-          error: "Invalid pack name"
-        });
+      const pack = await Pack.findOne({ name: packName }).populate("blooks");
+      if (!pack) return res.status(404).json({ error: "Pack not found" });
+      if (!pack.visible) return res.status(403).json({ error: "Pack unavailable" });
+
+      if (!Array.isArray(pack.blooks) || pack.blooks.length === 0) {
+        return res.status(400).json({ error: "Pack has no blooks" });
       }
 
-      const pack = await Pack.findOne({
-        name: packName
-      }).populate("blooks");
+      const user = await User.findOneAndUpdate(
+        { id: req.session.userId, tokens: { $gte: pack.cost } },
+        { $inc: { tokens: -pack.cost, packs: 1, opened: 1 } },
+        { new: true }
+      );
 
-      if (!pack) {
-        return res.status(404).json({
-          error: "Pack not found"
-        });
-      }
-
-      if (!pack.visible) {
-        return res.status(403).json({
-          error: "Pack unavailable"
-        });
-      }
-
-      if (pack.rotation === "weekly") {
-
-        const { weekKey } =
-          getWeekWindowUTC(new Date());
-
-        if (
-          !isPackActiveThisWeek(
-            pack,
-            weekKey
-          )
-        ) {
-          return res.status(403).json({
-            error: "Pack unavailable"
-          });
-        }
-
-      }
-
-      if (
-        !Array.isArray(pack.blooks) ||
-        pack.blooks.length === 0
-      ) {
-        return res.status(400).json({
-          error: "Pack has no blooks"
-        });
-      }
-
-      const user =
-        await User.findOneAndUpdate(
-
-          {
-            id: req.session.userId,
-            tokens: {
-              $gte: pack.cost
-            }
-          },
-
-          {
-            $inc: {
-              tokens: -pack.cost,
-              packs: 1,
-              opened: 1
-            }
-          },
-
-          {
-            new: true
-          }
-
-        );
-
-      if (!user) {
-        return res.status(400).json({
-          error: "Not enough tokens"
-        });
-      }
+      if (!user) return res.status(400).json({ error: "Not enough tokens" });
 
       const roll = Math.random() * 100;
-
       let current = 0;
-
       let wonBlook = null;
 
       for (const blook of pack.blooks) {
-
         current += Number(blook.chance) || 0;
-
         if (roll <= current) {
-
           wonBlook = blook;
-
           break;
-
         }
-
       }
 
-      if (!wonBlook) {
-        return res.status(500).json({
-          error: "Roll failed"
-        });
-      }
+      if (!wonBlook) return res.status(500).json({ error: "Roll failed" });
 
-      const blookName =
-        wonBlook.name ||
-        wonBlook.title ||
-        wonBlook.blookName;
+      const blookName = wonBlook.name || wonBlook.title || wonBlook.blookName;
 
       await User.updateOne(
-
-        {
-          id: req.session.userId
-        },
-
-        {
-          $inc: {
-            [`blooks.${blookName}`]: 1
-          }
-        }
-
+        { id: req.session.userId },
+        { $inc: { [`blooks.${blookName}`]: 1 } }
       );
 
-      const updatedUser =
-        await User.findOne({
-          id: req.session.userId
-        });
+      const updatedUser = await User.findOne({ id: req.session.userId });
 
       try {
-
         await fetch(DISCORD_WEBHOOK, {
-
           method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-
-            content:
-              `${updatedUser.username} has opened ${pack.name} and got a ${blookName}`
-
+            content: `${updatedUser.username} has opened ${pack.name} and got a ${blookName}`
           })
-
         });
-
       } catch (err) {
-
-        console.error(
-          "Webhook error:",
-          err
-        );
-
+        console.error("Webhook error:", err);
       }
 
       return res.json({
-
         success: true,
-
         blook: wonBlook,
-
         tokens: updatedUser.tokens,
-
         packs: updatedUser.packs,
-
         blooks: updatedUser.blooks
-
       });
-
     } catch (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        error: "Failed to open pack"
-      });
-
+      return res.status(500).json({ error: "Failed to open pack" });
     }
-
   }
 );
 

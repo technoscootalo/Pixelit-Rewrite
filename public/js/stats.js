@@ -96,6 +96,7 @@ let inboxListEl = null;
 let socket = null;
 
 function renderInboxMessage(msg) {
+
   const row = document.createElement("div");
   row.style.cssText = `
     display:flex;
@@ -118,7 +119,7 @@ function renderInboxMessage(msg) {
 
   const top = document.createElement("div");
   top.style.cssText = `font-size:16px;font-weight:800;opacity:0.95;`;
-  top.textContent = msg.username ? msg.username : "Someone";
+  top.textContent = msg.username ? msg.username : "System";
 
   const text = document.createElement("div");
   text.style.cssText = `margin-top:4px;font-size:14px;opacity:0.9;line-height:1.3;`;
@@ -137,6 +138,7 @@ function renderInboxMessage(msg) {
   return row;
 }
 
+
 async function fetchInbox() {
   const res = await fetch("/api/inbox", { credentials: "include" });
   if (!res.ok) return [];
@@ -144,21 +146,25 @@ async function fetchInbox() {
   return data.messages || [];
 }
 
-function ensureInboxUI() {
-  if (!inboxButton) return;
-  if (inboxModal) return;
+function isChatMessage(msg) {
+  // With corrected backend inbox, inbox should only contain notifications.
+  // Keep this as a safety net; use notification field names.
+  const sender = (msg?.senderUsername || msg?.username || "").toString();
+  const content = (msg?.content || "").toString();
+  const text = `${sender} ${content}`.toLowerCase();
+  return text.includes("chat");
 }
+
 
 async function loadInboxIntoModal() {
   if (!inboxModal || !inboxListEl) return;
 
-
-
   inboxListEl.innerHTML = "";
 
   const messages = await fetchInbox();
+  const filtered = Array.isArray(messages) ? messages.filter((m) => !isChatMessage(m)) : [];
 
-  if (!Array.isArray(messages) || messages.length === 0) {
+  if (!Array.isArray(filtered) || filtered.length === 0) {
     const empty = document.createElement("div");
     empty.textContent = "No messages";
     empty.style.cssText = `display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:18px;opacity:0.9;text-align:center;`;
@@ -166,8 +172,9 @@ async function loadInboxIntoModal() {
     return;
   }
 
-  messages.forEach((m) => {
+  filtered.forEach((m) => {
     const row = renderInboxMessage(m);
+
 
     const del = document.createElement("button");
     del.textContent = "✕";
@@ -255,6 +262,7 @@ inboxButton && inboxButton.addEventListener("click", async () => {
 
       socket.on("inbox:new", (msg) => {
         if (!msg) return;
+        if (isChatMessage(msg)) return;
         showGiftToast(msg);
         if (inboxModal && inboxListEl) {
           loadInboxIntoModal();
