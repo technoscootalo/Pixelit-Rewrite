@@ -291,6 +291,24 @@ img.emoji,
   transform: translateY(-2px);
 }
 
+.emojiContainer {
+  width: 60px;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    background: rgb(111, 5, 122);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px -3px inset;
+    color: white;
+    font-family: "Pixelify Sans";
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(0px);
+}
+
+
 .chat-toast {
   position: fixed;
   top: 40px;

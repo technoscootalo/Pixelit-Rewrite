@@ -39,10 +39,9 @@ if (!emojiPopupEl) {
     position: absolute;
     bottom: 85px;
     right: 20px;
-    width: 340px;
-    height: 350px;
+    width: 240px;
     background-color: #55145c;
-    box-shadow: inset 0 -0.265vw #410b47, 3px 3px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 -0.365vw #410b47, 3px 3px 15px rgba(0, 0, 0, 0.5);
     border-radius: 12px;
     display: none;
     flex-direction: column;
@@ -52,7 +51,7 @@ if (!emojiPopupEl) {
   `;
 
   const headerBar = document.createElement("div");
-  headerBar.textContent = "Pixelit Emoji's";
+  headerBar.textContent = "Emojis";
   headerBar.style.cssText = `
     background-color: #6f057a;
     color: white;
@@ -69,8 +68,8 @@ if (!emojiPopupEl) {
   gridContainer.style.cssText = `
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
     padding: 12px;
-    border-radius: 10px;
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -99,33 +98,37 @@ socket.on("emotesList", (emotesCollection) => {
     btn.type = "button";
     btn.title = emote.name;
     btn.style.cssText = `
-      border-radius: 10px;
-      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid transparent;
+      border-radius: 6px;
       padding: 2px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: transparent;
-      width: 50px;
-      height: 50px;
+      width: 38px;
+      height: 38px;
       transition: background 0.15s ease, transform 0.1s ease, border-color 0.1s ease;
     `;
 
     const img = document.createElement("img");
     img.src = emote.imageUrl;
-    img.alt = emote.name;
+    img.alt = `:${emote.name}:`;
     img.style.cssText = `
-      width: 100%;
-      height: 100%;
+      width: 30px;
+      height: 30px;
       object-fit: contain;
     `;
     btn.appendChild(img);
     
     btn.onmouseenter = () => { 
+      btn.style.background = "rgba(255, 255, 255, 0.2)"; 
+      btn.style.borderColor = "white";
       btn.style.transform = "scale(1.08)"; 
     };
     btn.onmouseleave = () => { 
+      btn.style.background = "rgba(255, 255, 255, 0.08)"; 
+      btn.style.borderColor = "transparent";
       btn.style.transform = "scale(1)"; 
     };
     
@@ -255,6 +258,12 @@ function formatTimestamp(timestamp) {
   }
 }
 
+function safeEscapeText(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function parseMentions(htmlContent, parentRow) {
   const isDirectReplyToMe = parentRow.hasAttribute("data-reply-to-user") && 
     parentRow.getAttribute("data-reply-to-user").toLowerCase() === currentClientUsername.toLowerCase();
@@ -270,70 +279,73 @@ function parseMentions(htmlContent, parentRow) {
     
     if (isMe) {
       parentRow.classList.add("mention-highlight");
-      return `<span class="user-mention-tag">@${username}</span>`;
+      return `<span class="user-mention-tag">@${safeEscapeText(username)}</span>`;
     }
     
-    return match;
+    return `<span class="chat-raw-mention">@${safeEscapeText(username)}</span>`;
   });
 }
 
 function parseBodyText(bodyElement, text, isEdited, parentRow) {
   bodyElement.innerHTML = "";
+  const cleanText = text.trim();
+
+  const imgRegex = /\.(apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjpg|png|svg|webp)(\?[^\s]*)?$/i;
+  const videoRegex = /\.(mp4|webm|ogg|m4v)(\?[^\s]*)?$/i;
+  const audioRegex = /\.(mp3|wav|aac|m4a|ogg)(\?[^\s]*)?$/i;
   
-  const imageRegex = /https?:\/\/[^\s]+?\.(apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjpg|png|svg|webp)(\?[^\s]*)?/i;
-  const generalUrlRegex = /(blob:)?https?:\/\/[^\s]+/i;
+  const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/)?([a-zA-Z0-9_-]{11})/;
+  const spotifyRegex = /https:\/\/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/;
+  const scRegex = /https:\/\/soundcloud\.com\/[\w-]+\/[\w-]+/;
 
-  if (imageRegex.test(text)) {
-    const imageUrl = text.match(imageRegex)[0];
-    
-    const textNode = document.createElement("div");
-    let baseTextHtml = renderChatContentWithEmoji(text.replace(imageUrl, '').trim());
-    textNode.innerHTML = parseMentions(baseTextHtml, parentRow);
-    
-    if (textNode.innerHTML.trim() !== "") {
-        bodyElement.appendChild(textNode);
-    }
+  const mediaStyle = "max-width: 100%; border-radius: 8px; margin-top: 5px; display: block;";
 
-    const mediaImg = document.createElement("img");
-    mediaImg.className = "chat-attached-media";
-    mediaImg.src = imageUrl;
-    mediaImg.alt = "Shared Media Image";
-    
-    mediaImg.onload = () => {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    };
-    
-    mediaImg.onerror = () => {
-      const fallbackLink = document.createElement("a");
-      fallbackLink.href = imageUrl;
-      fallbackLink.target = "_blank";
-      fallbackLink.style.cssText = "color: #ffd6ff; text-decoration: underline; font-size: 18px; word-break: break-all;";
-      fallbackLink.textContent = imageUrl;
-      bodyElement.appendChild(fallbackLink);
-    };
-    
-    mediaImg.addEventListener("click", () => {
-      openImageModal(imageUrl);
-    });
-
-    bodyElement.appendChild(mediaImg);
-  } else if (generalUrlRegex.test(text)) {
-    const matchedUrl = text.match(generalUrlRegex)[0];
-    bodyElement.innerHTML = `<a href="${matchedUrl}" target="_blank" style="color: #ffd6ff; text-decoration: underline; font-size: 18px; word-break: break-all;">${matchedUrl}</a>`;
-  } else {
-    let baseTextHtml = renderChatContentWithEmoji(text);
-    bodyElement.innerHTML = parseMentions(baseTextHtml, parentRow);
+  if (ytRegex.test(cleanText)) {
+    const videoId = cleanText.match(ytRegex)[1];
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.style.cssText = `${mediaStyle} width: 320px; height: 180px;`;
+    bodyElement.appendChild(iframe);
+  }
+  else if (spotifyRegex.test(cleanText)) {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://open.spotify.com/embed/${cleanText.split('.com/')[1]}`;
+    iframe.style.cssText = `${mediaStyle} width: 320px; height: 80px;`;
+    bodyElement.appendChild(iframe);
+  }
+  else if (scRegex.test(cleanText)) {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanText)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false`;
+    iframe.style.cssText = `${mediaStyle} width: 320px; height: 160px;`;
+    bodyElement.appendChild(iframe);
+  }
+  else if (imgRegex.test(cleanText)) {
+    const img = document.createElement("img");
+    img.src = cleanText;
+    img.style.cssText = `${mediaStyle} max-height: 250px; cursor: pointer;`;
+    img.addEventListener("click", () => openImageModal(cleanText));
+    bodyElement.appendChild(img);
+  }
+  else if (videoRegex.test(cleanText) || audioRegex.test(cleanText)) {
+    const type = videoRegex.test(cleanText) ? "video" : "audio";
+    const media = document.createElement(type);
+    media.src = cleanText;
+    media.controls = true;
+    media.style.cssText = `${mediaStyle} ${type === 'video' ? 'width: 320px;' : 'width: 280px;'}`;
+    bodyElement.appendChild(media);
+  }
+  else {
+    let escapedBase = safeEscapeText(cleanText);
+    bodyElement.innerHTML = parseMentions(renderChatContentWithEmoji(escapedBase), parentRow);
   }
 
-  if (isEdited) {
-    appendEditedTag(bodyElement);
-  }
+  if (isEdited) appendEditedTag(bodyElement);
 }
 
 function appendEditedTag(element) {
   const editedSpan = document.createElement("span");
   editedSpan.className = "edited-tag";
-  editedSpan.textContent = "(edited)";
+  editedSpan.textContent = " (edited)";
   element.appendChild(editedSpan);
 }
 
@@ -436,7 +448,9 @@ function initiateReplyContext(messageId, username, contextExcerpt) {
   
   const textContainer = replyBarEl.querySelector(".reply-bar-info-text");
   if (textContainer) {
-    textContainer.innerHTML = `<i class="fa-solid fa-reply"></i> Replying to <span style="font-weight:bold; color:#fff275;">@${username}</span>: <span style="font-style:italic; opacity:0.8;">"${contextExcerpt}"</span>`;
+    const cleanUser = safeEscapeText(username);
+    const cleanExcerpt = safeEscapeText(contextExcerpt);
+    textContainer.innerHTML = `<i class="fa-solid fa-reply"></i> Replying to <span style="font-weight:bold; color:#fff275;">@${cleanUser}</span>: <span style="font-style:italic; opacity:0.8;">"${cleanExcerpt}"</span>`;
   }
   replyBarEl.classList.add("active");
   chatInput.focus();
@@ -468,7 +482,9 @@ function renderMessage(message, grouped = false) {
     lineHook.className = "reply-line-hook";
     
     const replyMeta = document.createElement("span");
-    replyMeta.innerHTML = `<i class="fa-solid fa-reply" style="font-size:11px; margin-right:4px; opacity:0.6;"></i> <span class="reply-preview-user">@${message.replyToUser || "Unknown"}</span> <span class="reply-preview-text">${message.replyToContent || ""}</span>`;
+    const safeReplyUser = safeEscapeText(message.replyToUser || "Unknown");
+    const safeReplyContent = safeEscapeText(message.replyToContent || "");
+    replyMeta.innerHTML = `<i class="fa-solid fa-reply" style="font-size:11px; margin-right:4px; opacity:0.6;"></i> <span class="reply-preview-user">@${safeReplyUser}</span> <span class="reply-preview-text">${safeReplyContent}</span>`;
     
     replyHookRow.appendChild(lineHook);
     replyHookRow.appendChild(replyMeta);
@@ -705,6 +721,11 @@ chatForm.addEventListener("submit", (event) => {
   const content = chatInput.value.trim();
   if (!content) return;
 
+  if (content.length > 256) {
+    showWarningToast("Message is too long! (Max 256 characters)");
+    return;
+  }
+
   const leetMap = {
     '0': 'o', '1': 'i', 'l': 'i', '3': 'e', '4': 'a', 
     '5': 's', '7': 't', '8': 'b', '$': 's', '@': 'a', 
@@ -772,3 +793,9 @@ sendButton.onmouseleave = () => {
 sendButton.onmousedown = () => {
   sendButton.style.transform = "translateY(1px) scale(0.98)";
 };
+
+sendButton.onmouseup = () => {
+  sendButton.style.transform = "translateY(-2px) scale(1)";
+};
+
+if (window.twemoji) window.twemoji.parse(messagesEl, { folder: "svg", ext: ".svg" });
