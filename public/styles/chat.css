@@ -454,12 +454,10 @@ img.emoji,
   border-bottom: 2px solid rgba(255, 234, 0, 0.4);
   display: inline-block;
 }
-
 .message.mention-highlight {
   background-color: rgb(255 234 0 / 27%) !important;
   border-left: 4px solid #ffeb3b;
 }
-
 .message.mention-highlight:hover {
   background-color: rgba(255, 234, 0, 0.1) !important;
 }
