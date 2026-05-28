@@ -9,6 +9,8 @@ const session = require("express-session");
 const connectDB = require("./backend/utils/db");
 const User = require("./backend/models/User");
 const Message = require("./backend/models/Messages");
+const Emoji = require("./backend/models/Emojis.js");
+
 const pages = require("./backend/routers/pages");
 const registerRoute = require("./backend/routers/auth/register");
 const loginRoute = require("./backend/routers/auth/login");
@@ -98,7 +100,6 @@ app.use("/api/weekly", weeklyMarketRoutes);
 app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
 app.use("/", pages);
 
-
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "src/views/404.html"));
 });
@@ -132,140 +133,118 @@ io.on("connection", async (socket) => {
             return socket.disconnect(true);
         }
 
+        socket.user = user;
+
+        socket.emit("initClient", { username: user.username, userId: user.id.toString() });
+
+        try {
+            const currentEmotes = await Emoji.find({}, "name imageUrl");
+            socket.emit("emotesList", currentEmotes);
+        } catch (dbErr) {
+            console.error("Failed loading container emotes for picker:", dbErr);
+            socket.emit("emotesList", []);
+        }
+
         const recentMessages = await Message.find({})
             .sort({ createdAt: -1 })
-            .limit(50)
+            .limit(200)
             .lean();
 
         socket.emit("chatHistory", recentMessages.reverse());
-        
-        socket.on('joinUserRoom', ({ username }) => {
-            if (!username || typeof username !== 'string') return;
-            socket.join(`user:${username}`);
-        });
-
-        socket.on('tradeRequest', ({ sender, recipient }) => {
-            if (!sender || !recipient) return;
-            if (sender === recipient) return;
-
-            const trade = tradeStore.createTrade({ sender, recipient });
-
-            io.to(`user:${recipient}`).emit('tradeRequest', {
-                sender,
-                recipient,
-                tradeId: trade.tradeId,
-            });
-        });
-
-
-
-        socket.on('joinTradeRoom', ({ tradeId, username }) => {
-            if (!tradeId || typeof tradeId !== 'string') return;
-            if (!username || typeof username !== 'string') return;
-            socket.join(`trade:${tradeId}`);
-        });
-
-
-
-        socket.on('tradeResponse', ({ sender, recipient, accepted, tradeId }) => {
-
-            if (!sender || !recipient || typeof accepted !== 'boolean') return;
-
-            const targetTrade = tradeId
-                ? tradeStore.getTrade(tradeId)
-                : null;
-
-            const trade = targetTrade || Array.from((tradeStore.trades || new Map()).values()).find(t => {
-                const a = t.sender === sender && t.recipient === recipient;
-                const b = t.sender === recipient && t.recipient === sender;
-                return a || b;
-            });
-
-            if (!trade) return;
-
-            if (!accepted) {
-                io.to(`user:${sender}`).emit('tradeDeclined', { by: recipient, tradeId: trade.tradeId });
-                tradeStore.deleteTrade(trade.tradeId);
-                return;
-            }
-
-            io.to(`user:${sender}`).emit('tradeAccepted', { tradeId: trade.tradeId });
-            io.to(`user:${recipient}`).emit('tradeAccepted', { tradeId: trade.tradeId });
-
-            io.to(`user:${sender}`).emit('tradeState', trade);
-            io.to(`user:${recipient}`).emit('tradeState', trade);
-
-        });
-
-        socket.on('tradeUpdate', ({ tradeId, username, offer }) => {
-            const trade = tradeStore.updateOffer({ tradeId, username, offer });
-            if (!trade) return;
-            io.to(`trade:${tradeId}`).emit('tradeUpdate', { username, offer });
-
-            io.to(`trade:${tradeId}`).emit('tradeState', trade);
-        });
-
-        socket.on('tradeAccept', ({ tradeId, username }) => {
-            const trade = tradeStore.setReady({ tradeId, username, ready: true });
-            if (!trade) return;
-            io.to(`trade:${tradeId}`).emit('tradeAccept', { username });
-        });
-
-        socket.on('tradeCancel', ({ tradeId, username }) => {
-            const trade = tradeStore.getTrade(tradeId);
-            if (!trade) return;
-            io.to(`trade:${tradeId}`).emit('tradeCancelled', { by: username });
-            tradeStore.deleteTrade(tradeId);
-        });
-
-        socket.on('tradeNotifySuccess', ({ tradeId }) => {
-            io.to(`trade:${tradeId}`).emit('tradeSuccess');
-        });
-
-        socket.on('tradeChat', ({ tradeId, sender, msg }) => {
-            io.to(`trade:${tradeId}`).emit('tradeChat', { sender, msg });
-        });
 
         socket.on("chatMessage", async (payload) => {
+            if (!payload || typeof payload.content !== "string") return;
 
-            if (!payload || typeof payload.content !== "string") {
-                return;
+            let content = payload.content.trim();
+            if (!content) return;
+
+            const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
+            const textMatches = [...content.matchAll(emoteRegex)];
+
+            if (textMatches.length > 0) {
+                const targetedNames = [...new Set(textMatches.map(m => m[1]))];
+                const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
+
+                const mapLookup = {};
+                matchedDbEmotes.forEach(e => {
+                    mapLookup[e.name] = e.imageUrl;
+                });
+
+                content = content.replace(emoteRegex, (fullMatch, tokenName) => {
+                    if (mapLookup[tokenName]) {
+                        return `<img src="${mapLookup[tokenName]}" class="chat-custom-emoji" alt=":${tokenName}:" title=":${tokenName}:" style="width: 32px; height: 32px; vertical-align: middle; object-fit: contain; margin: 0 2px;" />`;
+                    }
+                    return fullMatch; 
+                });
             }
 
-            const content = payload.content.trim();
-            if (!content) {
-                return;
-            }
-
-            const earnedTokens = Math.floor(Math.random() * 5) + 1; // 1 - 5 tokens per message
+            const earnedTokens = Math.floor(Math.random() * 5) + 1;
 
             await User.findOneAndUpdate(
-                { id: user.id },
+                { id: socket.user.id },
                 { $inc: { sent: 1, tokens: earnedTokens } },
                 { new: true }
             );
 
             const savedMessage = await Message.create({
-                userId: user.id,
-                username: user.username,
-                pfp: user.pfp,
-                badges: user.badges || [],
+                userId: socket.user.id.toString(),
+                username: socket.user.username,
+                pfp: socket.user.pfp,
+                badges: socket.user.badges || [],
                 content,
+                replyToId: payload.replyToId || null,
+                replyToUser: payload.replyToUser || null,
+                replyToContent: payload.replyToContent || null
             });
 
-
-            const broadcastMessage = {
-                userId: savedMessage.userId,
-                username: savedMessage.username,
-                pfp: savedMessage.pfp,
-                badges: savedMessage.badges || [],
-                content: savedMessage.content,
-                createdAt: savedMessage.createdAt,
-                _id: savedMessage._id,
-            };
-
-            io.emit("chatMessage", broadcastMessage);
+            io.emit("chatMessage", savedMessage);
         });
+
+        socket.on("editMessage", async ({ messageId, content }) => {
+            if (!messageId || typeof content !== "string" || !content.trim()) return;
+
+            const message = await Message.findById(messageId);
+            if (!message || message.userId !== socket.user.id.toString()) return;
+
+            let updatedContent = content.trim();
+
+            const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
+            const textMatches = [...updatedContent.matchAll(emoteRegex)];
+
+            if (textMatches.length > 0) {
+                const targetedNames = [...new Set(textMatches.map(m => m[1]))];
+                const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
+
+                const mapLookup = {};
+                matchedDbEmotes.forEach(e => {
+                    mapLookup[e.name] = e.imageUrl;
+                });
+
+                updatedContent = updatedContent.replace(emoteRegex, (fullMatch, tokenName) => {
+                    if (mapLookup[tokenName]) {
+                        return `<img src="${mapLookup[tokenName]}" class="chat-custom-emoji" alt=":${tokenName}:" title=":${tokenName}:" style="width: 32px; height: 32px; vertical-align: middle; object-fit: contain; margin: 0 2px;" />`;
+                    }
+                    return fullMatch;
+                });
+            }
+
+            message.content = updatedContent;
+            message.edited = true;
+            await message.save();
+
+            io.emit("messageEdited", { messageId: message._id, content: message.content });
+        });
+
+        socket.on("deleteMessage", async ({ messageId }) => {
+            if (!messageId) return;
+
+            const message = await Message.findById(messageId);
+            if (!message || message.userId !== socket.user.id.toString()) return;
+
+            await Message.deleteOne({ _id: messageId });
+            io.emit("messageDeleted", { messageId });
+        });
+
     } catch (err) {
         console.error("Socket connection error:", err);
         socket.disconnect(true);

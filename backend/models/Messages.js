@@ -5,16 +5,14 @@ const messageSchema = new mongoose.Schema({
   username: { type: String, required: true },
   pfp: {
     type: String,
-    default:
-      "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
+    default: "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
   },
   badges: { type: Array, default: [] },
   content: { type: String, required: true, trim: true },
-  replyTo: {
-    messageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
-    username: { type: String },
-    content: { type: String }
-  },
+  edited: { type: Boolean, default: false },
+  replyToId: { type: String, default: null },
+  replyToUser: { type: String, default: null },
+  replyToContent: { type: String, default: null }, 
   createdAt: { type: Date, default: Date.now },
 });
 
