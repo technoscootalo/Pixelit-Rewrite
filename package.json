@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
   "author": "IzumiiHD, Lemon, Iamgamedude, SOUNDGOD, Packman28, Dylanee300, Hjr, Buenar",
   "license": "ISC",
   "dependencies": {
