@@ -1,37 +1,33 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
   username: { type: String, required: true, trim: true, unique: true },
   password: { type: String, required: true },
-
-  accessKey: {
-    type: String,
-    required: true
-  },
+  accessKey: { type: String, required: true },
+  discordId: { type: String, default: null },
 
   pfp: {
     type: String,
-    default:
-      "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
+    default: "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
   },
-
   banner: {
     type: String,
-    default:
-      "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png",
+    default: "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png",
   },
-
-  id: { type: String, required: true, unique: true },
-
+  badges: { type: [String], default: [] },
   role: { type: String, default: "Player" },
 
   tokens: { type: Number, default: 0 },
   opened: { type: Number, default: 0 },
   sent: { type: Number, default: 0 },
-
-  blooks: {
-    type: Object,
-    default: {}
+  blooks: { type: Object, default: {} },
+  items: {
+    type: [{
+      itemName: String,
+      quantity: { type: Number, default: 1 }
+    }],
+    default: []
   },
 
   inbox: {
@@ -46,26 +42,15 @@ const userSchema = new mongoose.Schema({
 
   muted: { type: Boolean, default: false },
   muteReason: { type: String, default: "No Reason Provided" },
-
+  muteDuration: { type: Number, default: 0 },
+  
   banned: { type: Boolean, default: false },
   banReason: { type: String, default: "No Reason Provided" },
-
-  badges: {
-    type: [String],
-    default: []
-  },
-
   banDuration: { type: Number, default: 0 },
-  muteDuration: { type: Number, default: 0 },
 
   joinDate: {
     type: String,
     default: () => new Date().toISOString(),
-  },
-
-  discordId: {
-    type: String,
-    default: null,
   },
 });
 

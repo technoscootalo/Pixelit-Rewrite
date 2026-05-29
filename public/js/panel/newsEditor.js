@@ -289,7 +289,8 @@ async function loadArticles() {
 
 document.addEventListener("DOMContentLoaded", () => {
   ensureUI();
-  wireButtons();
+
+
 
   loadArticles().catch(err => {
     console.error(err);

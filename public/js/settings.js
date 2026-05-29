@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const usernameElement = document.getElementById("username");
   const roleElement = document.getElementById("role");
   const idElement = document.getElementById("id");
+  const discordIdElement = document.getElementById("discordId");
   const accessKeyElement = document.getElementById("accessKey");
   const joinDateElement = document.getElementById("date");
 
@@ -44,6 +45,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (joinDateElement) {
       joinDateElement.textContent = `Joined: ${formatJoinDate(userData.joinDate)}`;
+    }
+
+    if (discordIdElement) {
+        discordIdElement.textContent= `Discord ID: ${userData.discordId || "Unavailable"}`;
     }
 
     if (idElement) {
@@ -73,6 +78,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (roleElement) roleElement.textContent = "Role: Unavailable";
     if (joinDateElement) joinDateElement.textContent = "Joined: Unknown";
     if (idElement) idElement.textContent = "ID: Unavailable";
+    if (discordIdElement) discordIdElement.textContent = "Discord ID: Unavailable";
     if (accessKeyElement) accessKeyElement.textContent = "Access Key: Unavailable";
   }
 });
