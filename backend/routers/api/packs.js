@@ -6,7 +6,7 @@ const User = require("../../models/User");
 
 const { rateLimit } = require("../../middleware/rateLimit");
 
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1510120522988654812/PsMxHEN1nXdl1YSStCt1lal8qJIJUoKCmcwUouGue00AneEQlF0XZOXMtGCZ6x5avmhh";
 
 router.get("/", async (req, res) => {
   try {
@@ -77,7 +77,7 @@ router.post(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            content: `${updatedUser.username} has opened ${pack.name} and got a ${blookName}`
+            content: `**${updatedUser.username}** has opened **${pack.name}** and got a **${blookName}**`
           })
         });
       } catch (err) {

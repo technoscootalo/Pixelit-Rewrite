@@ -42,7 +42,7 @@ body {
 .profile-title {
   color: white;
   font-size: 32px;
-  text-align: center;
+  text-align: left;
 }
 
 .content-container {
@@ -76,11 +76,14 @@ body {
 }
 
 .changeUser,
-.changePass,
-.instantOpen {
+.changePass {
   text-decoration: underline white;
   text-decoration-thickness: 2px;
   cursor: pointer;
+}
+
+.chatRulesPopup {
+  text-decoration: none;
 }
 
 .developer,

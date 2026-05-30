@@ -6,7 +6,86 @@ const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const sendButton = document.querySelector(".chat-form button");
 const emojiButton = document.querySelector(".emojiContainer");
-const socket = io();
+
+(function setupChatRulesModal() {
+  try {
+    const KEY = "chatRulesPopup";
+    if (localStorage.getItem(KEY) === "hidden") return;
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 10000; padding: 20px; backdrop-filter: blur(8px);
+    `;
+
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+      background: #5e046e;
+      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+      padding: 40px; border-radius: 10px; width: 600px;
+      color: #fff; font-family: 'Pixelify Sans', sans-serif;
+      text-align: center; border: 1px solid rgba(255,255,255,0.1);
+    `;
+
+    const title = document.createElement("h2");
+    title.textContent = "Chat Guidelines";
+    title.style.cssText = `
+      margin: 0 0 30px 0; font-size: 38px; letter-spacing: 2px; 
+      text-shadow: 0px 4px 6px rgba(0,0,0,0.5);
+      border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px;
+    `;
+
+    const rulesContainer = document.createElement("div");
+    rulesContainer.style.cssText = `margin-bottom: 35px;`;
+    
+    const rules = [
+      "Be respectful to all members.",
+      "No spamming or flooding the chat.",
+      "Zero tolerance for hate speech or harassment.",
+      "No usage of scams or exploits.",
+      "Always report suspicious behavior to staff."
+    ];
+
+    rules.forEach(r => {
+      const ruleDiv = document.createElement("div");
+      ruleDiv.textContent = r;
+      // Added a subtle background and border to each rule to make them pop
+      ruleDiv.style.cssText = `
+        font-size: 20px; margin: 12px 0; padding: 12px;
+        background: rgba(0,0,0,0.2); border-radius: 6px;
+        border-left: 4px solid #c050d1; text-align: left;
+      `;
+      rulesContainer.appendChild(ruleDiv);
+    });
+
+    const okBtn = document.createElement("button");
+    okBtn.textContent = "I Understand";
+    okBtn.className = "edit-msg-modal-btn edit-msg-modal-btn-primary";
+
+    okBtn.onclick = () => {
+      localStorage.setItem(KEY, "hidden");
+      overlay.remove();
+    };
+
+    modal.append(title, rulesContainer, okBtn);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+  } catch (e) {
+    console.error("Chat rules modal failed:", e);
+  }
+})();
+
+const socket = io({
+
+  transports: ["websocket"],
+  reconnection: true,
+  reconnectionAttempts: 20,
+  reconnectionDelay: 500,
+  reconnectionDelayMax: 2000,
+});
+
 
 const ROLE_COLOR_MAP = {
   Owner: "#020202",
@@ -262,9 +341,19 @@ function formatTimestamp(timestamp) {
 
 function safeEscapeText(text) {
   const div = document.createElement("div");
-  div.textContent = text;
+  div.textContent = text == null ? "" : String(text);
   return div.innerHTML;
 }
+
+function sanitizeForMediaUrl(url) {
+  const raw = String(url || '').trim();
+  const lowered = raw.toLowerCase();
+  if (lowered.startsWith('javascript:')) return '';
+  if (lowered.startsWith('data:')) return '';
+  return raw;
+}
+
+
 
 function parseMentions(htmlContent, parentRow) {
   const isDirectReplyToMe = parentRow.hasAttribute("data-reply-to-user") && 
@@ -291,6 +380,14 @@ function parseMentions(htmlContent, parentRow) {
 function parseBodyText(bodyElement, text, isEdited, parentRow) {
   bodyElement.innerHTML = "";
   const cleanText = text.trim();
+  
+  if (/on\w+\s*=|javascript:/i.test(cleanText)) {
+    bodyElement.textContent = text;
+    if (isEdited) appendEditedTag(bodyElement);
+    return;
+  }
+
+
 
   const imgRegex = /\.(apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjpg|png|svg|webp)(\?[^\s]*)?$/i;
   const videoRegex = /\.(mp4|webm|ogg|m4v)(\?[^\s]*)?$/i;
@@ -305,25 +402,28 @@ function parseBodyText(bodyElement, text, isEdited, parentRow) {
   if (ytRegex.test(cleanText)) {
     const videoId = cleanText.match(ytRegex)[1];
     const iframe = document.createElement("iframe");
-    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`;
+
     iframe.style.cssText = `${mediaStyle} width: 320px; height: 180px;`;
     bodyElement.appendChild(iframe);
   }
   else if (spotifyRegex.test(cleanText)) {
     const iframe = document.createElement("iframe");
-    iframe.src = `https://open.spotify.com/embed/${cleanText.split('.com/')[1]}`;
+    const spotifyId = cleanText.split('.com/')[1];
+    iframe.src = `https://open.spotify.com/embed/${encodeURIComponent(spotifyId)}`;
     iframe.style.cssText = `${mediaStyle} width: 320px; height: 80px;`;
     bodyElement.appendChild(iframe);
   }
   else if (scRegex.test(cleanText)) {
     const iframe = document.createElement("iframe");
-    iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanText)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false`;
+    const safeUrl = sanitizeForMediaUrl(cleanText);
+    iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(safeUrl)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false`;
     iframe.style.cssText = `${mediaStyle} width: 320px; height: 160px;`;
     bodyElement.appendChild(iframe);
   }
   else if (imgRegex.test(cleanText)) {
     const img = document.createElement("img");
-    img.src = cleanText;
+    img.src = sanitizeForMediaUrl(cleanText);
     img.style.cssText = `${mediaStyle} max-height: 250px; cursor: pointer;`;
     img.addEventListener("click", () => openImageModal(cleanText));
     bodyElement.appendChild(img);
@@ -339,7 +439,7 @@ function parseBodyText(bodyElement, text, isEdited, parentRow) {
   else {
     const emojiProcessed = renderChatContentWithEmoji(cleanText);
     bodyElement.innerHTML = parseMentions(emojiProcessed, parentRow);
-}
+  }
 
   if (isEdited) appendEditedTag(bodyElement);
 }
@@ -431,9 +531,39 @@ function openEditMessageModal(messageId, currentText) {
 
   saveButton.onclick = () => {
     const updatedText = editInput.value.trim();
-    if (updatedText && updatedText !== currentText) {
-      socket.emit("editMessage", { messageId, content: updatedText });
+
+    if (!updatedText || updatedText === currentText) {
+      modal.remove();
+      return;
     }
+
+    if (updatedText.length > 256) {
+      showWarningToast("Message is too long! (Max 256 characters)");
+      return;
+    }
+
+    const leetMap = {
+      '0': 'o', '1': 'i', 'l': 'i', '3': 'e', '4': 'a', 
+      '5': 's', '7': 't', '8': 'b', '$': 's', '@': 'a', 
+      'v': 'u', 'x': 'ck'
+    };
+
+    const baseContent = updatedText;
+    let simpleClean = baseContent.toLowerCase().replace(/[\s\W_]/g, '');
+    let normalized = baseContent.toLowerCase().split('').map(char => leetMap[char] || char).join('').replace(/[\s\W_]/g, '');
+    let compressed = normalized.replace(/(.)\1+/g, '$1');
+
+    const containsSlur = SLUR_BLOCKLIST.some(slur => {
+      const target = slur.toLowerCase();
+      return simpleClean.includes(target) || normalized.includes(target) || compressed.includes(target);
+    });
+
+    if (containsSlur) {
+      showWarningToast("You cannot say that word.");
+      return;
+    }
+
+    socket.emit("editMessage", { messageId, content: updatedText });
     modal.remove();
   };
 
@@ -452,7 +582,29 @@ function initiateReplyContext(messageId, username, contextExcerpt) {
   if (textContainer) {
     const cleanUser = safeEscapeText(username);
     const cleanExcerpt = safeEscapeText(contextExcerpt);
-    textContainer.innerHTML = `<i class="fa-solid fa-reply"></i> Replying to <span style="font-weight:bold; color:#fff275;">@${cleanUser}</span>: <span style="font-style:italic; opacity:0.8;">"${cleanExcerpt}"</span>`;
+    textContainer.innerHTML = '';
+    const icon = document.createElement('i');
+    icon.className = 'fa-solid fa-reply';
+    textContainer.appendChild(icon);
+
+    const replyTextNode = document.createTextNode(' Replying to ');
+    textContainer.appendChild(replyTextNode);
+
+    const userSpan = document.createElement('span');
+    userSpan.style.fontWeight = 'bold';
+    userSpan.style.color = '#fff275';
+    userSpan.textContent = `@${cleanUser}`;
+    textContainer.appendChild(userSpan);
+
+    const sepNode = document.createTextNode(': ');
+    textContainer.appendChild(sepNode);
+
+    const excerptSpan = document.createElement('span');
+    excerptSpan.style.fontStyle = 'italic';
+    excerptSpan.style.opacity = '0.8';
+    excerptSpan.textContent = `"${cleanExcerpt}"`;
+    textContainer.appendChild(excerptSpan);
+
   }
   replyBarEl.classList.add("active");
   chatInput.focus();
@@ -656,18 +808,44 @@ socket.on("chatHistory", (messages) => {
   if (window.twemoji) window.twemoji.parse(messagesEl, { folder: "svg", ext: ".svg" });
 });
 
+const PING_SOUND_URL = "https://technoscootalo.github.io/pixelitcdn-1/assets/audio/ping.mp3";
+
+
+const pingAudio = new Audio(PING_SOUND_URL);
+pingAudio.preload = "auto";
+let pingSoundEnabled = false;
+
+function playPingNoise() {
+  if (!pingSoundEnabled) return;
+
+  try {
+    pingAudio.currentTime = 0;
+    const p = pingAudio.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch (_) {}
+}
+
+document.addEventListener("pointerdown", () => {
+  pingSoundEnabled = true;
+});
+
 socket.on("chatMessage", (message) => {
   if (!message || !message.content) return;
-  
+
   const currentTimestamp = message.createdAt ? new Date(message.createdAt).getTime() : Date.now();
   const isWithinTenMinutes = lastMsgTime && (currentTimestamp - lastMsgTime < 600000);
   const grouped = message.username && message.username === lastMsgUsername && isWithinTenMinutes;
-  
+
   renderMessage(message, grouped);
-  
+
+  const content = String(message.content || "");
+  const mentionsMe = !!currentClientUsername && new RegExp(`@${currentClientUsername}\\b`, "i").test(content);
+
+  if (mentionsMe) playPingNoise();
+
   lastMsgUsername = message.username ?? null;
   lastMsgTime = currentTimestamp;
-  
+
   if (window.twemoji) window.twemoji.parse(messagesEl, { folder: "svg", ext: ".svg" });
 });
 

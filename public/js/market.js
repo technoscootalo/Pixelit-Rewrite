@@ -298,9 +298,10 @@ async function fetchUser() {
 }
 
 function updateTokens() {
-  const el = document.getElementById("tokens");
+  const el = document.getElementById("tokenAmount");
   if (el) el.innerText = userTokens.toLocaleString();
 }
+
 
 async function fetchPacks() {
   try {
@@ -594,7 +595,7 @@ async function openPack(pack) {
 
     const data = await res.json();
 
-if (!res.ok) {
+    if (!res.ok) {
       const errMsg = data?.error || "Failed to open pack";
       showModal(errMsg);
       if (typeof window.hideLoader === "function") window.hideLoader();
@@ -604,7 +605,7 @@ if (!res.ok) {
     userTokens = data.tokens;
     updateTokens();
 
-showResult(data.blook, {
+    showResult(data.blook, {
       packBackground: pack.packBackground,
       phase: "reveal",
       revealDelayMs: 0,

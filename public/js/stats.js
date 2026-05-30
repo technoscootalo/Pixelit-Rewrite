@@ -147,8 +147,6 @@ async function fetchInbox() {
 }
 
 function isChatMessage(msg) {
-  // With corrected backend inbox, inbox should only contain notifications.
-  // Keep this as a safety net; use notification field names.
   const sender = (msg?.senderUsername || msg?.username || "").toString();
   const content = (msg?.content || "").toString();
   const text = `${sender} ${content}`.toLowerCase();
@@ -166,8 +164,8 @@ async function loadInboxIntoModal() {
 
   if (!Array.isArray(filtered) || filtered.length === 0) {
     const empty = document.createElement("div");
-    empty.textContent = "No messages";
-    empty.style.cssText = `display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:18px;opacity:0.9;text-align:center;`;
+    empty.textContent = "No notifications.";
+    empty.style.cssText = `display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:24px;opacity:0.9;text-align:center;`;
     inboxListEl.appendChild(empty);
     return;
   }
@@ -318,19 +316,20 @@ inboxButton && inboxButton.addEventListener("click", async () => {
     position: absolute;
     top: 14px;
     left: 16px;
+    text-shadow: #000 1px 0 13px;
     font-size: 42px !important;
     font-weight: bold;
   `;
 
   const empty = document.createElement("div");
-  empty.textContent = "No messages.";
+  empty.textContent = "No notifications.";
   empty.style.cssText = `
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 24px;
+    font-size: 28px;
     text-align: center;
   `;
 
@@ -431,12 +430,45 @@ async function loadUser() {
     if (openedEl) openedEl.innerText = user.opened.toLocaleString();
     if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
 
+    // Render my badges (so user can see their own badges)
+    const badgesContainer = document.getElementById('badges-container');
+    const badgesEl = document.getElementById('badges');
+    if (badgesContainer && badgesEl) {
+      const badges = Array.isArray(user.badges)
+        ? user.badges
+        : (user.userBadges || []);
+
+      if (Array.isArray(badges) && badges.length) {
+        badgesContainer.style.display = 'block';
+        badgesEl.innerHTML = badges
+          .map((b) => {
+            const isObj = b && typeof b === 'object';
+            const id = isObj ? (b.badgeId || b._id || b.id || b.badge?.badgeId || '') : b;
+            const url = isObj ? (b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || '') : '';
+            const name = isObj ? (b.name || b.badge?.name || 'Badge') : 'Badge';
+
+            const src = url || '';
+            if (!src) return '';
+
+            const safeId = String(id || name || '').replace(/[^a-zA-Z0-9_-]/g, '');
+            return `<img class="badge" src="${src}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
+          })
+          .filter(Boolean)
+          .join('');
+      } else {
+        badgesEl.innerHTML = '';
+        badgesContainer.style.display = 'none';
+      }
+    }
+
     checkPanelAccess();
     updateDailyWheelState();
   } catch (err) {
     console.error("Failed to load user data:", err);
   }
 }
+
+let __dailyWheelClaimInFlight = false;
 
 async function claimDailyWheel() {
     const button = document.getElementById("spinButton");
@@ -445,9 +477,13 @@ async function claimDailyWheel() {
 
     if (!button || !messageEl) return;
 
+    if (__dailyWheelClaimInFlight) return;
+    __dailyWheelClaimInFlight = true;
+
     button.disabled = true;
 
     messageEl.innerText = "Claiming your reward...";
+
 
     try {
 
@@ -487,6 +523,9 @@ async function claimDailyWheel() {
 
         user.tokens = data.tokens;
         user.lastClaim = new Date().toISOString();
+
+        __dailyWheelClaimInFlight = false;
+
 
         if (tokensEl) {
             tokensEl.innerText =
@@ -668,8 +707,10 @@ function openViewUserPopup() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ username: searchUser }),
+        body: JSON.stringify({ username: searchUser, id: /^\d+$/.test(searchUser) ? Number(searchUser) : undefined }),
+
       });
+
 
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -698,8 +739,11 @@ function openViewUserPopup() {
         messages: document.getElementById('messages'),
         spinButton: document.getElementById('spinButton'),
         dailyWheelMessage: document.getElementById('dailyWheelMessage'),
+        badgesContainer: document.getElementById('badges-container'),
+        badgesEl: document.getElementById('badges'),
         viewUserBtn: document.querySelector('.viewUser')
       };
+
 
       if (ui.pfp) ui.pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
       if (ui.banner) ui.banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
@@ -733,6 +777,36 @@ function openViewUserPopup() {
       if (ui.opened) ui.opened.innerText = (other.opened ?? 0).toLocaleString();
       if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
 
+      if (ui.badgesEl && ui.badgesContainer) {
+        const badges = Array.isArray(other.badges) ? other.badges : (other.userBadges || []);
+        if (Array.isArray(badges) && badges.length) {
+          ui.badgesContainer.style.display = 'block';
+          ui.badgesEl.innerHTML = badges
+            .map(b => {
+              const isObj = b && typeof b === 'object';
+              const id = isObj
+                ? (b.badgeId || b._id || b.id || b.badge?.badgeId || '')
+                : b;
+              const url = isObj
+                ? (b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || '')
+                : '';
+              const name = isObj ? (b.name || b.badge?.name || 'Badge') : 'Badge';
+
+              const src = url || '';
+              if (!src) return '';
+
+              const safeId = String(id || name || '').replace(/[^a-zA-Z0-9_-]/g, '');
+              return `<img class="badge" src="${src}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
+            })
+            .join('');
+        } else {
+          ui.badgesEl.innerHTML = '';
+          ui.badgesContainer.style.display = 'none';
+        }
+      }
+
+
+
       if (ui.spinButton) {
         ui.spinButton.style.display = 'none';
         ui.spinButton.disabled = true;
@@ -749,7 +823,9 @@ function openViewUserPopup() {
         reportBtn.className = 'reportUser report-user-btn';
         reportBtn.innerHTML = '<i class="fa-solid fa-flag"></i> Report';
 
-        reportBtn.onclick = () => {
+        reportBtn.onclick = (event) => {
+          event.stopPropagation();
+
           const modal = createElement('div', {}, {
             position: 'fixed',
             inset: '0',
@@ -783,20 +859,18 @@ function openViewUserPopup() {
             type: 'text',
             placeholder: 'Reason for reporting...',
           }, {
-            width: '60%',
-            height: '50px',
-            marginBottom: '10px',
-            fontFamily: 'Pixelify Sans, sans-serif',
-            fontSize: '20px',
+            background: 'transparent',
+            padding: '10px 14px',
             fontWeight: 'bold',
-            textAlign: 'center',
-            border: '3px solid #5e046e',
-            borderRadius: '4px',
-            boxSizing: 'border-box',
-            backgroundColor: 'transparent',
+            textAlign: 'center',  
+            borderRadius: '10px',  
             color: 'white',
-            marginRight: '5px',
+            border: '3px solid white',
+            fontSize: '24px',  
+            fontFamily: 'Pixelify Sans',
             outline: 'none',
+            marginBottom: '10px', 
+            boxSizing: 'border-box'
           });
 
           const errorEl = createElement('div', {}, {
@@ -813,21 +887,16 @@ function openViewUserPopup() {
             display: 'none',
           });
 
-          const sendBtn = createElement('button', { type: 'button' }, {
-            backgroundColor: '#ff4d4d',
-            boxShadow: 'inset 0 -0.365vw #b30000, 3px 3px 15px rgba(0, 0, 0, 0.6)',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'Pixelify Sans, sans-serif',
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: 'bold',
-          });
+          const sendBtn = createElement('button', { 
+            type: 'button', 
+            className: 'report-user-modal-btn report-user-modal-btn-primary' 
+          }, {}); 
+
           sendBtn.textContent = 'Send report';
 
-          const btnRow = createElement('div', {}, {
+          const btnRow = createElement('div', { 
+            className: 'modal-button-row' 
+          }, {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -835,6 +904,7 @@ function openViewUserPopup() {
             flexWrap: 'wrap',
             marginTop: '8px',
           });
+
           btnRow.appendChild(sendBtn);
 
           box.appendChild(title);
@@ -852,13 +922,14 @@ function openViewUserPopup() {
           };
 
           modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.currentTarget === modal) close();
-          });
+            if (e.target === modal) {
+                modal.remove();
+              }
+            });
 
-          document.body.addEventListener('click', (e) => {
-            if (modal.contains(e.target)) return;
-            close();
-          }, { once: true });
+          box.addEventListener('click', (e) => {
+            e.stopPropagation();
+          });
 
           input.focus();
 
@@ -898,6 +969,7 @@ function openViewUserPopup() {
           };
 
           sendBtn.onclick = submit;
+          e.stopPropagation();
           input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') submit();
           });
@@ -930,4 +1002,84 @@ if (viewUserButton) {
   viewUserButton.onclick = openViewUserPopup;
 }
 
-loadUser();
+(function handleStatsQueryUser() {
+  const url = new URL(window.location.href);
+  const name = url.searchParams.get('name');
+  if (!name) return loadUser();
+
+  if (window.__profileViewMode === 'other') return;
+
+  fetch('/api/viewUser/getUserStats', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ username: name }),
+  })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      if (!ok || !data?.success) return loadUser();
+
+      const other = data.user;
+      window.__profileViewOriginal = window.__profileViewOriginal || (user ? { ...user } : null);
+      window.__profileViewMode = 'other';
+
+      const pfp = document.getElementById('pfp');
+      const banner = document.getElementById('banner');
+      const usernameEl = document.getElementById('username');
+      const roleEl = document.getElementById('role');
+      const tokensEl = document.getElementById('tokens');
+      const openedEl = document.getElementById('opened');
+      const messagesEl = document.getElementById('messages');
+      const badgesContainer = document.getElementById('badges-container');
+      const badgesEl = document.getElementById('badges');
+      const spinButton = document.getElementById('spinButton');
+
+
+      const roleColors = {
+        Owner: "#020202",
+        Veteran: "#969a5c",
+        Verified: "#5ab65b",
+        Plus: "#5657d3",
+        Tester: "#80a1d3",
+        Helper: "#4b69c3",
+        Moderator: "#ab53c4",
+        Admin: "#dc6dc1",
+        "Community Manager": "#69c95d",
+        Developer: "#6a76c7",
+        Artist: "#ca964c",
+        Player: "#FFFFFF",
+      };
+
+      if (pfp) pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+      if (banner) banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
+      if (usernameEl) {
+        usernameEl.innerText = other.username;
+        const color = roleColors[other.role];
+        if (color) usernameEl.style.color = color;
+      }
+      if (roleEl) {
+        roleEl.innerText = other.role || 'Player';
+        const color = roleColors[other.role];
+        if (color) roleEl.style.color = color;
+      }
+      if (tokensEl) tokensEl.innerText = (other.tokens ?? 0).toLocaleString();
+      if (openedEl) openedEl.innerText = (other.opened ?? 0).toLocaleString();
+      if (messagesEl) messagesEl.innerText = (other.stats?.sent ?? 0).toLocaleString();
+
+      if (spinButton) {
+        spinButton.style.display = 'none';
+        spinButton.disabled = true;
+      }
+
+      const backBtn = document.querySelector('.viewUser');
+      if (backBtn) {
+        backBtn.innerHTML = '<i class="fa-solid fa-reply"></i> Back to my profile';
+        backBtn.onclick = () => {
+          window.__profileViewMode = 'my';
+          window.history.pushState({}, '', '/stats');
+          loadUser();
+        };
+      }
+    })
+    .catch(() => loadUser());
+})();

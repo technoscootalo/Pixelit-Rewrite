@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema({
   accessKey: { type: String, required: true },
   discordId: { type: String, default: null },
 
+  hashedIps: {
+    type: [String],
+    default: [],
+  },
+
   pfp: {
     type: String,
     default: "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
@@ -15,7 +20,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png",
   },
-  badges: { type: [String], default: [] },
+  badges: {
+    type: [
+      {
+        badgeId: { type: String, default: "" },
+        _id: { type: mongoose.Schema.Types.ObjectId, required: false },
+        name: { type: String, default: "" },
+        image: { type: String, default: "" },
+      }
+    ],
+    default: [],
+  },
   role: { type: String, default: "Player" },
 
   tokens: { type: Number, default: 0 },
@@ -30,7 +45,13 @@ const userSchema = new mongoose.Schema({
     default: []
   },
 
+  lastClaim: {
+    type: Date,
+    default: null,
+  },
+
   inbox: {
+
     type: [{
       senderUsername: String,
       content: String,
@@ -53,5 +74,6 @@ const userSchema = new mongoose.Schema({
     default: () => new Date().toISOString(),
   },
 });
+
 
 module.exports = mongoose.model("User", userSchema, "accounts");

@@ -1,12 +1,19 @@
 function formatJoinDate(isoString) {
   if (!isoString) return 'Unknown';
+  
   const date = new Date(isoString);
+  
   const options = {
     year: "numeric",
-    month: "long", 
-    day: "numeric"
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true 
   };
-  return date.toLocaleDateString("en-US", options);
+  
+  return date.toLocaleString("en-US", options);
 }
 
 async function fetchUserData() {
@@ -30,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let revealed = false;
   let realKey = "";
-  const hiddenKey = "••••••••••••••••••••";
+  const hiddenKey = "•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
 
   const userData = await fetchUserData();
 
@@ -48,14 +55,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     if (discordIdElement) {
-        discordIdElement.textContent= `Discord ID: ${userData.discordId || "Unavailable"}`;
+        discordIdElement.textContent= `Discord ID: ${userData.discordId || "Not Linked"}`;
     }
 
     if (idElement) {
       idElement.textContent = `ID: ${userData.id || userData._id}`;
     }
 
-    // ACCESS KEY
     realKey = userData.accessKey || "Unavailable";
 
     if (accessKeyElement) {
@@ -420,6 +426,32 @@ const dateOptions = {
   minute: "numeric",
 };
 date.innerHTML = today.toLocaleDateString("en-US", dateOptions);
+
+(function setupChatRulesVisibility() {
+  const chatRulesEl = document.getElementById("chatRulesPopup");
+  if (!chatRulesEl) return;
+
+  const KEY = "chatRulesPopup"; 
+
+  function getState() {
+    const state = localStorage.getItem(KEY);
+    return state ? state : "visible";
+  }
+
+  function applyUI() {
+    const state = getState();
+    chatRulesEl.textContent = `Chat Guide: ${state === "visible" ? "Visible" : "Hidden"}`;
+  }
+
+  applyUI();
+
+  chatRulesEl.style.cursor = "pointer";
+  chatRulesEl.addEventListener("click", () => {
+    const nextState = getState() === "visible" ? "hidden" : "visible";
+    localStorage.setItem(KEY, nextState);
+    applyUI();
+  });
+})();
 
 async function handleDeveloperVisibility() {
   try {

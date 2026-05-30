@@ -1,8 +1,10 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 
 const User = require("../../models/User");
+
 const AccessKey = require("../../models/AccessKey");
 
 const router = express.Router();
@@ -56,6 +58,35 @@ router.post("/", async (req, res) => {
             username
         });
 
+        const forwardedFor = req.headers["x-forwarded-for"]?.split(",")[0]?.trim();
+        const connIp = req.connection?.remoteAddress;
+
+        const rawIp = (
+            (typeof forwardedFor === "string" && forwardedFor.includes(":")) ? forwardedFor :
+            (typeof connIp === "string" && connIp.includes(":")) ? connIp :
+            (forwardedFor || connIp || "unknown")
+        ).toString();
+
+        const normalizedIp = rawIp
+            .replace(/^[\[]|[\]]$/g, "")
+            .replace(/^::ffff:/i, "");
+
+        const hashedIp = crypto
+            .createHash("sha256")
+            .update(normalizedIp)
+            .digest("hex");
+
+
+
+        const ipUserExists = await User.findOne({ hashedIps: hashedIp });
+
+        if (ipUserExists) {
+            return res.status(403).json({
+                error: "An account already exists under this IP"
+            });
+        }
+
+
         if (existing) {
             return res.status(400).json({
                 error: "Username already taken"
@@ -69,8 +100,10 @@ router.post("/", async (req, res) => {
             username,
             password: hashedPassword,
             accessKey,
-            id: uuidv4()
+            id: uuidv4(),
+            hashedIps: [hashedIp]
         });
+
 
         keyDoc.used = true;
         await keyDoc.save();

@@ -1,10 +1,9 @@
 const express = require("express");
 const User = require("../../models/User");
+const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
 
-
-// to be put in the env file later i dont have my pc rn
 const DISCORD_WEBHOOK =
     "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
 
@@ -43,7 +42,7 @@ function chooseDailyReward() {
     return DAILY_REWARDS[DAILY_REWARDS.length - 1].amount;
 }
 
-router.post("/", async (req, res) => {
+router.post("/", rateLimit({ max: 3, windowMs: 20 * 1000 }), async (req, res) => {
     try {
 
         if (!req.session.userId) {

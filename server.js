@@ -168,6 +168,11 @@ io.on("connection", async (socket) => {
             let content = payload.content.trim();
             if (!content) return;
 
+            if (/[<>{}]/.test(content) || /on\w+\s*=|javascript:/i.test(content)) {
+                return;
+            }
+
+
             const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
             const textMatches = [...content.matchAll(emoteRegex)];
 

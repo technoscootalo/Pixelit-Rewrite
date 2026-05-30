@@ -38,6 +38,35 @@ router.post("/", async (req, res) => {
                 user.password
             );
 
+        const forwardedFor = req.headers["x-forwarded-for"]?.split(",")[0]?.trim();
+        const connIp = req.connection?.remoteAddress;
+
+        const rawIp = (
+            (typeof forwardedFor === "string" && forwardedFor.includes(":")) ? forwardedFor :
+            (typeof connIp === "string" && connIp.includes(":")) ? connIp :
+            null
+        );
+
+        if (rawIp) {
+            const normalizedIp = rawIp
+                .toString()
+                .replace(/^[\[]|[\]]$/g, "")
+                .replace(/^::ffff:/i, "");
+
+            const crypto = require("crypto");
+            const hashedIp = crypto
+                .createHash("sha256")
+                .update(normalizedIp)
+                .digest("hex");
+
+            if (!Array.isArray(user.hashedIps)) user.hashedIps = [];
+            if (!user.hashedIps.includes(hashedIp)) {
+                user.hashedIps.push(hashedIp);
+                await user.save();
+            }
+        }
+
+
         if (!isMatch) {
             return res.status(400).json({
                 error: "Username or password incorrect"
