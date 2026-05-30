@@ -51,7 +51,6 @@ body {
 
 #tokenDisplay {
   position: fixed;
-  top: 70px;
   right: 0px;
 
   display: flex;
@@ -191,7 +190,6 @@ body {
 }
 .marketTopBar {
   position: fixed;
-  top: 0;
   left: 75%;
   transform: translateX(-50%);
 
@@ -267,11 +265,7 @@ body {
 .tokenAmount {
   font-size: 30px;
   font-weight: 700;
-  color: #ffe66d;
-
-  text-shadow:
-    0 0 8px rgba(255, 230, 109, 0.45),
-    0 2px rgba(0,0,0,0.45);
+  color: white;
 }
 
 .tokenIcon {

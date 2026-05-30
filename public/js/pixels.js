@@ -94,7 +94,6 @@ function generatePacksHTML(packsData) {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
 
-
     const packTitle = document.createElement("h2");
     packTitle.className = "pack-title";
     packTitle.textContent = pack.name;
@@ -153,9 +152,27 @@ function generatePacksHTML(packsData) {
         badge.textContent = blook.owned;
 
         badge.style.backgroundColor =
-          RARITY_COLORS[(blook.rarity || "").toLowerCase()] || "purple";
+          RARITY_COLORS[(blook.rarity || "").toLowerCase()] || "white";
 
         itemDiv.appendChild(badge);
+
+        itemDiv.style.transition = "transform 0.2s ease-in-out";
+
+        itemDiv.addEventListener("mouseover", () => {
+          itemDiv.style.transform = "scale(0.9)";
+        });
+
+        itemDiv.addEventListener("mouseout", () => {
+          itemDiv.style.transform = "scale(1)";
+        });
+
+        itemDiv.addEventListener("mousedown", () => {
+          itemDiv.style.transform = "scale(0.8)";
+        });
+
+        itemDiv.addEventListener("mouseup", () => {
+          itemDiv.style.transform = "scale(1)";
+        });
 
         itemDiv.onclick = () => updateBlookInfo(blook);
       } else {

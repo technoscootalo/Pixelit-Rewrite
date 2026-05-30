@@ -325,7 +325,7 @@ body {
 .speechBubble {
   height: 42px;
   margin-left: 10px;
-  transform: rotate(0deg);
+  transform: rotate(-20deg);
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
@@ -444,6 +444,15 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  .token,
+  .lock,
+  .speechBubble {
+    height: 42px;
+    margin-left: 10px;
+    transform: rotate(0deg);
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
   }
 
   #username {

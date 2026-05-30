@@ -94,10 +94,13 @@ router.get("/badgeeditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/badgeeditor.html"));
 });
 
+router.get("/manageusers", requireDeveloperAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/panel/manageusers.html"));
+});
+
 router.get("/bannereditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/bannereditor.html"));
 });
-
 
 router.get("/newseditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/newseditor.html"));

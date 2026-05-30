@@ -54,7 +54,7 @@ const emojiButton = document.querySelector(".emojiContainer");
         font-size: 20px; margin: 12px 0; padding: 12px;
         background: #6f057a; border-radius: 6px;
         border-left: 3px solid #50505074; text-align: left;
-        box-shadow: inset 0 -0.225vw #570066, 3px 3px 15px rgba(61, 61, 61, 0.73)
+        box-shadow: inset 0 -0.265vw #570066, 3px 3px 15px rgba(0, 0, 0, 0.3);
       `;
       rulesContainer.appendChild(ruleDiv);
     });

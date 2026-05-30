@@ -51,17 +51,26 @@
         width: 78px;
         height: 78px;
         object-fit: contain;
-        animation: pixelit-spin-slow 1.6s linear infinite;
       }
 
-      @keyframes pixelit-breathe {
-        0%, 100% { transform: scale(1); opacity: 0.95; }
-        50% { transform: scale(1.06); opacity: 1; }
+      @keyframes pixelit-bouncing-snap {
+        0% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-20px) rotate(90deg); }
+        35% { transform: translateY(0) rotate(90deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+        60% { transform: translateY(0) rotate(180deg); }
+        75% { transform: translateY(-20px) rotate(270deg); }
+        85% { transform: translateY(0) rotate(270deg); }
+        100% { transform: translateY(-20px) rotate(360deg); }
       }
 
-      @keyframes pixelit-spin-slow {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      .pixelit-loader-icon {
+        /* Apply the new snapping bounce animation */
+        animation: pixelit-bouncing-snap 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        width: 78px;
+        height: 78px;
+        object-fit: contain;
+        transform-origin: center;
       }
 
       .pixelit-loader-subtext {
@@ -88,40 +97,47 @@
     modal.innerHTML = `
       <div class="pixelit-loader">
         <p class="pixelit-loader-title">Loading</p>
-        <div class="pixelit-loader-icon-wrap" aria-hidden="true">
+          <div class="pixelit-loader-icon-wrap" aria-hidden="true">
           <img
             class="pixelit-loader-icon"
-            src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png"
+            src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png"
             alt="Loading"
           />
         </div>
-        <div class="pixelit-loader-subtext">Please wait...</div>
+        <div id="pixelit-loader-subtext" class="pixelit-loader-subtext">Loading</div>
       </div>
-
     `;
 
     document.body.appendChild(modal);
     return modal;
   }
 
-  window.showLoader = function showLoader() {
-    const modal = ensureModal();
-    modal.style.display = "flex";
-  };
+let loaderInterval = null;
 
-  window.hideLoader = function hideLoader() {
-    const modal = document.getElementById(MODAL_ID);
-    if (modal) modal.style.display = "none";
-  };
+window.showLoader = function showLoader() {
+  const modal = ensureModal();
+  modal.style.display = "flex";
 
-  if (document.readyState === "loading") {
-    window.showLoader();
-    document.addEventListener("DOMContentLoaded", () => {
-      window.showLoader();
-    });
-  } else {
-    window.showLoader();
+  if (loaderInterval) clearInterval(loaderInterval);
+
+  const subtext = document.getElementById("pixelit-loader-subtext");
+  let dots = 0;
+
+  loaderInterval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    subtext.textContent = "Loading" + ".".repeat(dots);
+  }, 400); 
+};
+
+window.hideLoader = function hideLoader() {
+  const modal = document.getElementById(MODAL_ID);
+  if (modal) modal.style.display = "none";
+  
+  if (loaderInterval) {
+    clearInterval(loaderInterval);
+    loaderInterval = null;
   }
+};
 
   window.addEventListener("load", () => {
     window.hideLoader();

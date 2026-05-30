@@ -21,12 +21,23 @@ router.post('/getUserStats', async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found.' });
         }
 
+        const userUnlocked = user.blooks
+            ? Object.values(user.blooks).reduce((acc, v) => {
+                const n = typeof v === 'number' ? v : Number(v?.amount ?? 0);
+                return acc + (n > 0 ? 1 : 0);
+              }, 0)
+            : 0;
+
+        const totalBlooks = await require('../../models/Blook').countDocuments({});
+
         const userStats = {
             username: user.username,
             pfp: user.pfp,
             role: user.role,
             tokens: user.tokens,
             packsOpened: user.packs,
+            unlocked: userUnlocked,
+            totalBlooks,
             stats: {
                 sent: user.sent || 0,
                 packsOpened: user.packs || 0

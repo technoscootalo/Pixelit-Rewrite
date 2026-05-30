@@ -404,6 +404,26 @@ async function loadUser() {
     user.opened = user.opened || 0;
     user.sent = user.sent || 0;
 
+    const unlockedEl = document.getElementById('unlocked');
+    if (unlockedEl) {
+      try {
+        const allRes = await fetch('/api/blooks', { credentials: 'include' });
+        const allBlooks = allRes.ok ? await allRes.json() : [];
+        const totalBlooks = Array.isArray(allBlooks) ? allBlooks.length : 0;
+
+        const ownedUnlocked = user.blooks
+          ? Object.values(user.blooks).reduce((acc, v) => {
+              const n = typeof v === 'number' ? v : Number(v?.amount ?? 0);
+              return acc + (n > 0 ? 1 : 0);
+            }, 0)
+          : 0;
+
+        unlockedEl.innerText = `${ownedUnlocked}/${totalBlooks}`;
+      } catch (e) {
+        unlockedEl.innerText = `0/0`;
+      }
+    }
+
     const pfp = document.getElementById("pfp");
     const banner = document.getElementById("banner");
     const usernameEl = document.getElementById("username");
@@ -447,7 +467,6 @@ async function loadUser() {
     if (openedEl) openedEl.innerText = user.opened.toLocaleString();
     if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
 
-    // Render my badges (so user can see their own badges)
     const badgesContainer = document.getElementById('badges-container');
     const badgesEl = document.getElementById('badges');
     if (badgesContainer && badgesEl) {
@@ -1092,6 +1111,13 @@ if (viewUserButton) {
       if (tokensEl) tokensEl.innerText = (other.tokens ?? 0).toLocaleString();
       if (openedEl) openedEl.innerText = (other.opened ?? 0).toLocaleString();
       if (messagesEl) messagesEl.innerText = (other.stats?.sent ?? 0).toLocaleString();
+
+      const unlockedEl = document.getElementById('unlocked');
+      if (unlockedEl) {
+        const u = typeof other.unlocked === 'number' ? other.unlocked : 0;
+        const t = typeof other.totalBlooks === 'number' ? other.totalBlooks : 0;
+        unlockedEl.innerText = `${u}/${t}`;
+      }
 
       if (spinButton) {
         spinButton.style.display = 'none';
