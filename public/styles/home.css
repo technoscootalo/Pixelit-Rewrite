@@ -52,3 +52,46 @@ color {
 	transform: translate(-50%, -50%) rotate(15deg);
 	opacity: 0.1;
 }
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.registerButton,
+.discordButton {
+  flex: 1;
+  height: 70px;
+  width: 150px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #5e046e;
+  color: white;
+  box-shadow: inset 0 -0.365vw #53055c, 3px 3px 14px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.registerButton:hover,
+.discordButton:hover {
+  filter: brightness(1.08);
+
+}
+
+@media (max-width: 636px) {
+	.terms {
+		display: none;
+	}
+
+	.blooks {
+		display: none;
+	}
+
+	.copyright {
+		text-align: center;
+	}
+}

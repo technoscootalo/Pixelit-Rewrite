@@ -5,7 +5,15 @@ const UserReport = require("../../models/UserReport");
 const User = require("../../models/User");
 const { rateLimit } = require("../../middleware/rateLimit");
 
-router.post("/", rateLimit({ max: 1, windowMs: 20 * 1000 }), async (req, res) => {
+router.post(
+  "/",
+  rateLimit({
+    max: 3,
+    windowMs: 10 * 60 * 1000,
+    keyGenerator: (req) => String(req?.session?.userId || req.ip || "unknown"),
+  }),
+  async (req, res) => {
+
   try {
     if (!req.session || !req.session.userId) {
       return res.status(401).json({ success: false, message: "You must be logged in." });
@@ -14,6 +22,7 @@ router.post("/", rateLimit({ max: 1, windowMs: 20 * 1000 }), async (req, res) =>
     const reporterUserId = req.session.userId;
     const reporter = await User.findOne({ id: reporterUserId }).select("username");
     const reporterUsername = reporter?.username;
+
 
     if (!reporterUsername) {
       return res.status(401).json({ success: false, message: "You must be logged in." });
@@ -25,7 +34,22 @@ router.post("/", rateLimit({ max: 1, windowMs: 20 * 1000 }), async (req, res) =>
       return res.status(400).json({ success: false, message: "Username is required." });
     }
 
+    const reportedUsernameRaw = (username ?? "").toString().trim();
+    if (!reportedUsernameRaw) {
+      return res.status(400).json({ success: false, message: "Username is required." });
+    }
+
+    if (reportedUsernameRaw.toLowerCase() === String(reporterUsername).trim().toLowerCase()) {
+      return res.status(400).json({ success: false, message: "You cannot report yourself." });
+    }
+
+    const reportedUser = await User.findOne({ username: reportedUsernameRaw }).select("id");
+    if (reportedUser && String(reportedUser.id) === String(reporterUserId)) {
+      return res.status(400).json({ success: false, message: "You cannot report yourself." });
+    }
+
     const trimmedReason = (reason ?? "").toString().trim();
+
     if (!trimmedReason) {
       return res.status(400).json({ success: false, message: "Reason is required." });
     }
@@ -38,7 +62,7 @@ router.post("/", rateLimit({ max: 1, windowMs: 20 * 1000 }), async (req, res) =>
       status: "pending",
     });
 
-    return res.json({ success: true, message: "Report submitted. Thanks!" });
+    return res.json({ success: true, message: "Report has been sent to our staff." });
   } catch (err) {
     console.error("reportUser error:", err);
     return res.status(500).json({ success: false, message: "Server error" });

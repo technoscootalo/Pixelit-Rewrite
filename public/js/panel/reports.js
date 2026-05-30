@@ -78,24 +78,6 @@ async function loadPendingReports() {
         await loadPendingReports();
       }));
 
-      btnRow.appendChild(actionBtn("Mute", "#ffa31e", async () => {
-        const reason = prompt(`Mute reason for @${r.reportedUsername}:`);
-        if (reason === null) return;
-        const durationStr = prompt("Mute duration in hours (number):", "1");
-        const duration = Number(durationStr);
-        await postAction(`/api/moderationReports/${r._id}/mute`, { reason: reason.trim() || undefined, duration: Number.isFinite(duration) ? duration : 0 });
-        await loadPendingReports();
-      }));
-
-      btnRow.appendChild(actionBtn("Ban", "#ff4d4d", async () => {
-        const reason = prompt(`Ban reason for @${r.reportedUsername}:`);
-        if (reason === null) return;
-        const durationStr = prompt("Ban duration in hours (number, 0 = forever):", "0");
-        const duration = Number(durationStr);
-        await postAction(`/api/moderationReports/${r._id}/ban`, { reason: reason.trim() || undefined, duration: Number.isFinite(duration) ? duration : 0 });
-        await loadPendingReports();
-      }));
-
       head.appendChild(left);
       head.appendChild(btnRow);
       card.appendChild(head);
@@ -120,7 +102,7 @@ function actionBtn(text, bg, onClick) {
     cursor: "pointer",
     fontFamily: "Pixelify Sans, sans-serif",
     fontWeight: "bold",
-    boxShadow: "inset 0 -0.325vw rgba(0,0,0,0.35), 3px 3px 15px rgba(0,0,0,0.45)",
+    boxShadow: "inset 0 -0.225vw rgba(0,0,0,0.35), 3px 3px 15px rgba(0,0,0,0.45)",
   });
   b.textContent = text;
   b.onclick = async () => {

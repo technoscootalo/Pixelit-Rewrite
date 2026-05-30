@@ -31,6 +31,23 @@ function updateDailyWheelState() {
   messageEl.innerText = "";
 }
 
+let __dailyWheelCountdownTimer = null;
+function startDailyWheelCountdownTicker() {
+  if (__dailyWheelCountdownTimer) return;
+
+  updateDailyWheelState();
+  __dailyWheelCountdownTimer = setInterval(() => {
+    updateDailyWheelState();
+  }, 1000);
+}
+
+function stopDailyWheelCountdownTicker() {
+  if (!__dailyWheelCountdownTimer) return;
+  clearInterval(__dailyWheelCountdownTimer);
+  __dailyWheelCountdownTimer = null;
+}
+
+
 function showClaimModal(reward) {
   const modal = document.createElement("div");
   modal.style.cssText = `
@@ -462,7 +479,8 @@ async function loadUser() {
     }
 
     checkPanelAccess();
-    updateDailyWheelState();
+    startDailyWheelCountdownTicker();
+
   } catch (err) {
     console.error("Failed to load user data:", err);
   }
@@ -857,7 +875,7 @@ function openViewUserPopup() {
 
           const input = createElement('input', {
             type: 'text',
-            placeholder: 'Reason for reporting...',
+            placeholder: 'Reason',
           }, {
             background: 'transparent',
             padding: '10px 14px',
@@ -933,7 +951,12 @@ function openViewUserPopup() {
 
           input.focus();
 
+          let __reportInFlight = false;
+
           const submit = async () => {
+            if (__reportInFlight) return;
+            __reportInFlight = true;
+
             const reason = (input.value || '').trim();
             errorEl.style.display = 'none';
 
@@ -945,6 +968,7 @@ function openViewUserPopup() {
 
             sendBtn.disabled = true;
             sendBtn.textContent = 'Sending...';
+            input.disabled = true;
 
             try {
               const r = await fetch('/api/reportUser', {
@@ -958,18 +982,21 @@ function openViewUserPopup() {
 
               successEl.textContent = d.message || 'Report sent.';
               successEl.style.display = 'block';
+              __reportInFlight = false;
               setTimeout(() => close(), 500);
             } catch (err) {
               console.error(err);
               errorEl.textContent = 'Failed to send report.';
-              errorEl.style.display = 'block';
+              __reportInFlight = false;
               sendBtn.disabled = false;
               sendBtn.textContent = 'Send report';
+              input.disabled = false;
+              errorEl.style.display = 'block';
             }
           };
 
           sendBtn.onclick = submit;
-          e.stopPropagation();
+          event.stopPropagation();
           input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') submit();
           });

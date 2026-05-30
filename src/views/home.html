@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1" /> 
     <link rel="stylesheet" href="/styles/home.css">
+    <script src="/js/loadingModal.js"></script>
     <title>Home</title>
 
     <meta name="twitter:card" content="large_image" />
@@ -70,6 +71,18 @@
             text-decoration: underline;
         }
 
+        .copyright {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            font-size:14px;
+        }
+
+        .copyright a {
+            color: white;
+            text-decoration: none;
+        }
+
         .text {
             display: flex;
             flex-direction: column;
@@ -98,7 +111,6 @@
             text-shadow: #000 1px 0 13px;
         }
     </style>
-    <script src="/js/loadingModal.js"></script>
 </head>
 <body>
     <img alt="Background" class="background" />
@@ -111,6 +123,19 @@
                 <br />
                 Rewritten entirely in <color>Node JS</color>
             </h2>
+            <br />
+            <div class="buttons">
+                <button                 
+                    onclick="window.location.href='/register'"
+                    class="registerButton" >
+                    Register
+                </button>
+                <button                 
+                    onclick="window.location.href='https://discord.gg/GEUahsD2Va'"
+                    class="discordButton" >
+                    Discord
+                </button>
+            </div>
         </div>
 
         <div class="blooks">
@@ -121,6 +146,9 @@
                 style="cursor: pointer;"
             >
         </div>
+        <span class="copyright">
+            <a>© 2023 Pixelit LLC. All Rights Reserved.</a>
+        </span>
 
         <span class="terms">
             Running version 3.0.0 •  

@@ -22,7 +22,7 @@ const emojiButton = document.querySelector(".emojiContainer");
     const modal = document.createElement("div");
     modal.style.cssText = `
       background: #5e046e;
-      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
       padding: 40px; border-radius: 10px; width: 600px;
       color: #fff; font-family: 'Pixelify Sans', sans-serif;
       text-align: center; border: 1px solid rgba(255,255,255,0.1);
@@ -32,7 +32,7 @@ const emojiButton = document.querySelector(".emojiContainer");
     title.textContent = "Chat Guidelines";
     title.style.cssText = `
       margin: 0 0 30px 0; font-size: 38px; letter-spacing: 2px; 
-      text-shadow: 0px 4px 6px rgba(0,0,0,0.5);
+      text-shadow: #000 1px 0 13px;
       border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px;
     `;
 
@@ -50,11 +50,11 @@ const emojiButton = document.querySelector(".emojiContainer");
     rules.forEach(r => {
       const ruleDiv = document.createElement("div");
       ruleDiv.textContent = r;
-      // Added a subtle background and border to each rule to make them pop
       ruleDiv.style.cssText = `
         font-size: 20px; margin: 12px 0; padding: 12px;
-        background: rgba(0,0,0,0.2); border-radius: 6px;
-        border-left: 4px solid #c050d1; text-align: left;
+        background: #6f057a; border-radius: 6px;
+        border-left: 3px solid #50505074; text-align: left;
+        box-shadow: inset 0 -0.225vw #570066, 3px 3px 15px rgba(61, 61, 61, 0.73)
       `;
       rulesContainer.appendChild(ruleDiv);
     });
@@ -64,7 +64,6 @@ const emojiButton = document.querySelector(".emojiContainer");
     okBtn.className = "edit-msg-modal-btn edit-msg-modal-btn-primary";
 
     okBtn.onclick = () => {
-      localStorage.setItem(KEY, "hidden");
       overlay.remove();
     };
 

@@ -382,7 +382,7 @@ body {
   #packContainer {
     gap: 12px;
     max-width: 390px;
-    margin-top: -300px;
+    margin-top: 0px;
   }
 
   .box {

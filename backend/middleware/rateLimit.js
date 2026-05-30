@@ -7,47 +7,51 @@ const DEFAULTS = {
 
 const buckets = new Map();
 
-function getBucket(key) {
+function getBucket(key, windowMs) {
   const now = Date.now();
   const existing = buckets.get(key);
 
   if (!existing) {
-    const bucket = { count: 1, resetAt: now + DEFAULTS.windowMs };
+    const bucket = { count: 1, resetAt: now + windowMs };
     buckets.set(key, bucket);
     return bucket;
   }
 
   if (now > existing.resetAt) {
     existing.count = 1;
-    existing.resetAt = now + DEFAULTS.windowMs;
+    existing.resetAt = now + windowMs;
     return existing;
   }
 
   return existing;
 }
 
-function rateLimit({ max = 30, windowMs = WINDOW_MS } = {}) {
+/**
+ * @param {object} opts
+ * @param {number} opts.max
+ * @param {number} opts.windowMs
+ * @param {(req: import('express').Request) => string} [opts.keyGenerator]
+ */
+function rateLimit({ max = 30, windowMs = WINDOW_MS, keyGenerator } = {}) {
   return function rateLimitMiddleware(req, res, next) {
     try {
-      const ip = req.ip || req.connection?.remoteAddress || "unknown";
       const routeKey = req.baseUrl ? `${req.baseUrl}${req.path}` : req.path;
       const method = req.method;
-      const key = `${ip}:${method}:${routeKey}`;
 
-      const bucket = getBucket(key);
+      const fallbackIp = req.ip || req.connection?.remoteAddress || "unknown";
+      const keyPart = typeof keyGenerator === "function" ? keyGenerator(req) : fallbackIp;
+      const key = `${keyPart}:${method}:${routeKey}`;
 
-      if (bucket.resetAt - Date.now() > windowMs) {
-        bucket.resetAt = Date.now() + windowMs;
-      }
-      if (bucket.resetAt - Date.now() <= 0) {
-        bucket.count = 1;
-        bucket.resetAt = Date.now() + windowMs;
-      }
+      const bucket = getBucket(key, windowMs);
 
       bucket.count += 1;
 
+
       if (bucket.count > max) {
-        res.status(429).json({ error: "You are being ratelimited" });
+        res.status(429).json({
+          error: "You are being ratelimited",
+          retryAfterMs: Math.max(0, bucket.resetAt - Date.now()),
+        });
         return;
       }
 
@@ -61,4 +65,5 @@ function rateLimit({ max = 30, windowMs = WINDOW_MS } = {}) {
 module.exports = {
   rateLimit,
 };
+
 

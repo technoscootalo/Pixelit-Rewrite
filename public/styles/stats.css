@@ -402,7 +402,7 @@ body {
   padding: 7px;
   border-radius: 5px;
   background: #6e057b;
-  box-shadow: inset 0 -0.265vw #5a0564, 3px 3px 14px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 -0.235vw #5a0564, 3px 3px 14px rgba(0, 0, 0, 0.5);
 }
 
 .badge {

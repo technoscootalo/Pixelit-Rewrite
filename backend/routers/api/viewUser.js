@@ -32,7 +32,9 @@ router.post('/getUserStats', async (req, res) => {
                 packsOpened: user.packs || 0
             },
             banner: user.banner || '',
+            badges: Array.isArray(user.badges) ? user.badges : [],
         };
+
 
         res.json({ success: true, user: userStats });
     } catch (err) {
