@@ -24,73 +24,57 @@
 </head>
 
 <body>
-  <nav>
-    <h1
-      class="logo"
-      onclick="window.location.href='/'"
-      style="cursor:pointer; transition:0.2s;"
-      onmouseover="this.style.opacity='0.7'"
-      onmouseout="this.style.opacity='1'"
-    >
-      Pixelit
-    </h1>
-
-    <div class="profile-container">
-      <div class="profile-row">
-        <img
-          src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png"
-          id="profilePic"
-          class="profile-pic"
-          alt="Profile"
-        />
-        <span class="profile-name" id="profileName">User</span>
-        <i class="fa-solid fa-chevron-down profile-arrow"></i>
-      </div>
-      <div class="profile-dropdown-menu">
-        <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-        <a href="/" onclick="handleLogout(event)">
-          <i class="fa-solid fa-sign-out-alt"></i> Logout
-        </a>
-      </div>
+<nav>
+  <h1 class="logo"
+    onclick="window.location.href='/'"
+    style="cursor:pointer; transition:0.2s;"
+    onmouseover="this.style.opacity='0.7'"
+    onmouseout="this.style.opacity='1'">
+    Pixelit
+  </h1>
+  
+  <div class="profile-container">
+    <div class="profile-row">
+      <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png" id="profilePic" class="profile-pic" alt="Profile" />
+      <span class="profile-name" id="profileName">User</span>
+      <i class="fa-solid fa-chevron-down profile-arrow"></i>
     </div>
-
-    <div class="icons">
-      <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
-      <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
-      <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
-      <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
-      <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
-      <a href="/inventory"><i class="fa-solid fa-box-open"></i> Inventory</a>
-      <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>
-      <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
+    <div class="profile-dropdown-menu">
       <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
+      <a href="/" onclick="handleLogout(event)">
+        <i class="fa-solid fa-sign-out-alt"></i> Logout
+      </a>   
     </div>
+  </div>
+  
+  <div class="icons">
+    <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
+    <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
+    <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
+    <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
+    <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
+    <a href="/bazaar"><i class="fa-solid fa-gavel"></i> Bazaar</a>
+    <a href="/inventory"><i class="fa-solid fa-box-open"></i> Inventory</a>
+    <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>   
+    <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
+    <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
+  </div>
 
-    <div class="buttonGap"></div>
-
-    <div class="bottomIcons">
-      <a
-        href="https://discord.gg/jRJVFYyJJj"
-        target="_blank"
-        class="discord"
-        title="Join our Discord"
-      >
-        <i class="fa-brands fa-discord"></i>
-      </a>
-      <a
-        href="https://github.com/technoscootalo/Pixelit-Rewrite"
-        target="_blank"
-        class="github"
-        title="Visit our Github"
-      >
-        <i class="fa-brands fa-github"></i>
-      </a>
-      <a href="/store" class="store">
-        <i class="fa-solid fa-cart-shopping"></i>
-      </a>
-    </div>
-  </nav>
+  <div class="buttonGap"></div>
+    <a href="https://discord.gg/jRJVFYyJJj" target="_blank" class="discord" title="Join our Discord">
+  
+  <div class="bottomIcons">
+      <i class="fa-brands fa-discord"></i>
+    </a>
+    <a href="https://github.com/technoscootalo/Pixelit-Rewrite" target="_blank" class="github" title="Visit our Github">
+      <i class="fa-brands fa-github"></i>
+    </a>
+    <a href="/store"  class="store">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </a>
+  </div>
+</nav>
 
   <div class="background"></div>
 
@@ -120,12 +104,13 @@
     <section class="bazaar-grid" id="listingsContainer"></section>
 
     <div class="bazaar-controls">
-      <button class="bazaar-btn search-btn" title="Search">
-        <i class="fas fa-search"></i>
-      </button>
-      <button class="bazaar-btn list-btn" onclick="openListModal()" title="List Item">
-        <i class="fas fa-list"></i>
-      </button>
+      <input type="text" id="bazaarSearch" placeholder="Search blooks...">
+        <button class="bazaar-btn search-btn" id="searchBtn" title="Search">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="bazaar-btn list-btn" onclick="openListModal()" title="List Item">
+          <i class="fas fa-list"></i>
+        </button>
     </div>
 
   <div class="mobile_nav">

@@ -96,13 +96,27 @@ main {
 }
 
 .bazaar-controls {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
-  z-index: 1001;
+  width: 100%;
+  margin-top: 10px; 
+  margin-bottom: 20px;
+}
+
+#bazaarSearch {
+  width: 50%;     
+  padding: 10px 14px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  border: 3px solid white;
+  background: #5e046e;
+  color: white;
+  font-size: 24px;
+  font-family: "Pixelify Sans";
+  outline: none;
 }
 
 .bazaar-btn {
@@ -139,3 +153,4 @@ main {
   gap: 5px;
   align-items: center;
 }
+
