@@ -476,45 +476,28 @@ function createPack(pack) {
 
 function confirmPurchase(pack) {
   return new Promise((resolve) => {
-    const overlay = document.createElement("div");
+    if (typeof window.hideLoader === "function") window.hideLoader();
 
+    const overlay = document.createElement("div");
+    overlay.className = "sell-blook-modal-overlay";
     overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6);
+      display: flex; justify-content: center; align-items: center; z-index: 99999;
     `;
 
     const modalBox = document.createElement("div");
-
+    modalBox.className = "sell-blook-modal-box";
     modalBox.style.cssText = `
-      padding: 25px;
-      width: 400px;
-      border-radius: 5px;
-      text-align: center;
-      color: white;
-      font-family: Pixelify Sans;
-      background: #5e046e;
-      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
+      padding: 25px; width: 400px; border-radius: 8px; text-align: center;
+      color: white; font-family: 'Pixelify Sans', sans-serif;
+      background: #6f057a; box-shadow: 3px 3px 15px rgba(0,0,0,0.6);
     `;
 
     modalBox.innerHTML = `
-      <p style="font-size:35px;">
-        Purchase <strong>${pack.name}</strong>
-        for <span>${pack.cost}</span> tokens?
-      </p>
-
-      <div style="
-        display:flex;
-        justify-content:center;
-        gap:15px;
-        margin-top:20px;
-      ">
-        <button id="purchaseYes">Yes</button>
-        <button id="purchaseNo">No</button>
+      <h3 class="cofirmBlookPurchase">Purchase ${pack.name} for ${pack.cost} tokens?</h3>
+      <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+        <button id="purchaseYes" class="purchase-confirm-btn primary-action-btn">Confirm</button>
+        <button id="purchaseNo" class="purchase-cancel-btn secondary-action-btn">Cancel</button>
       </div>
     `;
 
@@ -524,31 +507,8 @@ function confirmPurchase(pack) {
     const yesBtn = modalBox.querySelector("#purchaseYes");
     const noBtn = modalBox.querySelector("#purchaseNo");
 
-    yesBtn.style.cssText = `
-      background: #5e046e;
-      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
-      font-family: 'Pixelify Sans', sans-serif;
-      color: white;
-      border: none;
-      padding: 10px 25px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    `;
-
-    noBtn.style.cssText = `
-      background: #5e046e;
-      box-shadow: inset 0 -0.265vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.4);
-      font-family: 'Pixelify Sans', sans-serif;
-      color: white;
-      border: none;
-      padding: 10px 25px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    `;
-
     yesBtn.onclick = () => {
+      if (typeof window.showLoader === "function") window.showLoader();
       overlay.remove();
       resolve(true);
     };
@@ -567,8 +527,14 @@ function confirmPurchase(pack) {
   });
 }
 
+let __openPackInFlight = false;
+
 async function openPack(pack) {
+  if (__openPackInFlight) return;
+  __openPackInFlight = true;
+
   if (typeof window.showLoader === "function") window.showLoader();
+
   try {
     const instantOpen = localStorage.getItem("instantOpen") === "On";
 
@@ -579,13 +545,15 @@ async function openPack(pack) {
 
     if (!instantOpen) {
       const confirmed = await confirmPurchase(pack);
-
       if (!confirmed) return;
     }
 
     const res = await fetch(`/api/packs/open/${encodeURIComponent(pack.name)}`, {
       method: "POST",
-      credentials: "include"
+      credentials: "include",
+      headers: {
+        "Accept": "application/json",
+      },
     });
 
     if (res.status === 401) {
@@ -598,7 +566,6 @@ async function openPack(pack) {
     if (!res.ok) {
       const errMsg = data?.error || "Failed to open pack";
       showModal(errMsg);
-      if (typeof window.hideLoader === "function") window.hideLoader();
       return;
     }
 
@@ -612,12 +579,11 @@ async function openPack(pack) {
       skipIntro: true,
     });
 
-    if (typeof window.hideLoader === "function") window.hideLoader();
-
-
   } catch (err) {
     console.error(err);
     showModal(err.message || "Something went wrong");
+  } finally {
+    __openPackInFlight = false;
     if (typeof window.hideLoader === "function") window.hideLoader();
   }
 }
@@ -906,7 +872,6 @@ async function showResult(blook, pack = null) {
   };
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const instantOpenElement = document.getElementById("instantOpen");
 
@@ -932,7 +897,3 @@ document.addEventListener("DOMContentLoaded", () => {
     updateText();
   });
 });
-
-if (typeof window.showLoader === "function") window.showLoader();
-
-if (typeof window.hideLoader === "function") window.hideLoader();

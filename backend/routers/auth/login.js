@@ -5,16 +5,9 @@ const User = require("../../models/User");
 
 const router = express.Router();
 
-const DISCORD_WEBHOOK =
-    "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
-
 router.post("/", async (req, res) => {
     try {
-
-        const {
-            username,
-            password
-        } = req.body;
+        const { username, password } = req.body;
 
         if (!username || !password) {
             return res.status(400).json({
@@ -22,9 +15,8 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const user = await User.findOne({
-            username
-        });
+
+        const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(400).json({
@@ -32,40 +24,8 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const isMatch =
-            await bcrypt.compare(
-                password,
-                user.password
-            );
 
-        const forwardedFor = req.headers["x-forwarded-for"]?.split(",")[0]?.trim();
-        const connIp = req.connection?.remoteAddress;
-
-        const rawIp = (
-            (typeof forwardedFor === "string" && forwardedFor.includes(":")) ? forwardedFor :
-            (typeof connIp === "string" && connIp.includes(":")) ? connIp :
-            null
-        );
-
-        if (rawIp) {
-            const normalizedIp = rawIp
-                .toString()
-                .replace(/^[\[]|[\]]$/g, "")
-                .replace(/^::ffff:/i, "");
-
-            const crypto = require("crypto");
-            const hashedIp = crypto
-                .createHash("sha256")
-                .update(normalizedIp)
-                .digest("hex");
-
-            if (!Array.isArray(user.hashedIps)) user.hashedIps = [];
-            if (!user.hashedIps.includes(hashedIp)) {
-                user.hashedIps.push(hashedIp);
-                await user.save();
-            }
-        }
-
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res.status(400).json({
@@ -73,58 +33,28 @@ router.post("/", async (req, res) => {
             });
         }
 
+
         if (user.banned) {
+            let banMessage = `You have been banned from Pixelit\nReason: ${user.banReason || "No reason provided"}`;
 
-            let banMessage =
-                `You have been banned from Pixelit\n` +
-                `Reason: ${user.banReason || "No reason provided"}`;
+            if (user.banDuration && user.banDuration > 0) {
 
-            if (
-                user.banDuration &&
-                user.banDuration > 0
-            ) {
-
-                banMessage +=
-                    `\nExpires: (${user.banDuration} hours)`;
+                banMessage += `\nExpires: (${user.banDuration} hours)`;
 
                 return res.status(403).json({
                     error: banMessage
                 });
 
             } else {
-
                 banMessage += `\nExpires: Never`;
 
                 return res.status(403).json({
                     error: banMessage
                 });
-
             }
         }
 
         req.session.userId = user.id;
-
-        try {
-
-            await fetch(DISCORD_WEBHOOK, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    content:
-                        `**${user.username}** has logged into Pixelit`
-                })
-            });
-
-        } catch (webhookError) {
-
-            console.error(
-                "Discord webhook failed:",
-                webhookError
-            );
-
-        }
 
         return res.json({
             message: "Login successful",
@@ -136,19 +66,16 @@ router.post("/", async (req, res) => {
         });
 
     } catch (err) {
-
         console.error("Login error:", err);
 
         return res.status(500).json({
             error: "Server error"
         });
-
     }
 });
 
 router.get("/loggedin", async (req, res) => {
     try {
-
         if (!req.session.userId) {
             return res.status(401).json({
                 loggedIn: false
@@ -171,28 +98,22 @@ router.get("/loggedin", async (req, res) => {
         });
 
     } catch (err) {
-
         console.error(err);
 
         return res.status(500).json({
             error: "Server error"
         });
-
     }
 });
 
 router.post("/logout", (req, res) => {
-
     req.session.destroy(() => {
-
         res.clearCookie("pixelit.sid");
 
         return res.json({
             message: "Logged out"
         });
-
     });
-
 });
 
 module.exports = router;

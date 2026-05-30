@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+
+html,
+body {
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+
+body {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: white;
+  background: #6f0083;
+  overflow-y: auto;
+}
+
+.background {
+  position: fixed;
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  background-size: 550px;
+  background-position: -100px -100px;
+  background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+  transform: translate(-50%, -50%) rotate(15deg);
+  opacity: 0.1;
+}
+
+main {
+  padding: 100px 226px 110px;
+}
+
+#listingsContainer {
+  position: fixed;        
+  bottom: 20px;         
+  left: 50%;              
+  transform: translateX(-50%); 
+  width: 90%;
+  max-width: 1000px;
+  max-height: 340px;      
+  overflow-y: auto; 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 25px;
+  padding: 20px;
+  border-radius: 7px;
+  background: #5e046e;
+  box-shadow: inset 0 -0.245vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+}
+
+.listing-card {
+  background: #6f057a;
+  box-shadow: inset 0 -0.225vw #570066, 3px 3px 15px rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bazaar-blook-img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin-bottom: 5px;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+.blook-name { font-size: 0.9em; font-weight: bold; margin-bottom: 4px; }
+.seller-name { font-size: 0.75em; color: #ffffff; }
+.price-tag { color: #ffe66d; font-size: 0.9em; font-weight: bold; margin: 5px 0; }
+
+.price-tag {
+  color: #ffe66d;
+  font-weight: bold;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  gap: 5px; 
+  margin: 5px 0;
+}
+
+.token-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.bazaar-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1001;
+}
+
+.bazaar-btn {
+  width: 60px;    
+  height: 60px;
+  border: none;
+  border-radius: 5px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;    
+  color: white;   
+  align-items: center;  
+  justify-content: center; 
+  background: #5e046e;
+  box-shadow: inset 0 -0.245vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+}
+
+.bazaar-btn:hover { 
+  filter: brightness(1.1);
+}
+
+#userListingsContainer {
+  display: grid;
+  gap: 15px;
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modal-listing-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}

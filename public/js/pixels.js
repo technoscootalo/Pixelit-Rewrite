@@ -627,6 +627,81 @@ function showModal(message) {
   modal.onclick = () => modal.remove();
 }
 
+function listBlook() {
+  if (!selectedBlook || !selectedBlook.name) {
+    showModal("Select a blook first");
+    return;
+  }
+
+  const blookName = selectedBlook.name;
+  const blookImage = selectedBlook.imageUrl; 
+  
+  const modal = document.createElement("div");
+  modal.id = "list-blook-modal";
+  modal.className = "sell-blook-modal-overlay";
+
+  const box = document.createElement("div");
+  box.className = "sell-blook-modal-box";
+
+  box.innerHTML = `
+    <h3 class="sell-blook-modal-title">List ${blookName}</h3>
+    <img src="${blookImage}" alt="${blookName}" style="width: auto;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); height: 130px; margin: 10px auto; display: block;">
+    <div class="sell-blook-modal-input-row">
+      <label class="sell-blook-modal-label">Price</label>
+      <input type="number" id="listPrice" class="sell-blook-modal-amount" min="1" value="100">
+    </div>
+    <div class="sell-blook-modal-error" id="listError"></div>
+    <div class="sell-blook-modal-actions">
+      <button type="button" id="confirmList" class="sell-blook-modal-btn sell-blook-modal-btn-primary">List</button>
+      <button type="button" id="cancelList" class="sell-blook-modal-btn sell-blook-modal-btn-secondary">Cancel</button>
+    </div>
+  `;
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+  document.getElementById("cancelList").onclick = close;
+  
+  document.getElementById("confirmList").onclick = async () => {
+    const price = parseInt(document.getElementById("listPrice").value, 10);
+    const errorEl = document.getElementById("listError");
+
+    if (!price || price < 1) {
+      errorEl.textContent = "Enter a valid price";
+      return;
+    }
+
+    if (typeof window.showLoader === "function") window.showLoader();
+
+    try {
+      const res = await fetch('/api/users/listBlook', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ blookName, price })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Failed to list");
+
+      showModal("Blook listed successfully!");
+      close();
+    } catch (err) {
+      errorEl.textContent = err.message;
+    } finally {
+      if (typeof window.hideLoader === "function") window.hideLoader();
+    }
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadBlooks();
+  const listBtnEl = document.querySelector(".listBtn");
+  if (listBtnEl) {
+    listBtnEl.addEventListener("click", listBlook);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   loadBlooks();
@@ -657,5 +732,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-

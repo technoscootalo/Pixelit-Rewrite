@@ -234,17 +234,17 @@ main {
 
 .giftBtn,
 .sellBtn,
+.listBtn,
 .changePfpBtn {
   box-sizing: border-box;
-  
-  width: 115px;
+  width: 75px;
   height: 60px;
   padding: 12px;
   border: none;
   border-radius: 5px;
   color: white;
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: bold;
   cursor: pointer;
   background: #5e046e;
@@ -258,6 +258,7 @@ main {
 
 .giftBtn:hover,
 .sellBtn:hover,
+.listBtn:hover,
 .changePfpBtn:hover {
   filter: brightness(1.1);
 }
@@ -537,6 +538,7 @@ main {
   }
   .giftBtn,
   .sellBtn,
+  .listBtn,
   .changePfpBtn {
     width: 45vw;
     height: 50px;

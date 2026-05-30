@@ -40,6 +40,8 @@ const sellBlookRoute = require("./backend/routers/users/sellBlook");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
 const paypalWebhookRouter = require('./backend/routers/api/paypalWebhook')
 const inventoryRoute = require('./backend/routers/api/inventory');
+const listBlookRouter = require('./backend/routers/users/listBlook');
+const bazaarRouter = require('./backend/routers/api/bazaar'); 
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -93,6 +95,9 @@ app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
 app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
 app.use("/api/inventory", inventoryRoute);
+app.use("/api/users", listBlookRouter);
+app.use("/api/bazaar", bazaarRouter);
+
 app.use("/", pages);
 
 app.get("/*path", (req, res) => {

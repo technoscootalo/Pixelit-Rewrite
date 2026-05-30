@@ -287,6 +287,44 @@ body {
   100% { transform: scale(1) rotate(0deg); }
 }
 
+.cofirmBlookPurchase {
+  color: white;
+  font-size: 28px;
+}
+
+.purchase-confirm-btn, 
+.purchase-cancel-btn {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-action-btn {
+  background: #3aab3a;
+  color: white;
+  box-shadow: inset 0 -0.265vw rgba(0, 0, 0, 0.25), 3px 3px 14px rgba(0,0,0,0.5);
+}
+
+.primary-action-btn:hover {
+  filter: brightness(1.08);
+}
+
+.secondary-action-btn {
+  background: #5e046e;
+  color: white;
+  box-shadow: inset 0 -0.265vw #53055c, 3px 3px 14px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.secondary-action-btn:hover {
+  filter: brightness(1.08);
+}
+
 @media screen and (max-width: 768px) {
   main {
     padding: 90px 14px 120px;
