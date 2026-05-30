@@ -32,7 +32,7 @@ function confirmPurchase(listing) {
         modalBox.style.cssText = `padding: 25px; width: 400px; border-radius: 10px; text-align: center; color: white; font-family: 'Pixelify Sans', sans-serif; background: #5e046e; box-shadow: inset 0 -0.245vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);`;
 
         modalBox.innerHTML = `
-            <h3 style="font-size: 26px; margin: 0;">Do you want to buy ${listing.blookName} for ${listing.price} tokens?</h3>
+            <h3 style="font-size: 26px; margin: 0;">Do you want to buy ${listing.blookName} for ${listing.price.toLocaleString()} tokens?</h3>
             <img src="${listing.imageUrl}" alt="${listing.blookName}" style="width: auto; height: 100px; margin-bottom: 10px;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));">
             <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
                 <button id="pYes" class="modal-btn modal-btn-primary">Confirm</button>
@@ -70,7 +70,7 @@ async function loadListings(filter = "") {
                      onclick="${isOwner ? '' : `buyBlook({id: '${l._id}', blookName: '${l.blookName}', price: ${l.price}, imageUrl: '${l.imageUrl}', seller: '${l.sellerUsername || 'someone'}'})`}">
                     <img src="${l.imageUrl}" alt="${l.blookName}" class="bazaar-blook-img">
                     <div class="blook-name"><strong>${l.blookName}</strong></div>
-                    <div class="price-tag">${l.price} tokens</div>
+                    <div class="price-tag">${l.price.toLocaleString()} tokens</div>
                     ${isOwner ? '<p><small>Your Listing</small></p>' : ''}
                 </div>`;
         }).join("");
@@ -84,7 +84,7 @@ async function buyBlook(listing) {
         const res = await fetch(`/api/bazaar/buy/${listing.id}`, { method: 'POST' });
         const data = await res.json();
         if (res.ok) {
-            showModal(`You have bought ${listing.blookName} for ${listing.price} tokens!`);
+            showModal(`You have bought ${listing.blookName} for ${listing.price.toLocaleString()} tokens!`);
             allListings = []; 
             loadListings();
         } else {
