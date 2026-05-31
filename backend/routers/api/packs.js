@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-
 const Pack = require("../../models/Pack");
 const User = require("../../models/User");
-
 const { rateLimit } = require("../../middleware/rateLimit");
-
 const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1510120522988654812/PsMxHEN1nXdl1YSStCt1lal8qJIJUoKCmcwUouGue00AneEQlF0XZOXMtGCZ6x5avmhh";
 
 router.get("/", async (req, res) => {
@@ -28,7 +25,7 @@ router.post(
 
       if (!global.packCache) global.packCache = {};
       let pack = global.packCache[packName];
-      
+
       if (!pack) {
         pack = await Pack.findOne({ name: packName }).populate("blooks").lean();
         if (pack) global.packCache[packName] = pack;
@@ -40,9 +37,9 @@ router.post(
 
       const totalChance = pack.blooks.reduce((sum, b) => sum + (Number(b.chance) || 0), 0);
       const roll = Math.random() * totalChance;
-      
+
       let current = 0;
-      let wonBlook = pack.blooks[0]; 
+      let wonBlook = pack.blooks[0];
       for (const blook of pack.blooks) {
         current += Number(blook.chance) || 0;
         if (roll <= current) {
@@ -52,19 +49,19 @@ router.post(
       }
 
       const blookName = (wonBlook.name || wonBlook.title || wonBlook.blookName || "Unknown")
-        .replace(/\./g, "_"); 
+        .replace(/\./g, "_");
 
       const updatedUser = await User.findOneAndUpdate(
         { id: req.session.userId, tokens: { $gte: pack.cost } },
-        { 
-          $inc: { 
-            tokens: -pack.cost, 
-            packs: 1, 
-            opened: 1, 
-            [`blooks.${blookName}`]: 1 
-          } 
+        {
+          $inc: {
+            tokens: -pack.cost,
+            packs: 1,
+            opened: 1,
+            [`blooks.${blookName}`]: 1
+          }
         },
-        { returnDocument: 'after', projection: "username tokens packs blooks" }
+        { returnDocument: "after", projection: "username tokens packs blooks" }
       );
 
       if (!updatedUser) return res.status(400).json({ error: "Not enough tokens" });
@@ -77,11 +74,14 @@ router.post(
         blooks: updatedUser.blooks
       });
 
+      const rarityPercentage = ((wonBlook.chance / totalChance) * 100).toFixed(2);
+      const rarityLabel = wonBlook.rarity || "Common";
+
       fetch(DISCORD_WEBHOOK, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: `**${updatedUser.username}** opened **${pack.name}** and got a **${blookName}**`
+          content: `**${updatedUser.username}** opened **${pack.name}** and got a **${blookName}** | Rarity: **${rarityLabel}** (${rarityPercentage}%)`
         }),
       }).catch(console.error);
 
