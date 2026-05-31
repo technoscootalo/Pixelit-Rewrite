@@ -61,7 +61,7 @@ router.post(
             [`blooks.${blookName}`]: 1
           }
         },
-        { returnDocument: "after", projection: "username tokens packs blooks" }
+        { returnDocument: 'after', projection: "username tokens packs blooks" }
       );
 
       if (!updatedUser) return res.status(400).json({ error: "Not enough tokens" });
@@ -74,14 +74,11 @@ router.post(
         blooks: updatedUser.blooks
       });
 
-      const rarityPercentage = ((wonBlook.chance / totalChance) * 100).toFixed(2);
-      const rarityLabel = wonBlook.rarity || "Common";
-
       fetch(DISCORD_WEBHOOK, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: `**${updatedUser.username}** opened **${pack.name}** and got a **${blookName}** | Rarity: **${rarityLabel}** (${rarityPercentage}%)`
+          content: `**${updatedUser.username}** opened **${pack.name}** and got a **${blookName}**`
         }),
       }).catch(console.error);
 
