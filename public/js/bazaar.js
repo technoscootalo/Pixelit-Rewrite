@@ -104,7 +104,7 @@ function initBazaar() {
         .modal-header h2 { margin: 0; font-family: 'Pixelify Sans', sans-serif; font-size: 28px; }
         .close-icon { font-size: 24px; cursor: pointer; color: #ff0000; }
         #userListingsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; margin-top: 15px; }
-        .listing-card { cursor: pointer; transition: transform 0.2s; padding: 10px; border-radius: 8px;}
+        .listing-card { cursor: pointer; transition: transform 0.2s; border-radius: 8px;}
         .listing-card:hover { filter: brightness(1.2); }
         .listing-card.disabled { opacity: 0.6; cursor: not-allowed; }
         .modal-listing-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: center; }

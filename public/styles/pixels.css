@@ -160,7 +160,7 @@ main {
 }
 
 .blooks-details img {
-	width: 140px;
+	width: auto;
 	height: 150px;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
 	object-fit: contain;

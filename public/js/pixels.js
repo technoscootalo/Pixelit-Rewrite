@@ -142,7 +142,7 @@ function generatePacksHTML(packsData) {
       if (blook.owned > 0) {
         const img = document.createElement("img");
         img.className = "blook-image";
-        img.src = blook.imageUrl || "";
+        img.src = blook.imageUrl || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png";
         img.alt = blook.name;
 
         itemDiv.appendChild(img);
@@ -685,7 +685,7 @@ function listBlook() {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to list");
 
-      showModal("Blook listed successfully!");
+      showModal(`Your ${blookName} has been listed on bazaar`);
       close();
     } catch (err) {
       errorEl.textContent = err.message;
