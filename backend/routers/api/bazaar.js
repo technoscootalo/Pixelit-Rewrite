@@ -35,14 +35,14 @@ router.post('/buy/:id', async (req, res) => {
 
         const blookKey = `blooks.${listing.blookName.replace(/\./g, '_')}`;
 
+
         await User.updateOne(
             { id: buyer.id }, 
             { 
                 $inc: { 
                     tokens: -listing.price,
                     [blookKey]: 1 
-                },
-                $push: { "blooks.items": listing.blookName }
+                }
             }
         );
         
@@ -65,20 +65,30 @@ router.post('/remove/:id', async (req, res) => {
     }
 
     try {
-
-        const deletedListing = await BazaarListing.findOneAndDelete({ 
-            _id: req.params.id, 
-            userId: req.session.userId 
+        const deletedListing = await BazaarListing.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.session.userId
         });
 
         if (!deletedListing) {
-            return res.status(404).json({ 
-                error: "Listing not found or you do not have permission to delete it." 
+            return res.status(404).json({
+                error: "Listing not found or you do not have permission to delete it."
             });
         }
+
+        const blookKey = `blooks.${deletedListing.blookName.replace(/\./g, '_')}`;
         
-        res.json({ 
-            message: "Listing successfully removed from the bazaar." 
+        await User.updateOne(
+            { id: req.session.userId },
+            {
+                $inc: {
+                    [blookKey]: 1
+                }
+            }
+        );
+
+        res.json({
+            message: "Listing successfully removed from the bazaar and blook returned." 
         });
 
     } catch (err) {
