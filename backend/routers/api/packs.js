@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch packs" });
   }
 });
+
 router.post(
   "/open/:packName",
   rateLimit({ max: 3, windowMs: 8000 }),
@@ -30,17 +31,23 @@ router.post(
         return res.status(404).json({ error: "Pack unavailable" });
       }
 
-      const roll = Math.random() * 100;
-      let current = 0;
-      let wonBlook = pack.blooks[pack.blooks.length - 1];
+      const chances = (pack.blooks || []).map((b) => Number(b.chance) || 0);
+      const totalChance = chances.reduce((a, c) => a + c, 0);
 
-      for (const blook of pack.blooks) {
-        current += Number(blook.chance) || 0;
-        if (roll <= current) {
-          wonBlook = blook;
-          break;
+      let wonBlook;
+      if (totalChance > 0) {
+        const roll = Math.random() * totalChance;
+        let current = 0;
+        for (const blook of pack.blooks) {
+          current += Number(blook.chance) || 0;
+          if (roll <= current) {
+            wonBlook = blook;
+            break;
+          }
         }
       }
+
+      if (!wonBlook) wonBlook = pack.blooks[0];
 
       const blookName = wonBlook.name || wonBlook.title || wonBlook.blookName || "Unknown";
 
