@@ -497,3 +497,32 @@ body {
     margin-left: 0;
   }
 }
+
+#statsSpinOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+}
+
+#statsSpinOverlay img {
+  width: 1200px;
+  height: 12000px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.5));
+  animation: statsSpinOverlayRotate 2s linear infinite;
+}
+
+@keyframes statsSpinOverlayRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
