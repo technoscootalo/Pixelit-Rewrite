@@ -121,7 +121,7 @@ body {
 }
 
 .chat-pfp {
-  width: 70px;
+  width: auto;
   height: 70px;
   border-radius: 10px;
   flex-shrink: 0;
@@ -136,8 +136,7 @@ body {
 
 .message-header {
   display: flex;
-  gap: 8px;
-  align-items: baseline;
+  gap: 4px;
 }
 
 .message-content strong {
@@ -567,7 +566,7 @@ img.emoji,
 
   .chat-pfp {
     width: 55px;
-    height: 55px;
+    height: auto;
   }
 
   .message-content strong {

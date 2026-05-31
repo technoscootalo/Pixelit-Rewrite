@@ -25,7 +25,7 @@ const emojiButton = document.querySelector(".emojiContainer");
       box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
       padding: 40px; border-radius: 10px; width: 600px;
       color: #fff; font-family: 'Pixelify Sans', sans-serif;
-      text-align: center; border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
     `;
 
     const title = document.createElement("h2");
@@ -676,18 +676,18 @@ function renderMessage(message, grouped = false) {
 
   const usernameEl = document.createElement("strong");
   usernameEl.textContent = message.username || "Unknown";
-  
-  let resolvedUserColor = "#ffd6ff"; 
+
+  let resolvedUserColor = "#ffd6ff";
   if (Array.isArray(message.badges) && message.badges.length > 0) {
     for (const roleKey of Object.keys(ROLE_COLOR_MAP)) {
       if (message.badges.includes(roleKey)) {
         resolvedUserColor = ROLE_COLOR_MAP[roleKey];
-        break; 
+        break;
       }
     }
   }
   usernameEl.style.setProperty("color", resolvedUserColor, "important");
-  
+
   usernameEl.addEventListener("click", (e) => {
     if (e.shiftKey && message.username) {
       e.preventDefault();
@@ -696,6 +696,32 @@ function renderMessage(message, grouped = false) {
   });
 
   header.appendChild(usernameEl);
+
+  const badgesWrap = document.createElement("span");
+  badgesWrap.style.cssText = `display:inline-flex; gap:4px; align-items:center; margin-left:8px; vertical-align:middle;`;
+
+  const badges = Array.isArray(message.badges) ? message.badges : [];
+  if (badges.length > 0) {
+    badges.forEach((b) => {
+      const badgeName = typeof b === "string" ? b : b?.name;
+      const badgeImage = typeof b === "string" ? "" : b?.image;
+
+      const pill = document.createElement("span");
+      pill.style.cssText = ``;
+
+      if (badgeImage) {
+        const img = document.createElement("img");
+        img.src = badgeImage;
+        img.alt = badgeName || "Badge";
+        img.style.cssText = `width:28px; height:28px; border-radius:4px; object-fit:cover;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));`;
+        pill.appendChild(img);
+      }
+
+      badgesWrap.appendChild(pill);
+    });
+  }
+
+  header.appendChild(badgesWrap);
 
   const timestampEl = document.createElement("small");
   timestampEl.className = "message-timestamp";
