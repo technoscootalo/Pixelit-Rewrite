@@ -76,8 +76,8 @@ body {
 #packContainer {
   display: grid;
 
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   gap: 20px;
   width: 90%;
   max-width: 800px;
@@ -102,8 +102,7 @@ body {
 
 .box {
   width: 250px;
-  height: 250px;
-
+  height: 320px;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -324,6 +323,194 @@ body {
 .secondary-action-btn:hover {
   filter: brightness(1.08);
 }
+
+.packToolTips {
+  color: white;
+  text-decoration: underline;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 60px;    
+  height: 60px;
+  border: none;
+  border-radius: 5px;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;   
+  align-items: center;  
+  justify-content: center; 
+  background: #5e046e;
+  box-shadow: inset 0 -0.245vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s;
+}
+
+.packToolTips:hover { 
+  filter: brightness(1.1);
+}
+
+.packTooltipsOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px;
+}
+
+.packTooltipsModal {
+  width: min(1100px, 100%);
+  height: min(80vh, 720px);
+  background: #5e046e;
+  border-radius: 12px;
+  box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0,0,0,0.6);
+  position: relative;
+  overflow-y: scroll;
+  color: white;
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
+.packTooltipsClose {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 26px;
+  line-height: 40px;
+  z-index: 1;
+}
+
+.packTooltipsTitle {
+  margin: 0;
+  padding: 16px 56px 10px;
+  text-align: center;
+  border-bottom: 2px solid rgba(255,255,255,0.15);
+}
+
+.packTooltipsContent {
+  height: calc(100% - 60px);
+  overflow: auto;
+  padding: 14px;
+}
+
+.packTooltipsPack {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+
+.packTooltipsPackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.packTooltipsPackName {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.packTooltipsPackCost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.packTooltipsTokenIcon {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 4px rgba(255,215,0,0.35));
+}
+
+.packTooltipsBlooks {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.packTooltipsBlookItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.packTooltipsBlookImg {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+}
+
+.packTooltipsBlookMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.packTooltipsBlookName {
+  font-weight: 900;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.packTooltipsBlookBadges {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.packTooltipsRarity {
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.packTooltipsChance {
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(255,255,255,0.95);
+}
+
+@media screen and (max-width: 768px) {
+  .packTooltipsBlooks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .packTooltipsModal {
+    height: min(84vh, 720px);
+  }
+  .packTooltipsBlooks {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 @media screen and (max-width: 768px) {
   main {

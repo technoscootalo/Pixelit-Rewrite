@@ -264,10 +264,170 @@ function showModal(message, redirectToLogin = false) {
   }
 }
 
+let __packTooltipsInFlight = false;
+let __cachedPacksForTooltips = null;
+
+function rarityColor(rarity) {
+  const map = {
+    Common: "white",
+    Uncommon: "#4bc22e",
+    Rare: "blue",
+    Epic: "#be0000",
+    Legendary: "#ff910f",
+    Chroma: "#00ccff",
+    Mystical: "#9935dd",
+  };
+  return map[rarity] || "white";
+}
+
+async function openPackTooltipsModal() {
+  if (__packTooltipsInFlight) return;
+  __packTooltipsInFlight = true;
+
+  try {
+    if (!__cachedPacksForTooltips) {
+      const res = await fetch("/api/packs");
+      if (res.status === 401) {
+        showModal("Not logged in", true);
+        return;
+      }
+      if (!res.ok) throw new Error("Failed to load packs");
+      __cachedPacksForTooltips = await res.json();
+    }
+
+    const packs = __cachedPacksForTooltips || [];
+
+    const existing = document.getElementById("pack-tooltips-modal");
+    existing?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "pack-tooltips-modal";
+    overlay.className = "packTooltipsOverlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+
+    const modal = document.createElement("div");
+    modal.className = "packTooltipsModal";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "packTooltipsClose";
+    closeBtn.textContent = "×";
+    closeBtn.addEventListener("click", () => overlay.remove());
+
+    const title = document.createElement("h2");
+    title.className = "packTooltipsTitle";
+    title.textContent = "Pack Contents & Chances";
+
+    const content = document.createElement("div");
+    content.className = "packTooltipsContent";
+
+    const rarityOrder = [
+      "Uncommon",
+      "Rare",
+      "Epic",
+      "Legendary",
+      "Chroma",
+      "Mystical",
+      "Common",
+    ];
+
+    const rarityRank = (r) => {
+      const idx = rarityOrder.indexOf(r);
+      return idx === -1 ? 999 : idx;
+    };
+
+    const sortedPacks = [...packs].sort((a, b) => {
+      const aBlooks = Array.isArray(a?.blooks) ? a.blooks : [];
+      const bBlooks = Array.isArray(b?.blooks) ? b.blooks : [];
+
+      const bestARarity = aBlooks
+        .map((x) => x?.rarity || "Common")
+        .sort((ra, rb) => rarityRank(ra) - rarityRank(rb))[0];
+
+      const bestBRarity = bBlooks
+        .map((x) => x?.rarity || "Common")
+        .sort((ra, rb) => rarityRank(ra) - rarityRank(rb))[0];
+
+      return rarityRank(bestARarity) - rarityRank(bestBRarity);
+    });
+
+    sortedPacks.forEach((pack) => {
+
+      const packSection = document.createElement("section");
+      packSection.className = "packTooltipsPack";
+
+      const header = document.createElement("div");
+      header.className = "packTooltipsPackHeader";
+
+      const packName = document.createElement("div");
+      packName.className = "packTooltipsPackName";
+      packName.textContent = pack?.name || "Unknown Pack";
+
+      const packCost = document.createElement("div");
+      packCost.className = "packTooltipsPackCost";
+      packCost.innerHTML = `<img class="packTooltipsTokenIcon" src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png" alt="Token" />${pack?.cost ?? 0}`;
+
+      header.appendChild(packName);
+      header.appendChild(packCost);
+
+      const list = document.createElement("div");
+      list.className = "packTooltipsBlooks";
+
+      const blooks = Array.isArray(pack?.blooks) ? pack.blooks : [];
+      blooks.forEach((b) => {
+        const item = document.createElement("div");
+        item.className = "packTooltipsBlookItem";
+
+        const name = b?.blookName || b?.name || b?.title || "Unknown";
+        const rarity = b?.rarity || "Common";
+        const chance = b?.chance ?? b?.probability ?? b?.dropChance ?? 0;
+        const img = b?.imageUrl || "";
+
+        item.innerHTML = `
+          <img class="packTooltipsBlookImg" src="${img}" alt="${name}" />
+          <div class="packTooltipsBlookMeta">
+            <div class="packTooltipsBlookName">${name}</div>
+            <div class="packTooltipsBlookBadges">
+              <span class="packTooltipsRarity" style="color:${rarityColor(rarity)}">${rarity}</span>
+              <span class="packTooltipsChance">${Number(chance).toFixed ? Number(chance).toFixed(2).replace(/\.00$/, "") : chance}%</span>
+            </div>
+          </div>
+        `;
+
+        list.appendChild(item);
+      });
+
+      packSection.appendChild(header);
+      packSection.appendChild(list);
+      content.appendChild(packSection);
+    });
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(title);
+    modal.appendChild(content);
+    overlay.appendChild(modal);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
+  } catch (err) {
+    console.error(err);
+    showModal(err?.message || "Error loading pack tooltips");
+  } finally {
+    __packTooltipsInFlight = false;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   fetchPacks();
+
+  const btn = document.getElementById("packToolTips");
+  if (btn) btn.addEventListener("click", openPackTooltipsModal);
 });
+
 
 
 async function fetchUser() {
@@ -365,60 +525,45 @@ function createPack(pack) {
   div.className = "box";
   div.setAttribute("data-pack-name", pack.name);
 
-  if (pack.name === "OG Pack") {
-    div.style.background = "radial-gradient(circle, #ADD8E6, #335494)";
-    div.style.boxShadow = "inset 0 -0.365vw #335494, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
+  div.style.position = "relative";
+  div.style.overflow = "hidden"; 
+  div.style.borderRadius = "15px"; 
+  div.style.display = "flex";
+  div.style.flexDirection = "column";
+  div.style.alignItems = "center";
+  div.style.justifyContent = "center";
+  
+    div.style.border = "6px solid rgba(238, 238, 238, 0.57)";
+    div.style.boxSizing = "border-box";
 
-  if (pack.name === "Color Pack") {
-    div.style.background = "radial-gradient(circle, #FFFF00, #8B8000)";
-    div.style.boxShadow = "inset 0 -0.365vw #8B8000, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
+    div.style.borderRadius = "20px"; 
+    div.style.backgroundClip = "padding-box";
+  
+  div.style.display = "flex";
+  
+  const backgrounds = {
+    "OG Pack": "radial-gradient(circle, #ADD8E6, #335494)",
+    "Color Pack": "radial-gradient(circle, #FFFF00, #8B8000)",
+    "Fall Pack": "radial-gradient(circle, #DEB887, #8B4513)",
+    "Halloween Pack": "radial-gradient(circle, #39272d, #67433e)",
+    "Christmas Pack": "radial-gradient(circle, rgb(46, 139, 87), rgb(30, 86, 49), rgb(12, 45, 28), rgb(5, 20, 11))",
+    "Space Pack": "radial-gradient(circle, #808080, #00008B)",
+    "Technology Pack": "radial-gradient(circle, #346136, #2faa34)",
+    "School Pack": "radial-gradient(circle, #836048, #66423a)",
+    "Miscellaneous": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+  };
 
-  if (pack.name === "Fall Pack") {
-    div.style.background = "radial-gradient(circle, #DEB887, #8B4513)";
-    div.style.boxShadow = "inset 0 -0.365vw #8B4513, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Halloween Pack") {
-    div.style.background = "radial-gradient(circle, #39272d, #67433e)";
-    div.style.boxShadow = "inset 0 -0.365vw #39272d, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Christmas Pack") {
-    div.style.background = "radial-gradient(circle, rgb(46, 139, 87), rgb(30, 86, 49), rgb(12, 45, 28), rgb(5, 20, 11))";
-    div.style.boxShadow = "inset 0 -0.365vw rgba(13, 115, 45, 0.17), 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Space Pack") {
-    div.style.background = "radial-gradient(circle, #808080, #00008B)";
-    div.style.boxShadow = "inset 0 -0.365vw #00008B, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Technology Pack") {
-    div.style.background = "radial-gradient(circle, #346136, #2faa34)";
-    div.style.boxShadow = "inset 0 -0.365vw #346136, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "School Pack") {
-    div.style.background = "radial-gradient(circle, #836048, #66423a)";
-    div.style.boxShadow = "inset 0 -0.365vw #66423a, 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
-  if (pack.name === "Miscellaneous") {
-    div.style.background = "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
-    div.style.boxShadow = "inset 0 -0.365vw rgba(0, 0, 0, 0.6), 3px 3px 15px rgba(0, 0, 0, 0.6)";
-  }
-
+  div.style.background = backgrounds[pack.name] || "#5e046e";
+  div.style.boxShadow = "3px 3px 15px rgba(0, 0, 0, 0.6)";
 
   const img = document.createElement("img");
-
   img.src = pack.packImageUrl;
   img.alt = pack.name;
-
   img.style.cssText = `
-    width:145px;
-    height:145px;
+    width: 145px;
+    height: 145px;
+    margin-top: 20px;
+    margin-bottom: 70px;
     transform: rotate(6deg);
     filter: drop-shadow(0 10px 12px rgba(0,0,0,0.5));
     transition: 0.25s;
@@ -430,43 +575,42 @@ function createPack(pack) {
     img.style.transform = "rotate(0deg) scale(1.08)";
     img.style.filter = "drop-shadow(0 15px 20px rgba(0,0,0,0.6))";
   };
-
   img.onmouseleave = () => {
     img.style.transform = "rotate(6deg) scale(1)";
     img.style.filter = "drop-shadow(0 10px 12px rgba(0,0,0,0.5))";
   };
 
-  const cost = document.createElement("p");
+  const cost = document.createElement("div");
   cost.style.cssText = `
     display: flex;
-    align-items: center;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0; 
+    flex-direction: row;
     justify-content: center;
-    gap: 6px;
-    color: white;
-    font-weight: bold;
-    font-size: 32px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    align-items: center;    
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    height: 55px;
+    color: #fff;
+    font-size: 26px;
+    font-family: var(--font-titan);
+    text-shadow: 2px 2px rgba(0,0,0,.2);
+    box-sizing: border-box;
+    margin: 0;
   `;
 
   cost.innerHTML = `
-    <img 
-      src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png"
-      style="
-        width:28px;
-        height:28px;
-        filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
-      "
-    >
+    <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png" 
+         style="width:28px; height:28px; margin-right: 8px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));">
     ${pack.cost}
   `;
 
   div.appendChild(img);
-  div.appendChild(document.createElement("br"));
   div.appendChild(cost);
 
-  div.onclick = () => openPack(pack, img);
-
-  img.onclick = (e) => {
+  div.onclick = (e) => {
     e.stopPropagation();
     openPack(pack, img);
   };
