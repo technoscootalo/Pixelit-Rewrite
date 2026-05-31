@@ -70,6 +70,7 @@ async function loadListings(filter = "") {
                      onclick="${isOwner ? '' : `buyBlook({id: '${l._id}', blookName: '${l.blookName}', price: ${l.price}, imageUrl: '${l.imageUrl}', seller: '${l.sellerUsername || 'someone'}'})`}">
                     <img src="${l.imageUrl}" alt="${l.blookName}" class="bazaar-blook-img">
                     <div class="blook-name"><strong>${l.blookName}</strong></div>
+                    <div style="font-size: 12px; color: #ffffff;">${l.username || 'Unknown'}</div>\
                     <div class="price-tag">${l.price.toLocaleString()} tokens</div>
                     ${isOwner ? '<p><small>Your Listing</small></p>' : ''}
                 </div>`;
@@ -127,15 +128,24 @@ function closeListModal() { document.getElementById('myListingsModal').classList
 async function loadUserListings() {
     const container = document.getElementById('userListingsContainer');
     container.innerHTML = "Loading...";
-    const res = await fetch("/api/bazaar/my-listings");
-    const listings = await res.json();
-    container.innerHTML = listings.length === 0 ? '<p>No active listings.</p>' : listings.map(l => `
-        <div class="modal-listing-wrapper">
-            <div class="listing-card" onclick="cancelListing('${l._id}')">
-                <img src="${l.imageUrl}" alt="${l.blookName}" style="width: 80px;">
-                <div><strong>${l.blookName}</strong></div>
-            </div>
-        </div>`).join("");
+    
+    try {
+        const res = await fetch("/api/bazaar/my-listings");
+        const listings = await res.json();
+        
+        container.innerHTML = listings.length === 0 
+            ? '<p>No active listings.</p>' 
+            : listings.map(l => `
+                <div class="modal-listing-wrapper">
+                    <div class="listing-card" onclick="cancelListing('${l._id}')">
+                        <img src="${l.imageUrl}" alt="${l.blookName}" style="width: 80px;">
+                        <div><strong>${l.blookName}</strong></div>
+                    </div>
+                </div>`).join("");
+    } catch (err) {
+        container.innerHTML = '<p>Error loading listings.</p>';
+        console.error(err);
+    }
 }
 
 async function cancelListing(id) {
