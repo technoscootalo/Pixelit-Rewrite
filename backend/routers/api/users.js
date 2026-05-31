@@ -4,9 +4,9 @@ const User = require("../../models/User");
 
 
 const { requirePanelAccess } = require("../../middleware/panelAuth");
+const { requireDeveloperAccess } = require("../../middleware/panelAuth");
 const { rateLimit } = require("../../middleware/rateLimit");
 const { requireNotBanned } = require("../../middleware/sessionUser");
-
 
 
 
