@@ -1,7 +1,7 @@
 let user = null;
 const DAILY_WHEEL_COOLDOWN_MS = 1000 * 60 * 60 * 4;
 
-/* 
+
 const STATS_AUTOPLAY_AUDIO_URL = "/js/iChaseDih.mp3";
 const STATS_SPINNER_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0JMx6kUfK-Vt-G1-SQJMmkcD3XIOD0EX3wA&s";
 
@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
   tryAutoplayStatsAudio();
 });
 
-*/
 
 function formatRemaining(ms) {
   const hours = Math.floor(ms / 3600000);

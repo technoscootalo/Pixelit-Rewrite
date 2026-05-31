@@ -142,14 +142,14 @@ function generatePacksHTML(packsData) {
       if (blook.owned > 0) {
         const img = document.createElement("img");
         img.className = "blook-image";
-        img.src = blook.imageUrl || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png";
+        img.src = blook.imageUrl || "https://github.io";
         img.alt = blook.name;
 
         itemDiv.appendChild(img);
 
         const badge = document.createElement("div");
         badge.className = "badge";
-        badge.textContent = blook.owned;
+        badge.textContent = Number(blook.owned).toLocaleString(); 
 
         badge.style.backgroundColor =
           RARITY_COLORS[(blook.rarity || "").toLowerCase()] || "white";
@@ -178,12 +178,16 @@ function generatePacksHTML(packsData) {
       } else {
         itemDiv.classList.add("locked-item");
 
-        const lockIcon = document.createElement("img");
-        lockIcon.className = "lock-icon";
-        lockIcon.src =
-          "https://izumiihd.github.io/pixelitcdn/assets/img/icons/lock.png";
-        lockIcon.alt = "Locked";
+        const img = document.createElement("img");
+        img.className = "blook-image locked-blook-image";
+        img.src = blook.imageUrl || "https://github.com/IzumiiHD/pixelitcdn/blob/main/assets/img/blooks/placeholder.png";
+        img.alt = blook.name;
+        itemDiv.appendChild(img);
 
+        const lockIcon = document.createElement("img");
+        lockIcon.className = "custom-lock-icon";
+        lockIcon.src = "https://github.com/IzumiiHD/pixelitcdn/blob/main/assets/img/icons/lock.png?raw=true";
+        lockIcon.alt = "Locked";
         itemDiv.appendChild(lockIcon);
       }
 

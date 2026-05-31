@@ -498,7 +498,16 @@ body {
   }
 }
 
-/* 
+#statsSpinOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+}
 #statsSpinOverlay {
   position: fixed;
   inset: 0;
@@ -511,21 +520,18 @@ body {
 }
 
 #statsSpinOverlay img {
-  width: 1200px;
-  height: 12000px;
-  object-fit: contain;
+  width: 2200px;
+  height: 1200px; 
   filter: drop-shadow(0 8px 18px rgba(0,0,0,0.5));
-  animation: statsSpinOverlayRotate 2s linear infinite;
+  opacity: 0; 
+  animation: statsSpinOverlayFadeIn 34s ease-out forwards; 
 }
 
-@keyframes statsSpinOverlayRotate {
+@keyframes statsSpinOverlayFadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
   }
 }
-
-
-*/
