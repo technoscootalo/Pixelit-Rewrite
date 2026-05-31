@@ -230,7 +230,7 @@ function updateBlookInfo(blook) {
   `;
 
   document.getElementById("blookImage").src = blook.imageUrl;
-  document.getElementById("amountOwned").innerText = `${blook.owned} Owned`;
+  document.getElementById("amountOwned").innerText = `${(blook.owned).toLocaleString()} Owned`;
 
   if (detailsPanel) {
     const bg = blook.backgroundUrl;
