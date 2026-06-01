@@ -89,6 +89,7 @@ body {
 .chat-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   background: rgba(0, 0, 0, 0.12);
   display: flex;
