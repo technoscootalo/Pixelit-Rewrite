@@ -10,7 +10,7 @@
 ## 🌐 Preview
 
 <p align="center">
-  <img src="https://technoscootalo.github.io/pixelitcdn-1/assets/screenshots/homepage.png" width="800"/>
+  <img src="https://i.postimg.cc/59Z7dfVf/image.png" width="800"/>
 </p>
 
 ---
