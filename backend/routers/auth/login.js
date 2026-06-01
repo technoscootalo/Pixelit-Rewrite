@@ -45,32 +45,16 @@ router.post("/", async (req, res) => {
         }
 
         if (user.banned) {
+            const reason = user.banReason || "no reason provided";
+            const duration = (user.banDuration && user.banDuration > 0) 
+                ? `in ${user.banDuration} hours` 
+                : "never";
 
-            let banMessage =
-                `You have been banned from Pixelit\n` +
-                `Reason: ${user.banReason || "No reason provided"}`;
+            const banMessage = `You are currently banned for ${reason}. Your ban will expire ${duration}. If you believe this is a mistake, please contact a staff member.`;
 
-            if (
-                user.banDuration &&
-                user.banDuration > 0
-            ) {
-
-                banMessage +=
-                    `\nExpires: (${user.banDuration} hours)`;
-
-                return res.status(403).json({
-                    error: banMessage
-                });
-
-            } else {
-
-                banMessage += `\nExpires: Never`;
-
-                return res.status(403).json({
-                    error: banMessage
-                });
-
-            }
+            return res.status(403).json({
+                error: banMessage
+            });
         }
 
         req.session.userId = user.id;

@@ -46,7 +46,7 @@ router.post('/listBlook', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        content: `**${user.username}** has listed **${blookName}** for **${price.toLocaleString()} tokens* on the bazaar!`
+        content: `**${user.username}** has listed **${blookName}** for **${price.toLocaleString()}** tokens on the bazaar!`
       })
     }).catch(err => console.error("Discord Webhook failed:", err));
 
