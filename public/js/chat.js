@@ -379,54 +379,55 @@ function parseMentions(htmlContent, parentRow) {
 function parseBodyText(bodyElement, text, isEdited, parentRow) {
   bodyElement.innerHTML = "";
   const cleanText = text.trim();
-  
+
   if (/on\w+\s*=|javascript:/i.test(cleanText)) {
     bodyElement.textContent = text;
     if (isEdited) appendEditedTag(bodyElement);
     return;
   }
 
+  const mediaStyle = "max-width: 100%; border-radius: 8px; margin-top: 5px; display: block;";
 
-
-  const imgRegex = /\.(apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjpg|png|svg|webp)(\?[^\s]*)?$/i;
-  const videoRegex = /\.(mp4|webm|ogg|m4v)(\?[^\s]*)?$/i;
-  const audioRegex = /\.(mp3|wav|aac|m4a|ogg)(\?[^\s]*)?$/i;
-  
   const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|shorts\/)?([a-zA-Z0-9_-]{11})/;
   const spotifyRegex = /https:\/\/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/;
   const scRegex = /https:\/\/soundcloud\.com\/[\w-]+\/[\w-]+/;
-
-  const mediaStyle = "max-width: 100%; border-radius: 8px; margin-top: 5px; display: block;";
+  const imgRegex = /\.(apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjpg|png|svg|webp)(\?[^\s]*)?$/i;
+  const videoRegex = /\.(mp4|webm|ogg|m4v)(\?[^\s]*)?$/i;
+  const audioRegex = /\.(mp3|wav|aac|m4a|ogg)(\?[^\s]*)?$/i;
 
   if (ytRegex.test(cleanText)) {
     const videoId = cleanText.match(ytRegex)[1];
     const iframe = document.createElement("iframe");
     iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`;
-
     iframe.style.cssText = `${mediaStyle} width: 320px; height: 180px;`;
     bodyElement.appendChild(iframe);
-  }
+  } 
   else if (spotifyRegex.test(cleanText)) {
+    const match = cleanText.match(spotifyRegex);
+    const type = match[1]; 
+    const id = match[2];
+    
     const iframe = document.createElement("iframe");
-    const spotifyId = cleanText.split('.com/')[1];
-    iframe.src = `https://open.spotify.com/embed/${encodeURIComponent(spotifyId)}`;
-    iframe.style.cssText = `${mediaStyle} width: 320px; height: 80px;`;
+    iframe.src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
+    iframe.style.cssText = `${mediaStyle} width: 100%; max-width: 320px; height: 352px; border: none;`;
+    iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    iframe.loading = "lazy";
     bodyElement.appendChild(iframe);
-  }
+  } 
   else if (scRegex.test(cleanText)) {
     const iframe = document.createElement("iframe");
     const safeUrl = sanitizeForMediaUrl(cleanText);
     iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(safeUrl)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false`;
     iframe.style.cssText = `${mediaStyle} width: 320px; height: 160px;`;
     bodyElement.appendChild(iframe);
-  }
+  } 
   else if (imgRegex.test(cleanText)) {
     const img = document.createElement("img");
     img.src = sanitizeForMediaUrl(cleanText);
     img.style.cssText = `${mediaStyle} max-height: 250px; cursor: pointer;`;
     img.addEventListener("click", () => openImageModal(cleanText));
     bodyElement.appendChild(img);
-  }
+  } 
   else if (videoRegex.test(cleanText) || audioRegex.test(cleanText)) {
     const type = videoRegex.test(cleanText) ? "video" : "audio";
     const media = document.createElement(type);
@@ -434,7 +435,7 @@ function parseBodyText(bodyElement, text, isEdited, parentRow) {
     media.controls = true;
     media.style.cssText = `${mediaStyle} ${type === 'video' ? 'width: 320px;' : 'width: 280px;'}`;
     bodyElement.appendChild(media);
-  }
+  } 
   else {
     const emojiProcessed = renderChatContentWithEmoji(cleanText);
     bodyElement.innerHTML = parseMentions(emojiProcessed, parentRow);

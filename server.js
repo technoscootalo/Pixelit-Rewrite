@@ -227,6 +227,12 @@ io.on("connection", async (socket) => {
             if (!message || message.userId !== socket.user.id.toString()) return;
 
             let updatedContent = content.trim();
+            if (!updatedContent) return;
+
+            if (updatedContent.length > 256) return;
+            if (/[<>"'`]/.test(updatedContent)) return;
+            if (/on\w+\s*=|javascript:/i.test(updatedContent)) return;
+
 
             const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
             const textMatches = [...updatedContent.matchAll(emoteRegex)];
