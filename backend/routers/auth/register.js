@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
         const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
         const hashedIp = crypto.createHash("sha256").update(ip).digest("hex");
 
-        // allow up to 3 accounts per IP to prevent abuse without blocking shared networks
+        // allow up to 2 accounts per IP to prevent abuse without blocking shared networks
         const existingCount = await User.countDocuments({ hashedIps: hashedIp });
         if (existingCount >= 2) {
             return res.status(403).json({ error: "Too many accounts created from this IP" });

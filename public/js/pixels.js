@@ -640,6 +640,17 @@ function listBlook() {
   const blookName = selectedBlook.name;
   const blookImage = selectedBlook.imageUrl; 
   
+  const RARITY_VALUES = {
+    uncommon: 5,
+    rare: 20,
+    epic: 75,
+    legendary: 200,
+    chroma: 300,
+    mystical: 1000
+  };
+
+  const defaultPrice = RARITY_VALUES[selectedBlook.rarity] || 100;
+  
   const modal = document.createElement("div");
   modal.id = "list-blook-modal";
   modal.className = "sell-blook-modal-overlay";
@@ -652,7 +663,7 @@ function listBlook() {
     <img src="${blookImage}" alt="${blookName}" style="width: auto;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); height: 130px; margin: 10px auto; display: block;">
     <div class="sell-blook-modal-input-row">
       <label class="sell-blook-modal-label">Price</label>
-      <input type="number" id="listPrice" class="sell-blook-modal-amount" min="1" value="100">
+      <input type="number" id="listPrice" class="sell-blook-modal-amount" min="1" max="5000000" value="${defaultPrice}">
     </div>
     <div class="sell-blook-modal-error" id="listError"></div>
     <div class="sell-blook-modal-actions">
@@ -671,8 +682,8 @@ function listBlook() {
     const price = parseInt(document.getElementById("listPrice").value, 10);
     const errorEl = document.getElementById("listError");
 
-    if (!price || price < 1) {
-      errorEl.textContent = "Enter a valid price";
+    if (!price || price < 1 || price > 5000000) {
+      errorEl.textContent = "Enter a valid price (1 - 5,000,000)";
       return;
     }
 

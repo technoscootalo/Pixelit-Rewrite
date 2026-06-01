@@ -35,20 +35,24 @@ router.post('/buy/:id', async (req, res) => {
 
         const blookKey = `blooks.${listing.blookName.replace(/\./g, '_')}`;
 
-
         await User.updateOne(
             { id: buyer.id }, 
-            { 
-                $inc: { 
-                    tokens: -listing.price,
-                    [blookKey]: 1 
-                }
-            }
+            { $inc: { tokens: -listing.price, [blookKey]: 1 } }
         );
         
         await User.updateOne({ id: listing.userId }, { $inc: { tokens: listing.price } });
 
         await BazaarListing.findByIdAndDelete(listing._id);
+
+        const webhookUrl = "https://discord.com/api/webhooks/1510852018514694255/6F68Xglo98yr5pYOihzLKOHn20OzPsgGnCJzUEgsrxJAdN7aLjqBSChdjlXw7Tx457j9";
+        
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content: `**${buyer.username}** has bought **${listing.blookName}** from **${listing.username}** for **${listing.price.toLocaleString()}** tokens on the bazaar!`
+            })
+        }).catch(err => console.error("Discord Webhook failed:", err));
 
         res.json({ success: true });
     } catch (err) {
