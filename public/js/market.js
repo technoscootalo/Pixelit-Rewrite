@@ -296,21 +296,17 @@ async function openPackTooltipsModal() {
     }
 
     const packs = __cachedPacksForTooltips || [];
-
     const existing = document.getElementById("pack-tooltips-modal");
     existing?.remove();
 
     const overlay = document.createElement("div");
     overlay.id = "pack-tooltips-modal";
     overlay.className = "packTooltipsOverlay";
-    overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "true");
-
+    
     const modal = document.createElement("div");
     modal.className = "packTooltipsModal";
 
     const closeBtn = document.createElement("button");
-    closeBtn.type = "button";
     closeBtn.className = "packTooltipsClose";
     closeBtn.textContent = "×";
     closeBtn.addEventListener("click", () => overlay.remove());
@@ -322,79 +318,51 @@ async function openPackTooltipsModal() {
     const content = document.createElement("div");
     content.className = "packTooltipsContent";
 
-    const rarityOrder = [
-      "Uncommon",
-      "Rare",
-      "Epic",
-      "Legendary",
-      "Chroma",
-      "Mystical",
-      "Common",
-    ];
-
+    // Your specific rarity order
+    const rarityOrder = ["Uncommon", "Rare", "Epic", "Legendary", "Chroma", "Mystical", "Common"];
     const rarityRank = (r) => {
       const idx = rarityOrder.indexOf(r);
       return idx === -1 ? 999 : idx;
     };
 
-    const sortedPacks = [...packs].sort((a, b) => {
-      const aBlooks = Array.isArray(a?.blooks) ? a.blooks : [];
-      const bBlooks = Array.isArray(b?.blooks) ? b.blooks : [];
-
-      const bestARarity = aBlooks
-        .map((x) => x?.rarity || "Common")
-        .sort((ra, rb) => rarityRank(ra) - rarityRank(rb))[0];
-
-      const bestBRarity = bBlooks
-        .map((x) => x?.rarity || "Common")
-        .sort((ra, rb) => rarityRank(ra) - rarityRank(rb))[0];
-
-      return rarityRank(bestARarity) - rarityRank(bestBRarity);
-    });
-
-    sortedPacks.forEach((pack) => {
-
+    packs.forEach((pack) => {
       const packSection = document.createElement("section");
       packSection.className = "packTooltipsPack";
 
       const header = document.createElement("div");
       header.className = "packTooltipsPackHeader";
-
-      const packName = document.createElement("div");
-      packName.className = "packTooltipsPackName";
-      packName.textContent = pack?.name || "Unknown Pack";
-
-      const packCost = document.createElement("div");
-      packCost.className = "packTooltipsPackCost";
-      packCost.innerHTML = `<img class="packTooltipsTokenIcon" src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png" alt="Token" />${pack?.cost ?? 0}`;
-
-      header.appendChild(packName);
-      header.appendChild(packCost);
+      header.innerHTML = `
+        <div class="packTooltipsPackName">${pack?.name || "Unknown Pack"}</div>
+        <div class="packTooltipsPackCost">
+          <img class="packTooltipsTokenIcon" src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png" alt="Token" />
+          ${pack?.cost ?? 0}
+        </div>
+      `;
 
       const list = document.createElement("div");
       list.className = "packTooltipsBlooks";
 
+      // Sort the blooks array based on the custom rarityRank before creating elements
       const blooks = Array.isArray(pack?.blooks) ? pack.blooks : [];
-      blooks.forEach((b) => {
-        const item = document.createElement("div");
-        item.className = "packTooltipsBlookItem";
+      const sortedBlooks = [...blooks].sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity));
 
+      sortedBlooks.forEach((b) => {
         const name = b?.blookName || b?.name || b?.title || "Unknown";
         const rarity = b?.rarity || "Common";
-        const chance = b?.chance ?? b?.probability ?? b?.dropChance ?? 0;
-        const img = b?.imageUrl || "";
+        const rawChance = b?.chance ?? b?.probability ?? b?.dropChance ?? 0;
 
+        const item = document.createElement("div");
+        item.className = "packTooltipsBlookItem";
         item.innerHTML = `
-          <img class="packTooltipsBlookImg" src="${img}" alt="${name}" />
+          <img class="packTooltipsBlookImg" src="${b?.imageUrl || ""}" alt="${name}" />
           <div class="packTooltipsBlookMeta">
             <div class="packTooltipsBlookName">${name}</div>
             <div class="packTooltipsBlookBadges">
-              <span class="packTooltipsRarity" style="color:${rarityColor(rarity)}">${rarity}</span>
-              <span class="packTooltipsChance">${Number(chance).toFixed ? Number(chance).toFixed(2).replace(/\.00$/, "") : chance}%</span>
+              <span class="packTooltipsRarity" style="color:${typeof rarityColor === 'function' ? rarityColor(rarity) : '#fff'}">${rarity}</span>
+              <span class="packTooltipsChance">${rawChance}%</span>
             </div>
           </div>
         `;
-
         list.appendChild(item);
       });
 
@@ -403,18 +371,14 @@ async function openPackTooltipsModal() {
       content.appendChild(packSection);
     });
 
-    modal.appendChild(closeBtn);
-    modal.appendChild(title);
-    modal.appendChild(content);
+    modal.append(closeBtn, title, content);
     overlay.appendChild(modal);
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) overlay.remove();
-    });
-
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
     document.body.appendChild(overlay);
+
   } catch (err) {
     console.error(err);
-    showModal(err?.message || "Error loading pack tooltips");
+    if (typeof showModal === 'function') showModal(err?.message || "Error loading pack tooltips");
   } finally {
     __packTooltipsInFlight = false;
   }
@@ -427,8 +391,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("packToolTips");
   if (btn) btn.addEventListener("click", openPackTooltipsModal);
 });
-
-
 
 async function fetchUser() {
   try {
@@ -491,33 +453,6 @@ function displayPacks(packs) {
   packs.forEach(pack => {
     container.appendChild(createPack(pack));
   });
-}
-
-function createWeeklyBlookCard(blook) {
-  const card = document.createElement("div");
-  card.className = "weeklyBlookCard";
-  card.setAttribute("data-blook-id", String(blook.blookId || ""));
-
-  card.innerHTML = `
-    <img class="weeklyBlookImage" src="${blook.imageUrl || ""}" alt="${blook.BlookName || ""}" />
-    <div class="weeklyBlookName">${blook.BlookName || ""}</div>
-    <div class="weeklyBlookCost">
-      <img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png"
-        style="width:20px;height:20px;filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));"
-      />
-      <span>${blook.cost ?? 0}</span>
-    </div>
-    <button class="weeklyBuyBtn" type="button">Buy</button>
-  `;
-
-  const btn = card.querySelector(".weeklyBuyBtn");
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    buyWeeklyBlook(blook.blookId);
-  });
-
-  return card;
 }
 
 function createPack(pack) {
