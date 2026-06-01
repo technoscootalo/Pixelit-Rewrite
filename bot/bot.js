@@ -260,41 +260,40 @@ client.once("ready", () => {
     try {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-      const key = crypto.randomBytes(32).toString("hex");
+      const hasGeneratedBefore = await AccessKey.findOne({
+        discordId: interaction.user.id
+      });
 
+      if (hasGeneratedBefore) {
+        return interaction.editReply(
+          "You have already generated an access key."
+        );
+      }
+
+      const key = crypto.randomBytes(32).toString("hex");
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-      const saved = await AccessKey.create({
+      await AccessKey.create({
         key,
         discordId: interaction.user.id,
         used: false,
         expiresAt
       });
 
-      console.log("Access key created:", saved.key);
-
       return interaction.editReply(
-`━━━━━━━━━━━━━━━━━━
-ACCESS KEY GENERATED
+      `━━━━━━━━━━━━━━━━━━
+      ACCESS KEY GENERATED
 
-${key}
+      ${key}
 
-Expires in: 10 minutes
-One-time use only
-━━━━━━━━━━━━━━━━━━`
+      Expires in: 10 minutes
+      One-time use only
+      ━━━━━━━━━━━━━━━━━━`
       );
 
     } catch (err) {
       console.error("Access key error:", err);
-
-      if (interaction.deferred) {
-        return interaction.editReply("Failed to generate access key.");
-      }
-
-      return interaction.reply({
-        content: "Failed to generate access key.",
-        flags: MessageFlags.Ephemeral
-      });
+      return interaction.editReply("Failed to generate access key.");
     }
   }
 });

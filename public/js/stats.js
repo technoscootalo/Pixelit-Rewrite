@@ -1,4 +1,4 @@
-let user = null;
+  let user = null;
 const DAILY_WHEEL_COOLDOWN_MS = 1000 * 60 * 60 * 4;
 
 /* 
@@ -649,6 +649,174 @@ if (spinButton) {
   spinButton.addEventListener("click", claimDailyWheel);
 }
 
+async function openBannersModal() {
+  try {
+    const res = await fetch("/api/banners", { credentials: "include" });
+    if (!res.ok) return;
+    const banners = await res.json();
+
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeInOverlay 0.25s ease;
+    `;
+
+    const title = document.createElement("div");
+    title.style.cssText = `
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      text-shadow: #000 1px 0 13px;
+    `;
+    title.textContent = "Banners";
+
+    const list = document.createElement("div");
+    list.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow: auto;
+      padding: 6px;
+      max-height: calc(85vh - 90px);
+    `;
+
+
+    const safeBanners = Array.isArray(banners) ? banners : [];
+    if (safeBanners.length === 0) {
+      const empty = document.createElement("div");
+      empty.style.cssText = `padding: 30px; opacity: 0.9; font-size: 20px;`;
+      empty.textContent = "No banners available.";
+      list.appendChild(empty);
+    } else {
+      safeBanners.forEach((banner) => {
+        const wrap = document.createElement("div");
+
+        wrap.style.cssText = `
+          overflow: hidden;
+          width: 320px;
+          height: 110px;
+        `;
+
+        const img = document.createElement("img");
+        img.src = banner.image || "";
+        img.alt = "Banner";
+        img.style.cssText = ` object-fit: cover; display:block; cursor: pointer;`;
+
+        img.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (!banner?.image) return;
+
+          try {
+            const res = await fetch("/api/changeBanner", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+            body: JSON.stringify({ banner: banner.image })
+            });
+
+            if (!res.ok) return;
+            const data = await res.json().catch(() => null);
+            const newBanner = data?.banner ?? banner.image;
+
+            const bannerImgEl = document.getElementById("banner");
+            if (bannerImgEl) bannerImgEl.src = newBanner;
+
+            const closeBtn = close;
+            if (closeBtn && typeof closeBtn.click === "function") closeBtn.click();
+          } catch (err) {
+            console.error("Failed to change banner:", err);
+          }
+        });
+
+        wrap.appendChild(img);
+        list.appendChild(wrap);
+
+      });
+
+    }
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "X";
+    close.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: rgba(0,0,0,0.25);
+      color: white;
+      font-size: 22px;
+      font-weight: 900;
+    `;
+
+    close.onclick = () => {
+      modal.remove();
+    };
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.remove();
+    };
+
+    modal.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeInOverlay 0.25s ease;
+    `;
+
+    modal.innerHTML = "";
+
+    const panel = document.createElement("div");
+    panel.style.cssText = `
+      background: #5e046e;
+      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0,0,0,0.6);
+      padding: 18px;
+      border-radius: 8px;
+      text-align: center;
+      color: white;
+      font-family: Pixelify Sans, sans-serif;
+      height: 600px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    `;
+
+    panel.appendChild(list);
+    document.body.appendChild(modal);
+    modal.appendChild(panel);
+
+    const style = document.createElement("style");
+    style.textContent = `@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }`;
+    document.head.appendChild(style);
+    setTimeout(() => style.remove(), 1000);
+  } catch (e) {
+    console.error("Failed loading banners modal:", e);
+  }
+}
+
+const bannerImg = document.getElementById("banner");
+if (bannerImg) {
+  bannerImg.addEventListener("click", () => {
+    openBannersModal();
+  });
+}
+
+
 function createElement(tag, props = {}, styles = {}) {
   const el = document.createElement(tag);
   Object.assign(el, props);
@@ -861,8 +1029,18 @@ function openViewUserPopup() {
       }
 
       if (ui.tokens) ui.tokens.innerText = (other.tokens ?? 0).toLocaleString();
-      if (ui.opened) ui.opened.innerText = (other.opened ?? 0).toLocaleString();
-      if (ui.messages) ui.messages.innerText = (other.stats?.sent ?? 0).toLocaleString();
+      if (ui.opened) {
+        const openedVal = typeof other.opened === 'number' ? other.opened : (typeof other.packsOpened === 'number' ? other.packsOpened : 0);
+        ui.opened.innerText = Number(openedVal).toLocaleString();
+      }
+      const unlockedEl = document.getElementById('unlocked');
+      if (unlockedEl) {
+        const unlockedVal = typeof other.unlocked === 'number' ? other.unlocked : 0;
+        const totalBlooksVal = typeof other.totalBlooks === 'number' ? other.totalBlooks : 0;
+        unlockedEl.innerText = `${unlockedVal}/${totalBlooksVal}`;
+      }
+      if (ui.messages) ui.messages.innerText = (other?.stats && typeof other.stats.sent === 'number') ? other.stats.sent.toLocaleString() : ((other?.stats?.sent ?? 0)).toLocaleString();
+
 
       if (ui.badgesEl && ui.badgesContainer) {
         const badges = Array.isArray(other.badges) ? other.badges : (other.userBadges || []);
@@ -891,8 +1069,6 @@ function openViewUserPopup() {
           ui.badgesContainer.style.display = 'none';
         }
       }
-
-
 
       if (ui.spinButton) {
         ui.spinButton.style.display = 'none';
@@ -1158,9 +1334,18 @@ if (viewUserButton) {
         const color = roleColors[other.role];
         if (color) roleEl.style.color = color;
       }
-      if (tokensEl) tokensEl.innerText = (other.tokens ?? 0).toLocaleString();
-      if (openedEl) openedEl.innerText = (other.opened ?? 0).toLocaleString();
-      if (messagesEl) messagesEl.innerText = (other.stats?.sent ?? 0).toLocaleString();
+      if (tokensEl) tokensEl.innerText = (typeof other.tokens === 'number' ? other.tokens : (other.tokens ?? 0)).toLocaleString();
+      if (openedEl) {
+        const openedVal =
+          typeof other.opened === 'number'
+            ? other.opened
+            : (typeof other.packsOpened === 'number' ? other.packsOpened : 0);
+        openedEl.innerText = Number(openedVal).toLocaleString();
+      }
+
+
+      if (messagesEl) messagesEl.innerText = (other?.stats && typeof other.stats.sent === 'number') ? other.stats.sent.toLocaleString() : ((other?.stats?.sent ?? 0)).toLocaleString();
+
 
       const unlockedEl = document.getElementById('unlocked');
       if (unlockedEl) {

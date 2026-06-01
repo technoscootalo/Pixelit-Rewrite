@@ -35,12 +35,13 @@ router.post('/getUserStats', async (req, res) => {
             pfp: user.pfp,
             role: user.role,
             tokens: user.tokens,
-            packsOpened: user.packs,
+            opened: user.opened || 0,
+            packsOpened: user.opened || 0,
             unlocked: userUnlocked,
             totalBlooks,
             stats: {
                 sent: user.sent || 0,
-                packsOpened: user.packs || 0
+                packsOpened: user.opened || 0
             },
             banner: user.banner || '',
             badges: Array.isArray(user.badges) ? user.badges : [],

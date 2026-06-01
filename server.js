@@ -42,6 +42,8 @@ const paypalWebhookRouter = require('./backend/routers/api/paypalWebhook')
 const inventoryRoute = require('./backend/routers/api/inventory');
 const listBlookRouter = require('./backend/routers/users/listBlook');
 const bazaarRouter = require('./backend/routers/api/bazaar'); 
+const changeBannerRoute = require('./backend/routers/api/changeBanner');
+
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -82,6 +84,8 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/changePassword", changePasswordRouter);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/user", changePfpRoute);
+app.use("/api", changeBannerRoute);
+
 app.use("/api/reportUser", reportUserRoute);
 app.use("/api/moderationReports", moderationReportsRoute);
 app.use("/api/badges", badgeRoutes);
@@ -165,9 +169,20 @@ io.on("connection", async (socket) => {
             .limit(1000)
             .lean();
 
-        socket.emit("chatHistory", recentMessages.reverse());
+            socket.emit("chatHistory", recentMessages.reverse());
+
+        socket.emit("chatMuteState", {
+            muted: !!socket.user.muted,
+            muteReason: socket.user.muteReason || "No Reason Provided",
+            muteDuration: socket.user.muteDuration ?? 0,
+            userId: socket.user.id?.toString?.() || socket.user.id
+        });
 
         socket.on("chatMessage", async (payload) => {
+            if (socket.user.muted) {
+                return;
+            }
+
             if (!payload || typeof payload.content !== "string") return;
 
             let content = payload.content.trim();

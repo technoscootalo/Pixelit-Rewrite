@@ -10,7 +10,7 @@ const emojiButton = document.querySelector(".emojiContainer");
 (function setupChatRulesModal() {
   try {
     const KEY = "chatRulesPopup";
-    if (localStorage.getItem(KEY) === "hidden") return;
+    if (localStorage.getItem(KEY) === "Disabled") return;
 
     const overlay = document.createElement("div");
     overlay.style.cssText = `
@@ -107,6 +107,29 @@ const onlineUsersCounterEl = document.getElementById("onlineUsersCounter");
 let activeReplyTarget = null;
 let lastMsgUsername = null;
 let lastMsgTime = null;
+
+let isChatMuted = false;
+let mutedInfo = { muteReason: "No Reason Provided", muteDuration: 0 };
+
+function applyChatMuteUI({ muted, muteReason, muteDuration } = {}) {
+  isChatMuted = !!muted;
+  mutedInfo = {
+    muteReason: muteReason || "No Reason Provided",
+    muteDuration: muteDuration ?? 0
+  };
+
+  if (!chatInput || !chatForm) return;
+
+  chatInput.disabled = isChatMuted;
+  if (sendButton) sendButton.disabled = isChatMuted;
+  if (emojiButton) emojiButton.disabled = isChatMuted;
+  chatForm.style.opacity = isChatMuted ? "0.6" : "1";
+  chatForm.style.pointerEvents = isChatMuted ? "none" : "";
+
+  if (isChatMuted) {
+    showWarningToast(`You are muted. ${mutedInfo.muteReason}`);
+  }
+}
 
 let emojiPopupEl = document.querySelector(".chat-emoji-popup");
 let gridContainer = null;
@@ -806,6 +829,10 @@ socket.on("initClient", ({ username, userId }) => {
   if (userId) currentClientUserId = userId;
 });
 
+socket.on("chatMuteState", (muteState) => {
+  applyChatMuteUI(muteState);
+});
+
 
 socket.on("chatHistory", (messages) => {
   messagesEl.innerHTML = "";
@@ -978,6 +1005,11 @@ if (onlineUsersCounterEl) {
 
 chatForm.addEventListener("submit", (event) => {
   event.preventDefault();
+
+  if (isChatMuted) {
+    showWarningToast(`You are muted. ${mutedInfo.muteReason}`);
+    return;
+  }
 
   const content = chatInput.value.trim();
   if (!content) return;

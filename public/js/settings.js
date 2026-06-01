@@ -435,19 +435,19 @@ date.innerHTML = today.toLocaleDateString("en-US", dateOptions);
 
   function getState() {
     const state = localStorage.getItem(KEY);
-    return state ? state : "visible";
+    return state ? state : "Enabled";
   }
 
   function applyUI() {
     const state = getState();
-    chatRulesEl.textContent = `Chat Guide: ${state === "visible" ? "Visible" : "Hidden"}`;
+    chatRulesEl.textContent = `Chat Guidelines: ${state === "Enabled" ? "Enabled" : "Disabled"}`;
   }
 
   applyUI();
 
   chatRulesEl.style.cursor = "pointer";
   chatRulesEl.addEventListener("click", () => {
-    const nextState = getState() === "visible" ? "hidden" : "visible";
+    const nextState = getState() === "Enabled" ? "Disabled" : "Enabled";
     localStorage.setItem(KEY, nextState);
     applyUI();
   });
