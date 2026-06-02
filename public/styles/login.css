@@ -202,13 +202,22 @@ main {
   }
 
   .login-form-container {
-    width: 100%;
+    width: 380px;
     max-width: 400px; 
     height: auto;
     padding: 25px 20px;
     margin: 0 auto;
     box-sizing: border-box; 
   }
+
+  .accountRedirect {
+    left: auto;
+    display: block;
+    text-align: center;
+    margin-top: 2rem; 
+    font-size: 1.5rem;
+  }
+
   .terms {
     display: none;
   }

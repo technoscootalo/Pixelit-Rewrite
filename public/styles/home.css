@@ -81,17 +81,3 @@ color {
   filter: brightness(1.08);
 
 }
-
-@media (max-width: 636px) {
-	.terms {
-		display: none;
-	}
-
-	.blooks {
-		display: none;
-	}
-
-	.copyright {
-		text-align: center;
-	}
-}

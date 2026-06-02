@@ -15,8 +15,12 @@ router.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/login.html"));
 });
 
-router.get("/credits", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
+router.get("/terms", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/terms.html"));
+});
+
+router.get("/blacklisted", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/blacklisted.html"));
 });
 
 const { requireLoggedIn, requireNotBanned } = require("../middleware/sessionUser");
@@ -41,8 +45,8 @@ router.get("/ranking", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/ranking.html"));
 });
 
-router.get("/terms", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../src/views/terms.html"));
+router.get("/credits", requireLoggedIn, requireNotBanned, (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
 });
 
 router.get("/settings", requireLoggedIn, requireNotBanned, (req, res) => {

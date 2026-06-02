@@ -210,22 +210,21 @@ main {
   }
 
   .register-form-container {
-    width: 100%; 
+    width: 380px; 
     max-width: 400px;
     height: auto;
     padding: 25px 20px;
-    margin: 0 auto;
     box-sizing: border-box; 
   }
 
   .accessKeyDiscord {
     position: relative; 
-    bottom: auto;
+    bottom: 5px;
     left: auto;
     display: block;
     text-align: center;
     margin-top: 2rem; 
-    font-size: 0.9rem;
+    font-size: 1.5rem;
   }
 
   .terms {

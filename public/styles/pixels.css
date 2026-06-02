@@ -466,7 +466,13 @@ main {
   text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
 }
 
-@media (max-width: 1790px) {
+@media (max-width: 1600px) {
+  .pixelsContainer {
+    width: 700px;
+  }
+}
+
+@media (max-width: 1404px) {
   main {
     padding: 20px 10px;
     flex-direction: column;
@@ -679,7 +685,7 @@ body.panel-allowed #panelLink {
   display: none;
 }
 
-@media screen and (max-width: 1790px) {
+@media screen and (max-width: 1404px) {
   body {
     padding-bottom: 90px;
   }
@@ -886,7 +892,6 @@ body.panel-allowed #panelLink {
     background-size: 350px;
   }
 }
-
 
 #newsSidebarOverlay {
   position: fixed;

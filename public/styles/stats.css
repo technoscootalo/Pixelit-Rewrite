@@ -415,7 +415,7 @@ body {
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
 }
 
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 1000px) {
   .main_container {
     padding: 100px 16px 120px;
   }
