@@ -316,21 +316,6 @@ main {
   color: rgba(255, 255, 255, 0.6);
 }
 
-::-webkit-scrollbar {
-    width: 14px;
-}
-
-::-webkit-scrollbar-track {
-    background: #61056b;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #6f057a;
-    border-radius: 10px;
-    border: 3px solid #61056b;
-}
-
 .sell-blook-modal-overlay {
   position: fixed;
   inset: 0;
@@ -341,6 +326,7 @@ main {
   z-index: 9999;
   padding: 16px;
 }
+
 
 .sell-blook-modal-box {
   text-align: center;
@@ -441,29 +427,6 @@ main {
 
 .sell-blook-modal-btn-secondary:hover {
   filter: brightness(1.08);
-}
-
-
-.weekly-blook-section {
-  width: 100%;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 2px solid rgba(255, 255, 255, 0.25);
-}
-
-.weekly-blook-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 6px;
-  margin-bottom: 12px;
-}
-
-.weekly-blook-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #ffe66d;
-  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
 }
 
 @media (max-width: 1600px) {

@@ -43,6 +43,8 @@ const inventoryRoute = require('./backend/routers/api/inventory');
 const listBlookRouter = require('./backend/routers/users/listBlook');
 const bazaarRouter = require('./backend/routers/api/bazaar'); 
 const changeBannerRoute = require('./backend/routers/api/changeBanner');
+const sendTokensRouter = require('./backend/routers/api/sendTokens'); 
+
 
 
 const app = express();
@@ -101,6 +103,8 @@ app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
 app.use("/api/inventory", inventoryRoute);
 app.use("/api/users", listBlookRouter);
 app.use("/api/bazaar", bazaarRouter);
+app.use("/api/sendTokens", sendTokensRouter);
+
 
 app.use("/", pages);
 

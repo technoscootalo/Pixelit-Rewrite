@@ -664,7 +664,6 @@ async function openBannersModal() {
       justify-content: center;
       align-items: center;
       z-index: 10000;
-      animation: fadeInOverlay 0.25s ease;
     `;
 
     const title = document.createElement("div");
@@ -686,7 +685,6 @@ async function openBannersModal() {
       max-height: calc(85vh - 90px);
     `;
 
-
     const safeBanners = Array.isArray(banners) ? banners : [];
     if (safeBanners.length === 0) {
       const empty = document.createElement("div");
@@ -699,8 +697,6 @@ async function openBannersModal() {
 
         wrap.style.cssText = `
           overflow: hidden;
-          width: 320px;
-          height: 110px;
         `;
 
         const img = document.createElement("img");
@@ -740,25 +736,7 @@ async function openBannersModal() {
       });
 
     }
-
-    const close = document.createElement("button");
-    close.type = "button";
-    close.textContent = "X";
-    close.style.cssText = `
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: rgba(0,0,0,0.25);
-      color: white;
-      font-size: 22px;
-      font-weight: 900;
-    `;
-
+    
     close.onclick = () => {
       modal.remove();
     };
@@ -801,7 +779,6 @@ async function openBannersModal() {
     modal.appendChild(panel);
 
     const style = document.createElement("style");
-    style.textContent = `@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }`;
     document.head.appendChild(style);
     setTimeout(() => style.remove(), 1000);
   } catch (e) {
@@ -816,6 +793,199 @@ if (bannerImg) {
   });
 }
 
+async function openPfpModal() {
+  try {
+    const res = await fetch("/api/userBlooks", { credentials: "include" });
+    if (!res.ok) return;
+    const data = await res.json().catch(() => null);
+
+    const packs = Array.isArray(data?.packs) ? data.packs : [];
+    const pfpChoices = [];
+
+    for (const pack of packs) {
+      const blooks = Array.isArray(pack?.blooks) ? pack.blooks : [];
+      for (const b of blooks) {
+        const owned = Number(b?.owned ?? b?.amount ?? 0);
+        if (!(owned > 0)) continue;
+        const img = b?.imageUrl || b?.image || "";
+        if (typeof img === "string" && img.trim()) pfpChoices.push({ imageUrl: img });
+      }
+    }
+
+    if (pfpChoices.length === 0 && Array.isArray(data)) {
+      for (const b of data) {
+        const owned = Number(b?.owned ?? b?.amount ?? 0);
+        if (!(owned > 0)) continue;
+        const img = b?.imageUrl || b?.image || "";
+        if (typeof img === "string" && img.trim()) pfpChoices.push({ imageUrl: img });
+      }
+    }
+
+    const unique = new Map();
+    for (const choice of pfpChoices) {
+      unique.set(choice.imageUrl, choice);
+    }
+
+    const MAX_PFP_IMAGES = 100;
+    const safeChoices = Array.from(unique.values()).slice(0, MAX_PFP_IMAGES);
+
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    `;
+
+    const panel = document.createElement("div");
+    panel.style.cssText = `
+      background: #5e046e;
+      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0,0,0,0.6);
+      padding: 18px;
+      border-radius: 8px;
+      text-align: center;
+      color: white;
+      font-family: Pixelify Sans, sans-serif;
+      width: 450px;
+      height: 750px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    `;
+
+    const title = document.createElement("div");
+    title.style.cssText = `
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      text-shadow: #000 1px 0 13px;
+      width: 100%;
+    `;
+    title.textContent = "";
+
+    const list = document.createElement("div");
+    list.id = "pfpChoicesList";
+    list.style.cssText = `
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10.5px;
+      overflow: auto;
+      padding: 6px;
+      width: 100%;
+      align-content: start;
+    `;
+
+
+    if (!safeChoices.length) {
+      const empty = document.createElement("div");
+      empty.style.cssText = `padding: 30px; opacity: 0.9; font-size: 20px; width: 100%;`;
+      empty.textContent = "No PFP options available.";
+      list.appendChild(empty);
+    } else {
+      safeChoices.forEach((choice) => {
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.alt = "PFP";
+        img.dataset.src = choice.imageUrl;
+        img.src = "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const targetImg = entry.target;
+              const realSrc = targetImg?.dataset?.src;
+              if (realSrc) targetImg.src = realSrc;
+              obs.disconnect();
+            });
+          },
+          { root: list, threshold: 0.1 }
+        );
+        io.observe(img);
+
+        img.style.cssText = `
+
+          width: auto;
+          height: 75px;
+          object-fit: cover;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: transform 0.12s ease;
+          filter: drop-shadow(0 0 6px rgba(0,0,0,0.55));
+        `;
+
+
+        img.addEventListener("click", async (e) => {
+          e.stopPropagation();
+
+          if (window.__statsChangePfpInFlight) return;
+          window.__statsChangePfpInFlight = true;
+
+          const newPfp = choice.imageUrl;
+          try {
+            const r = await fetch("/api/user/changePfp", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ pfp: newPfp }),
+            });
+
+
+            if (!r.ok) return;
+            const data = await r.json().catch(() => null);
+            const updated = data?.pfp || newPfp;
+
+            const pfpEl = document.getElementById("pfp");
+
+            if (pfpEl) pfpEl.src = updated;
+
+            modal.remove();
+          } catch (err) {
+            console.error("Failed to change PFP:", err);
+          } finally {
+            window.__statsChangePfpInFlight = false;
+          }
+        });
+
+
+        img.addEventListener("mouseover", () => {
+          img.style.transform = "scale(1.05)";
+        });
+        img.addEventListener("mouseout", () => {
+          img.style.transform = "scale(1)";
+        });
+
+        list.appendChild(img);
+      });
+    }
+
+    panel.appendChild(title);
+    panel.appendChild(list);
+    modal.appendChild(panel);
+
+    const close = () => modal.remove();
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close();
+    });
+
+    document.body.appendChild(modal);
+  } catch (e) {
+    console.error("Failed loading pfp modal:", e);
+  }
+}
+
+const pfpImg = document.getElementById("pfp");
+if (pfpImg) {
+  pfpImg.addEventListener("click", () => {
+    if (window.__profileViewMode === "other") return;
+    openPfpModal();
+  });
+}
 
 function createElement(tag, props = {}, styles = {}) {
   const el = document.createElement(tag);

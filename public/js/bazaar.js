@@ -1,5 +1,6 @@
 let allListings = [];
 let currentUser = null;
+let sendTokensModalEl = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     initBazaar();
@@ -10,7 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     searchInput?.addEventListener('input', (e) => loadListings(e.target.value));
     searchBtn?.addEventListener('click', () => loadListings(searchInput?.value || ""));
+
+    const sendTokensBtn = document.querySelector('.sendTokens-btn');
+    sendTokensBtn?.addEventListener('click', openSendTokensModal);
 });
+
 
 function showModal(message) {
     const modal = document.createElement("div");
@@ -155,4 +160,101 @@ async function cancelListing(id) {
         if (res.ok) { allListings = []; loadListings(); closeListModal(); }
         else showModal("Failed to remove.");
     } catch (err) { showModal("Error removing."); }
+}
+
+function openSendTokensModal() {
+    if (sendTokensModalEl) return;
+
+    sendTokensModalEl = document.createElement('div');
+    sendTokensModalEl.className = 'sell-blook-modal-overlay';
+
+    const box = document.createElement('div');
+    box.className = 'sell-blook-modal-box';
+
+    box.innerHTML = `
+      <h3 class="sell-blook-modal-title">Send Tokens</h3>
+      <div class="sell-blook-modal-input-row" style="margin-top: 10px;">
+        <label class="sell-blook-modal-label" for="sendTokensRecipient">To</label>
+        <input
+          type="text"
+          id="sendTokensRecipient"
+          class="sell-blook-modal-amount"
+          style="width: 200px;"
+          placeholder="Recipient"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="sell-blook-modal-input-row">
+        <label class="sell-blook-modal-label" for="sendTokensAmount">Token Amount</label>
+        <input type="number" id="sendTokensAmount" class="sell-blook-modal-amount" min="1" max="5000000" value="1">
+      </div>
+
+      <div class="sell-blook-modal-error" id="sendTokensError"></div>
+
+      <div class="sell-blook-modal-actions">
+        <button type="button" id="confirmSendTokens" class="sell-blook-modal-btn sell-blook-modal-btn-primary">Send</button>
+        <button type="button" id="cancelSendTokens" class="sell-blook-modal-btn sell-blook-modal-btn-secondary">Cancel</button>
+      </div>
+    `;
+
+    sendTokensModalEl.onclick = () => closeSendTokensModal();
+    box.onclick = (e) => e.stopPropagation();
+
+    sendTokensModalEl.appendChild(box);
+    document.body.appendChild(sendTokensModalEl);
+
+    const recipientInput = document.getElementById('sendTokensRecipient');
+    recipientInput?.focus();
+
+    document.getElementById('cancelSendTokens')?.addEventListener('click', closeSendTokensModal);
+    document.getElementById('confirmSendTokens')?.addEventListener('click', async () => {
+        const recipientId = document.getElementById('sendTokensRecipient')?.value?.trim() || '';
+        const amountRaw = document.getElementById('sendTokensAmount')?.value;
+
+        const amount = Number(amountRaw);
+
+        const errorEl = document.getElementById('sendTokensError');
+        if (errorEl) errorEl.textContent = '';
+
+        if (!recipientId) {
+            if (errorEl) errorEl.textContent = 'Recipient is required.';
+            return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            if (errorEl) errorEl.textContent = 'Amount must be a positive number.';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/sendTokens/sendTokens', {
+
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipientUserId: recipientId, amount })
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                if (errorEl) errorEl.textContent = data.error || 'Failed to send tokens.';
+                return;
+            }
+
+            closeSendTokensModal();
+            const sentUser = data?.recipient?.username || data?.recipient?.id || 'recipient';
+            const sentAmount = Number(data?.recipient?.tokens);
+            showModal(`You have sent ${Number(amount).toLocaleString()} tokens to ${sentUser}!`);
+        } catch (e) {
+            if (errorEl) errorEl.textContent = 'Network error occurred.';
+        }
+    });
+}
+
+function closeSendTokensModal() {
+    if (sendTokensModalEl) {
+        sendTokensModalEl.remove();
+        sendTokensModalEl = null;
+    }
 }
