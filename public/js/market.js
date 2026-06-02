@@ -1,6 +1,5 @@
 let userTokens = 0;
 let userRole = null;
-
 let phaserGame = null;
 
 function triggerRaritySpecificParticles(rarity) {
@@ -157,7 +156,7 @@ function triggerRaritySpecificParticles(rarity) {
     case 'Chroma':
     case 'Mystical':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_turquoise.svg",
+        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_light_turquoise.svg",
         "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_light_turquoise.svg",
         "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_dark_turquoise.svg",
         "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_turquoise.svg",
@@ -342,7 +341,6 @@ async function openPackTooltipsModal() {
       const list = document.createElement("div");
       list.className = "packTooltipsBlooks";
 
-      // Sort the blooks array based on the custom rarityRank before creating elements
       const blooks = Array.isArray(pack?.blooks) ? pack.blooks : [];
       const sortedBlooks = [...blooks].sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity));
 
@@ -485,7 +483,7 @@ function createPack(pack) {
     "Space Pack": "radial-gradient(circle, #808080, #00008B)",
     "Technology Pack": "radial-gradient(circle, #346136, #2faa34)",
     "School Pack": "radial-gradient(circle, #836048, #66423a)",
-    "Miscellaneous": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+    "Miscellaneous Pack": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
   };
 
   div.style.background = backgrounds[pack.name] || "#5e046e";
@@ -675,152 +673,10 @@ function animateBox(box, keyframes, options) {
   return box.animate(keyframes, options).finished;
 }
 
-async function playRarityIntro(box, rarity) {
-  const center = "translate(-50%, -50%)";
-
-  box.style.transition = "none";
-  box.style.opacity = "0";
-  box.style.transform = center;
-
-  const reveal = () => {
-    box.style.transition = "opacity 250ms ease";
-    box.style.opacity = "1";
-  };
-
-  const isLow =
-    !rarity ||
-    rarity === "Common" ||
-    rarity === "Uncommon" ||
-    rarity === "Rare";
-
-  if (isLow) {
-    await sleep(500);
-    reveal();
-
-    box.style.transition = "transform 250ms cubic-bezier(0.2, 0.9, 0.2, 1)";
-    box.style.transform = center + " translateY(30px) scale(0.9)";
-
-    await sleep(250);
-
-    box.style.transition = "transform 350ms cubic-bezier(0.2, 1.2, 0.2, 1)";
-    box.style.transform = center + " translateY(-10px) scale(1.08)";
-
-    await sleep(350);
-
-    box.style.transition = "transform 250ms ease-out";
-    box.style.transform = center + " translateY(0px) scale(1)";
-
-    await sleep(250);
-
-    return;
-  }
-
-  if (rarity === "Epic") {
-    await sleep(650);
-    reveal();
-
-    box.style.transform = center + " scale(0.6) translateY(20px)";
-
-    await animateBox(box, [
-      {
-        transform: center + " scale(0.6) translateY(20px)"
-      },
-      {
-        transform: center + " scale(1.15) translateY(-10px)"
-      }
-    ], {
-      duration: 350,
-      easing: "cubic-bezier(0.2, 0.9, 0.2, 1)"
-    });
-
-    await animateBox(box, [
-      {
-        transform: center + " scale(1.15)"
-      },
-      {
-        transform: center + " scale(0.98)"
-      }
-    ], {
-      duration: 180,
-      easing: "ease-out"
-    });
-
-    await animateBox(box, [
-      {
-        transform: center + " scale(0.98)"
-      },
-      {
-        transform: center + " scale(1)"
-      }
-    ], {
-      duration: 180,
-      easing: "ease-out"
-    });
-
-    return;
-  }
-
-  if (rarity === "Chroma" || rarity === "Mystical") {
-    await sleep(1200);
-    reveal();
-
-    box.style.transform = center + " scale(0.3) rotate(0deg)";
-
-    await animateBox(box, [
-      {
-        transform: center + " scale(0.3) rotate(0deg)"
-      },
-      {
-        transform: center + " scale(1.05) rotate(1080deg)"
-      }
-    ], {
-      duration: 2500,
-      easing: "linear"
-    });
-
-    box.style.transition = "transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1)";
-    box.style.transform = center + " scale(1) rotate(0deg)";
-
-    await sleep(500);
-    box.style.transition = "none";
-
-    return;
-  }
-
-  if (rarity === "Legendary") {
-    await sleep(1500);
-    reveal();
-
-    await animateBox(box, [
-      { transform: "translate(-160%, -200%)" },
-      { transform: "translate(-160%, -50%)" }
-    ], { duration: 900, easing: "ease-in" });
-
-    await animateBox(box, [
-      { transform: "translate(160%, -200%)" },
-      { transform: "translate(160%, -50%)" }
-    ], { duration: 900, easing: "ease-in" });
-
-    await animateBox(box, [
-      { transform: "translate(-50%, -140%) scale(1.15)" },
-      { transform: center }
-    ], { duration: 900, easing: "ease-out" });
-
-    await sleep(600);
-    return;
-  }
-
-  await sleep(500);
-  reveal();
-
-  box.style.transition = "transform 400ms ease";
-  box.style.transform = center;
-  await sleep(400);
-}
-
 async function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
   const skipIntro = !!pack?.skipIntro;
+  const baseCenter = "translate(-50%, -50%)";
 
   const phase = pack?.phase || "reveal";
   const packBg = pack?.packBackground || "";
@@ -938,6 +794,87 @@ async function showResult(blook, pack = null) {
     box.style.opacity = "1";
     box.style.transform = "translate(-50%, -50%)";
   }
+
+  requestAnimationFrame(() => {
+    void box.offsetHeight; 
+
+    if (rarity === "Chroma" || rarity === "Mystical") {
+      Object.assign(box.style, {
+        position: "absolute", top: "50%", left: "50%",
+        width: "370px", height: "385px", opacity: "0"
+      });
+      box.animate(
+        [
+          { opacity: 0, transform: "translate(-50%, -50%) scale(0.2) rotate(0deg)" },
+          { opacity: 1, transform: "translate(-50%, -50%) scale(1.0) rotate(2160deg)" }
+        ],
+        { duration: 5000, easing: "linear", fill: "forwards" }
+      );
+      return;
+    }
+
+    if (rarity === "Rare") {
+      box.animate(
+        [
+          { opacity: 0, transform: baseCenter + " scale(0.5) rotate(-10deg)" },
+          { opacity: 1, transform: baseCenter + " scale(1.2) rotate(5deg)" },
+          { transform: baseCenter + " scale(0.95) rotate(-2deg)" },
+          { transform: baseCenter + " scale(1.0) rotate(0deg)" }
+        ],
+        { duration: 600, easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)", fill: "both" }
+      );
+      return;
+    }
+
+    if (rarity === "Legendary") {
+      box.animate(
+        [
+          { opacity: 0, transform: "translate(-50%, -1000px)" },
+          
+          { opacity: 1, transform: "translate(-50%, -50%)" }
+        ],
+        {
+          duration: 3500, 
+          easing: "linear", 
+          fill: "both"
+        }
+      );
+      return;
+    }
+
+    if (rarity === "Epic") {
+      box.animate(
+        [
+          { opacity: 0, transform: baseCenter + " scale(0.5) rotate(-10deg)" },
+          { opacity: 1, transform: baseCenter + " scale(1.2) rotate(5deg)" },
+          { transform: baseCenter + " scale(0.95) rotate(-2deg)" },
+          { transform: baseCenter + " scale(1.0) rotate(0deg)" }
+        ],
+        { duration: 600, easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)", fill: "both" }
+      );
+      return;
+    }
+
+    if (rarity === "Uncommon") {
+      box.animate(
+        [
+          { opacity: 0, transform: baseCenter + " scale(0.9) translateY(20px)" },
+          { opacity: 1, transform: baseCenter + " scale(1.05) translateY(-5px)" },
+          { transform: baseCenter + " scale(1.0) translateY(0px)" }
+        ],
+        { duration: 500, easing: "cubic-bezier(0.2, 0.9, 0.2, 1)", fill: "both" }
+      );
+      return;
+    }
+
+    box.animate(
+      [
+        { opacity: 0.2, transform: baseCenter + " scale(0.98)" },
+        { opacity: 1, transform: baseCenter + " scale(1)" }
+      ],
+      { duration: 220, easing: "cubic-bezier(0.2, 0.9, 0.2, 1)", fill: "both" }
+    );
+  });
 
 
   overlay.onclick = () => {
