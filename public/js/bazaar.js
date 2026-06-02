@@ -113,6 +113,7 @@ function initBazaar() {
         .modal-btn-secondary { background: #5e046e; color: white; box-shadow: inset 0 -0.265vw #53055c, 3px 3px 14px rgba(0,0,0,0.5); border: 2px solid rgba(255, 255, 255, 0.85); }
         .modal-btn-primary:hover, .modal-btn.modal-btn-secondary:hover { filter: brightness(1.08); }
     `;
+    
     document.head.appendChild(style);
     const modal = document.createElement('div');
     modal.id = 'myListingsModal';
