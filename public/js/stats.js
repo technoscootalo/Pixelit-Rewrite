@@ -839,6 +839,7 @@ async function openBannersModal() {
 const bannerImg = document.getElementById("banner");
 if (bannerImg) {
   bannerImg.addEventListener("click", () => {
+    if (window.__profileViewMode === "other") return;
     openBannersModal();
   });
 }
@@ -991,8 +992,10 @@ async function openPfpModal() {
             const updated = data?.pfp || newPfp;
 
             const pfpEl = document.getElementById("pfp");
+            const profilePicEl = document.getElementById("profilePic");
 
             if (pfpEl) pfpEl.src = updated;
+            if (profilePicEl) profilePicEl.src = updated;
 
             modal.remove();
           } catch (err) {
@@ -1269,14 +1272,19 @@ function openViewUserPopup() {
 
         const BADGE_PRIORITY = [
           'OG',
-          'booster',
-          'developer',
-          'owner',
-          'helper',
-          'moderator',
-          'admin',
-          'community manager',
-          'verified',
+          'Veteran',
+          'Pixeltuber',
+          'Booster',
+          'Owner',
+          'Plus',
+          'Developer',
+          'Artist',
+          'Tester',
+          'Helper',
+          'Moderator',
+          'Admin',
+          'Community Manager',
+          'Verified',
         ];
 
         const rolePriorityMap = new Map(
