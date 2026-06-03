@@ -12,6 +12,12 @@ const BadgeSchema = new mongoose.Schema({
     required: true
   },
 
+  description: {
+    type: String,
+    default:
+      "fill in the description for this badge in the database"
+  },
+
   createdAt: {
     type: Date,
     default: Date.now
