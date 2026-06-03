@@ -1,15 +1,6 @@
 # 🎮 Pixelit
 
 <p align="center">
-  <b>The first pixel art inspired Blooket Private Server (BPS)</b><br/>
-  Being rewritten fully in JavaScript for a smoother experience.
-</p>
-
----
-
-## 🌐 Preview
-
-<p align="center">
   <img src="https://i.postimg.cc/59Z7dfVf/image.png" width="800"/>
 </p>
 
