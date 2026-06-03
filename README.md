@@ -48,8 +48,6 @@ Pixelit is the **first Blooket private server with a full pixel-art theme**, now
 
 </p>
 
-<img src="https://izumiihd.github.io/pixelitcdn/assets/img/other/pixelitDiscordBanner.png">
-
 ## 📎 Notes
 
 > Pixelit is an independent project and is not affiliated with Blooket LLC in any sort of way.
