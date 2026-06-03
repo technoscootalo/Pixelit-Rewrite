@@ -317,7 +317,6 @@ async function openPackTooltipsModal() {
     const content = document.createElement("div");
     content.className = "packTooltipsContent";
 
-    // Your specific rarity order
     const rarityOrder = ["Uncommon", "Rare", "Epic", "Legendary", "Chroma", "Mystical", "Common"];
     const rarityRank = (r) => {
       const idx = rarityOrder.indexOf(r);
@@ -483,7 +482,7 @@ function createPack(pack) {
     "Space Pack": "radial-gradient(circle, #808080, #00008B)",
     "Technology Pack": "radial-gradient(circle, #346136, #2faa34)",
     "School Pack": "radial-gradient(circle, #836048, #66423a)",
-    "Miscellaneous Pack": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+    "Miscellaneous": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
   };
 
   div.style.background = backgrounds[pack.name] || "#5e046e";
