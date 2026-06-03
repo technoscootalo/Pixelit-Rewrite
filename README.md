@@ -17,7 +17,7 @@
 
 ## 📖 About
 
-Pixelit is the **first Blooket private server with a full pixel-art theme**, now being fully rebuilt using **Javascript** for better performance.
+Pixelit is the The **1st ever Pixelated Blooket Private Server** Rewritten entirely in **NodeJS** for a better game experience.
 
 ---
 
