@@ -481,15 +481,18 @@ async function handleDeveloperVisibility() {
 document.addEventListener("DOMContentLoaded", handleDeveloperVisibility);
 
 function logout() {
-  fetch('/logout', { method: 'POST' })
-    .then(response => {
-      if (response.ok) {
-        sessionStorage.clear();
-        localStorage.removeItem('loggedIn');
-        window.location.href = '/';
-      } else {
-        console.error('Logout failed');
-      }
-    })
-    .catch(error => console.error('Error:', error));
+  fetch('/api/logout', { 
+    method: 'POST', 
+    credentials: 'include' 
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+    window.location.href = '/login'; 
+  })
+  .catch((error) => { 
+    console.error('Logout error:', error); 
+    window.location.href = '/login'; 
+  });
 }

@@ -45,8 +45,6 @@ const bazaarRouter = require('./backend/routers/api/bazaar');
 const changeBannerRoute = require('./backend/routers/api/changeBanner');
 const sendTokensRouter = require('./backend/routers/api/sendTokens'); 
 
-
-
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
@@ -78,7 +76,7 @@ app.use("/api/packs", packsRouter);
 app.use("/api/register", registerRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
-app.use("/api/logout", logoutRoute);
+app.use("/api", logoutRoute);
 app.use("/api/messages", messagesRoute);
 app.use("/api/inbox", inboxRoute);
 app.use("/api/viewUser", viewUserRoute);

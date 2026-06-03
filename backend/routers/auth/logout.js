@@ -1,9 +1,19 @@
 const express = require("express");
+const User = require("../../models/User");
 
 const router = express.Router();
 
-router.post("/logout", (req, res) => {
-    const username = req.session.user ? req.session.user.username : "A user";
+router.post("/logout", async (req, res) => {
+    let username = "A user";
+
+    if (req.session.userId) {
+        const user = await User.findOne({ id: req.session.userId });
+        if (user?.username) {
+            username = user.username;
+        }
+    } else if (req.session.user?.username) {
+        username = req.session.user.username;
+    }
 
     req.session.destroy((err) => {
         if (err) {

@@ -46,21 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function handleLogout(event) {
   event.preventDefault();
-
-  try {
-    document.cookie = "pixelit.sid=; Max-Age=0; path=/;";
-  } catch (e) {
-  }
-
-  fetch('/api/logout', {
-    method: 'POST',
-    credentials: 'include'
+  
+  fetch('/api/logout', { 
+    method: 'POST', 
+    credentials: 'include' 
   })
-    .then((response) => {
-      window.location.href = '/login';
-    })
-    .catch((error) => {
-      console.error('Logout error:', error);
-      window.location.href = '/login';
-    });
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+    window.location.href = '/login'; 
+  })
+  .catch((error) => { 
+    console.error('Logout error:', error); 
+    window.location.href = '/login'; 
+  });
 }
