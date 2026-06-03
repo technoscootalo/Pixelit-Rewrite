@@ -1,15 +1,6 @@
 # 🎮 Pixelit
 
 <p align="center">
-  <b>The first pixel art inspired Blooket Private Server (BPS)</b><br/>
-  Being rewritten fully in JavaScript for a smoother experience.
-</p>
-
----
-
-## 🌐 Preview
-
-<p align="center">
   <img src="https://i.postimg.cc/59Z7dfVf/image.png" width="800"/>
 </p>
 
@@ -17,7 +8,7 @@
 
 ## 📖 About
 
-Pixelit is the **first Blooket private server with a full pixel-art theme**, now being fully rebuilt using **Javascript** for better performance.
+Pixelit is the The **1st ever Pixelated Blooket Private Server** Rewritten entirely in **NodeJS** for a better game experience.
 
 ---
 
@@ -47,8 +38,6 @@ Pixelit is the **first Blooket private server with a full pixel-art theme**, now
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 
 </p>
-
-<img src="https://izumiihd.github.io/pixelitcdn/assets/img/other/pixelitDiscordBanner.png">
 
 ## 📎 Notes
 
