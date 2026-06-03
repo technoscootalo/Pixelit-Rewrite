@@ -408,7 +408,7 @@ body {
 .badge {
   display: inline-block;
   height: 35px;
-  width: 35px;
+  width: auto;
   -webkit-user-drag: none;
   cursor: pointer;
   margin-right: 5px;

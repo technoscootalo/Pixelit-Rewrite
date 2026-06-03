@@ -22,6 +22,136 @@ const Blook = require("../backend/models/Blook");
 mongoose.set("strictQuery", true);
 mongoose.set("bufferCommands", false);
 
+const badgeDiscordRoleMap = {
+  Verified: "1276629833429946439",
+  Owner: "1276630724417683487",
+  Developer: "1398820249872367706",
+  Artist: "1276630784001708132",
+  "Community Manager": "1276629987046461580",
+  Admin: "1276630172472180746",
+  Moderator: "1276630034441961505",
+  Tester: "1276629928141520906",
+  Veteran: "1507439050078945290",
+  OG: "1276629902308802601"
+};
+
+function getDiscordRoleIdsForUser(user) {
+  if (!Array.isArray(user.badges)) return [];
+
+  const roleIds = new Set();
+  for (const badge of user.badges) {
+    const badgeName = typeof badge.name === "string" ? badge.name.trim() : "";
+    const roleId = badgeDiscordRoleMap[badgeName];
+    if (roleId) {
+      roleIds.add(roleId);
+    }
+  }
+
+  return [...roleIds];
+}
+
+const boosterBadgeId = "689d377805836f5839186cc1";
+const boosterBadgeImage = "https://izumiihd.github.io/pixelitcdn/assets/img/badges/Booster.png";
+
+function createBoosterBadge() {
+  return {
+    badgeId: boosterBadgeId,
+    _id: new mongoose.Types.ObjectId(boosterBadgeId),
+    name: "Booster",
+    image: boosterBadgeImage
+  };
+}
+
+function hasBoosterBadge(user) {
+  if (!Array.isArray(user.badges)) return false;
+  return user.badges.some(b => {
+    if (!b) return false;
+    const id = b._id ? String(b._id) : "";
+    const name = typeof b.name === "string" ? b.name : "";
+    return id === boosterBadgeId || name === "Booster";
+  });
+}
+
+function syncBoosterBadge(user, isBoosting) {
+  if (!user || !Array.isArray(user.badges)) return;
+
+  const hasBadge = hasBoosterBadge(user);
+
+  if (isBoosting && !hasBadge) {
+    user.badges.push(createBoosterBadge());
+  }
+
+  if (!isBoosting && hasBadge) {
+    user.badges = user.badges.filter(b => {
+      if (!b) return false;
+      const id = b._id ? String(b._id) : "";
+      const name = typeof b.name === "string" ? b.name : "";
+      return id !== boosterBadgeId && name !== "Booster";
+    });
+  }
+}
+
+async function syncDiscordBadgeRoles(member, desiredRoleIds) {
+  if (!member) return;
+  const botMember = member.guild.members.me;
+  if (!botMember) return;
+
+  const allBadgeRoleIds = Object.values(badgeDiscordRoleMap);
+  const botHighestPosition = botMember.roles.highest.position;
+
+  const manageableDesiredRoleIds = desiredRoleIds.filter(roleId => {
+    const role = member.guild.roles.cache.get(roleId);
+    return role && role.position < botHighestPosition;
+  });
+
+  const unmanageableRoleIds = desiredRoleIds.filter(roleId => !manageableDesiredRoleIds.includes(roleId));
+  if (unmanageableRoleIds.length) {
+    console.warn("Cannot manage these badge roles due to role position:", unmanageableRoleIds);
+  }
+
+  const rolesToAdd = manageableDesiredRoleIds.filter(roleId => !member.roles.cache.has(roleId));
+  const rolesToRemove = allBadgeRoleIds.filter(roleId => {
+    const role = member.guild.roles.cache.get(roleId);
+    return role && role.position < botHighestPosition && member.roles.cache.has(roleId) && !manageableDesiredRoleIds.includes(roleId);
+  });
+
+  if (rolesToAdd.length) {
+    await member.roles.add(rolesToAdd).catch(err => {
+      console.error("Failed to add badge roles:", err);
+    });
+  }
+
+  if (rolesToRemove.length) {
+    await member.roles.remove(rolesToRemove).catch(err => {
+      console.error("Failed to remove stale badge roles:", err);
+    });
+  }
+}
+
+async function syncUserDiscordRoles(user) {
+  if (!user || !user.discordId) return;
+  const guild = client.guilds.cache.get(process.env.GUILD_ID) || await client.guilds.fetch(process.env.GUILD_ID).catch(() => null);
+  if (!guild) return;
+
+  const member = await guild.members.fetch(user.discordId).catch(() => null);
+  if (!member) return;
+
+  const desiredRoleIds = getDiscordRoleIdsForUser(user);
+  await syncDiscordBadgeRoles(member, desiredRoleIds);
+}
+
+function shouldSyncUserChange(change) {
+  if (change.operationType !== "update") return false;
+  const desc = change.updateDescription;
+  if (!desc) return false;
+
+  const updatedKeys = Object.keys(desc.updatedFields || {});
+  if (updatedKeys.some(key => key === "badges" || key.startsWith("badges."))) return true;
+  if (desc.removedFields && desc.removedFields.includes("badges")) return true;
+  if (updatedKeys.some(key => key === "discordId")) return true;
+  return false;
+}
+
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -29,17 +159,36 @@ async function connectDB() {
     });
 
     console.log("MongoDB connected (bot)");
+    return mongoose.connection;
   } catch (err) {
     console.error("MongoDB connection failed:", err);
     process.exit(1);
   }
 }
 
-connectDB();
+connectDB().then(connection => {
+  if (!connection) return;
+
+  const changeStream = User.watch([], { fullDocument: "updateLookup" });
+
+  changeStream.on("change", async change => {
+    try {
+      if (!shouldSyncUserChange(change)) return;
+      const user = change.fullDocument;
+      await syncUserDiscordRoles(user);
+    } catch (err) {
+      console.error("User change stream sync error:", err);
+    }
+  });
+
+  changeStream.on("error", err => {
+    console.error("User change stream error:", err);
+  });
+});
 
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
 
 // -------------------- COMMANDS --------------------
@@ -84,7 +233,7 @@ const commands = [
       option.setName("username")
         .setDescription("The Pixelit username to search for")
         .setRequired(true)
-    ) //
+    ) 
 ].map(cmd => cmd.toJSON()); 
 
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
@@ -128,7 +277,23 @@ client.once("ready", () => {
   }, 30000); 
 });
 
-// -------------------- COMMAND HANDLER --------------------
+client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  try {
+    const oldBoost = Boolean(oldMember.premiumSince || oldMember.premiumSinceTimestamp);
+    const newBoost = Boolean(newMember.premiumSince || newMember.premiumSinceTimestamp);
+    if (oldBoost === newBoost) return;
+
+    const user = await User.findOne({ discordId: newMember.id });
+    if (!user) return;
+
+    syncBoosterBadge(user, newBoost);
+    await user.save();
+  } catch (err) {
+    console.error("Guild member boost sync error:", err);
+  }
+});
+
+// -------------------- INTERACTIONS --------------------
 
   client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -158,6 +323,22 @@ client.once("ready", () => {
       }
 
       user.discordId = interaction.user.id;
+      const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
+      const isBoosting = Boolean(member && (member.premiumSince || member.premiumSinceTimestamp));
+
+      try {
+        syncBoosterBadge(user, isBoosting);
+      } catch (err) {
+        console.error("Booster badge sync error on login:", err);
+      }
+
+      try {
+        const desiredRoleIds = getDiscordRoleIdsForUser(user);
+        await syncDiscordBadgeRoles(member, desiredRoleIds);
+      } catch (err) {
+        console.error("Badge role sync error on login:", err);
+      }
+
       await user.save();
 
       return interaction.editReply(`Success! Account **${user.username}** is now linked to your Discord.`);
@@ -172,10 +353,25 @@ client.once("ready", () => {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
+
       const user = await User.findOne({ discordId: interaction.user.id });
 
       if (!user) {
         return interaction.editReply("You do not have a Pixelit account linked to this Discord.");
+      }
+
+      const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
+      
+      try {
+        await syncDiscordBadgeRoles(member, []);
+      } catch (err) {
+        console.error("Badge role removal error on logout:", err);
+      }
+
+      try {
+        syncBoosterBadge(user, false);
+      } catch (err) {
+        console.error("Booster badge removal error on logout:", err);
       }
 
       user.discordId = null;

@@ -725,8 +725,44 @@ function renderMessage(message, grouped = false) {
   badgesWrap.style.cssText = `display:inline-flex; gap:4px; align-items:center; margin-left:8px; vertical-align:middle;`;
 
   const badges = Array.isArray(message.badges) ? message.badges : [];
-  if (badges.length > 0) {
-    badges.forEach((b) => {
+
+  const BADGE_PRIORITY = [
+    'OG',
+    'Veteran',
+    'Pixeltuber',
+    'Booster',
+    'Owner',
+    'Plus',
+    'Developer',
+    'Artist',
+    'Tester',
+    'Helper',
+    'Moderator',
+    'Admin',
+    'Community Manager',
+    'Verified',
+  ];
+
+  const rolePriorityMap = new Map(
+    BADGE_PRIORITY.map((name, idx) => [String(name).toLowerCase(), idx])
+  );
+
+  const normalizeBadgeName = (b) => {
+    if (!b) return '';
+    if (typeof b === 'string') return b;
+    return b?.name || b?.badge?.name || b?.role || b?.badgeRole || b?.key || '';
+  };
+
+  const getPriority = (b) => {
+    const key = String(normalizeBadgeName(b)).trim().toLowerCase();
+    if (rolePriorityMap.has(key)) return rolePriorityMap.get(key);
+    return Number.MAX_SAFE_INTEGER;
+  };
+
+  const sortedBadges = badges.slice().sort((a, b) => getPriority(a) - getPriority(b));
+
+  if (sortedBadges.length > 0) {
+    sortedBadges.forEach((b) => {
       const badgeName = typeof b === "string" ? b : b?.name;
       const badgeImage = typeof b === "string" ? "" : b?.image;
 

@@ -519,33 +519,83 @@ async function loadUser() {
 
     const badgesContainer = document.getElementById('badges-container');
     const badgesEl = document.getElementById('badges');
-    if (badgesContainer && badgesEl) {
-      const badges = Array.isArray(user.badges)
-        ? user.badges
-        : (user.userBadges || []);
+      if (badgesContainer && badgesEl) {
+        const badges = Array.isArray(user.badges)
+          ? user.badges
+          : (user.userBadges || []);
 
-      if (Array.isArray(badges) && badges.length) {
-        badgesContainer.style.display = 'block';
-        badgesEl.innerHTML = badges
-          .map((b) => {
-            const isObj = b && typeof b === 'object';
-            const id = isObj ? (b.badgeId || b._id || b.id || b.badge?.badgeId || '') : b;
-            const url = isObj ? (b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || '') : '';
-            const name = isObj ? (b.name || b.badge?.name || 'Badge') : 'Badge';
+        const BADGE_PRIORITY = [
+          'OG',
+          'Veteran',
+          'Pixeltuber',
+          'Booster',
+          'Owner',
+          'Plus',
+          'Developer',
+          'Artist',
+          'Tester',
+          'Helper',
+          'Moderator',
+          'Admin',
+          'Community Manager',
+          'Verified',
+        ];
 
-            const src = url || '';
-            if (!src) return '';
+        const rolePriorityMap = new Map(
+          BADGE_PRIORITY.map((name, idx) => [String(name).toLowerCase(), idx])
+        );
 
-            const safeId = String(id || name || '').replace(/[^a-zA-Z0-9_-]/g, '');
-            return `<img class="badge" src="${src}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
-          })
-          .filter(Boolean)
-          .join('');
-      } else {
-        badgesEl.innerHTML = '';
-        badgesContainer.style.display = 'none';
+        const normalizeBadgeName = (b) => {
+          if (!b) return '';
+          if (typeof b === 'string') return b;
+          return (
+            b?.name ||
+            b?.badge?.name ||
+            b?.role ||
+            b?.badgeRole ||
+            b?.key ||
+            ''
+          );
+        };
+
+        const getPriority = (b) => {
+          const name = normalizeBadgeName(b);
+          const key = String(name).trim().toLowerCase();
+          if (rolePriorityMap.has(key)) return rolePriorityMap.get(key);
+          return Number.MAX_SAFE_INTEGER;
+        };
+
+        if (Array.isArray(badges) && badges.length) {
+          badgesContainer.style.display = 'block';
+
+          const sortedBadges = badges
+            .slice()
+            .sort((a, b) => getPriority(a) - getPriority(b));
+
+          badgesEl.innerHTML = sortedBadges
+            .map((b) => {
+              const isObj = b && typeof b === 'object';
+              const id = isObj
+                ? b.badgeId || b._id || b.id || b.badge?.badgeId || ''
+                : b;
+              const url = isObj
+                ? b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || ''
+                : '';
+              const name = isObj ? b.name || b.badge?.name || 'Badge' : 'Badge';
+
+              const src = url || '';
+              if (!src) return '';
+
+              const safeId = String(id || name || '').replace(/[^a-zA-Z0-9_-]/g, '');
+              return `<img class="badge" src="${src}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
+            })
+            .filter(Boolean)
+            .join('');
+        } else {
+          badgesEl.innerHTML = '';
+          badgesContainer.style.display = 'none';
+        }
       }
-    }
 
     checkPanelAccess();
     startDailyWheelCountdownTicker();
@@ -1213,10 +1263,54 @@ function openViewUserPopup() {
 
 
       if (ui.badgesEl && ui.badgesContainer) {
-        const badges = Array.isArray(other.badges) ? other.badges : (other.userBadges || []);
+        const badges = Array.isArray(other.badges)
+          ? other.badges
+          : (other.userBadges || []);
+
+        const BADGE_PRIORITY = [
+          'OG',
+          'booster',
+          'developer',
+          'owner',
+          'helper',
+          'moderator',
+          'admin',
+          'community manager',
+          'verified',
+        ];
+
+        const rolePriorityMap = new Map(
+          BADGE_PRIORITY.map((name, idx) => [String(name).toLowerCase(), idx])
+        );
+
+        const normalizeBadgeName = (b) => {
+          if (!b) return '';
+          if (typeof b === 'string') return b;
+          return (
+            b?.name ||
+            b?.badge?.name ||
+            b?.role ||
+            b?.badgeRole ||
+            b?.key ||
+            ''
+          );
+        };
+
+        const getPriority = (b) => {
+          const name = normalizeBadgeName(b);
+          const key = String(name).trim().toLowerCase();
+          if (rolePriorityMap.has(key)) return rolePriorityMap.get(key);
+          return Number.MAX_SAFE_INTEGER;
+        };
+
         if (Array.isArray(badges) && badges.length) {
           ui.badgesContainer.style.display = 'block';
-          ui.badgesEl.innerHTML = badges
+
+          const sortedBadges = badges
+            .slice()
+            .sort((a, b) => getPriority(a) - getPriority(b));
+
+          ui.badgesEl.innerHTML = sortedBadges
             .map(b => {
               const isObj = b && typeof b === 'object';
               const id = isObj

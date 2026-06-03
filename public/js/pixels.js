@@ -701,6 +701,18 @@ function listBlook() {
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to list");
 
       showModal(`Your ${blookName} has been listed on bazaar`);
+
+      await loadBlooks();
+      const amtEl = document.getElementById("amountOwned");
+      if (amtEl && selectedBlook?.name) {
+        const fresh = allBlooksFlat.find((b) => (b?.name || "") === selectedBlook.name);
+        if (fresh) {
+          const updated = Number(fresh?.owned ?? fresh?.owned?.amount ?? 0);
+          amtEl.textContent = `${updated} Owned`;
+          selectedBlook.owned = updated;
+        }
+      }
+
       close();
     } catch (err) {
       errorEl.textContent = err.message;

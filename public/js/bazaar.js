@@ -107,7 +107,7 @@ function initBazaar() {
         .modal-content { background: #5e046e; padding: 25px; width: 900px; max-width: 90%; color: white; border-radius: 10px; text-align: center; cursor: default; box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #53055c; padding-bottom: 10px; }
         .modal-header h2 { margin: 0; font-family: 'Pixelify Sans', sans-serif; font-size: 28px; }
-        .close-icon { font-size: 24px; cursor: pointer; color: #ff0000; }
+        .close-icon { font-size: 0px; cursor: pointer; color: #ff0000; }
         #userListingsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; margin-top: 15px; }
         .listing-card { cursor: pointer; transition: transform 0.2s; border-radius: 8px;}
         .listing-card:hover { filter: brightness(1.2); }
