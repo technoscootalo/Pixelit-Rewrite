@@ -238,7 +238,7 @@ body.panel-allowed #panelLink {
 }
 
 .profile-pic {
-  width: 45px;
+  width: auto;
   height: 45px;
   border-radius: 5px;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
