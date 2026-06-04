@@ -59,15 +59,30 @@ color {
   gap: 20px;
 }
 
-.registerButton,
 .discordButton {
   flex: 1;
-  height: 70px;
-  width: 150px;
+  width: 19vh;
+  height: 7.5vh;
   border: none;
   border-radius: 10px;
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #FFFFFF;
+  color: #3a3a3a;
+  box-shadow: 0 -5px #0003 inset,0 0 4px #00000026;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.registerButton{
+  flex: 1;
+  width: 25vh;
+  height: 9vh;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 28px;
   font-weight: 800;
   cursor: pointer;
   background: #5e046e;
