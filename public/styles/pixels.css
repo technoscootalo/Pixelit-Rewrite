@@ -54,6 +54,13 @@ main {
   width: 1200px;
 }
 
+.pixelsInsideContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 @media (max-width: 1790px) {
   .pixelsContainer {
     width: 950px;

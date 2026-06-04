@@ -67,7 +67,7 @@ async function loadListings(filter = "") {
 
     const filtered = allListings.filter(l => l.blookName.toLowerCase().includes(filter.toLowerCase()));
 
-    container.innerHTML = filtered.length === 0 ? '<p class="noListingText">No matching blooks found.</p>' : 
+    container.innerHTML = filtered.length === 0 ? '<p class="noListingText">No Pixels have been listed.</p>' : 
         filtered.map(l => {
             const isOwner = String(l.userId) === String(currentUser);
             return `

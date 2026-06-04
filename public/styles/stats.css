@@ -6,7 +6,7 @@
 
 html,
 body {
-  min-height: 100%;
+  min-width: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -109,6 +109,7 @@ body {
   min-width: 180px;
   flex: 1 1 180px;
   height: 48px;
+  gap: 5px;
   font-weight: bold;
   text-shadow: #000 1px 0 13px;
   border-radius: 5px;
@@ -166,6 +167,7 @@ body {
   min-width: 180px;
   flex: 1 1 180px;
   height: 48px;
+  gap: 5px;
   font-weight: bold;
   text-shadow: #000 1px 0 13px;
   border-radius: 5px;
@@ -366,6 +368,7 @@ body {
   height: 52px;
   border: none;
   border-radius: 10px;
+  gap: 5px;
   font-family: 'Pixelify Sans', sans-serif;
   font-size: 22px;
   font-weight: 800;

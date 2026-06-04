@@ -6,6 +6,7 @@ const BazaarListingSchema = new mongoose.Schema({
   blookName: { type: String, required: true },
   imageUrl: { type: String, required: true },
   price: { type: Number, required: true },
+  rarity: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 

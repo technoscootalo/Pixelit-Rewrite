@@ -8,6 +8,7 @@ const {
   REST,
   Routes,
   ActivityType,
+  Events,
   MessageFlags,
   EmbedBuilder
 } = require("discord.js");
@@ -32,6 +33,7 @@ const badgeDiscordRoleMap = {
   Moderator: "1276630034441961505",
   Tester: "1276629928141520906",
   Veteran: "1507439050078945290",
+  Plus: "1512190823880593628",
   OG: "1276629902308802601"
 };
 
@@ -258,7 +260,7 @@ async function registerCommands() {
 
 registerCommands();
 
-client.once("ready", () => {
+client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}`);
   console.log(`Bot is active and ready to serve.`);
 
@@ -295,8 +297,36 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
 
 // -------------------- INTERACTIONS --------------------
 
-  client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
+function replyOrEdit(interaction, response) {
+  if (interaction.deferred || interaction.replied) {
+    return interaction.editReply(response);
+  }
+  return interaction.reply(response);
+}
+
+async function safeDeferReply(interaction, options = {}) {
+  try {
+    await interaction.deferReply(options);
+    return true;
+  } catch (err) {
+    console.error("Failed to defer reply:", err);
+    if (!interaction.replied && !interaction.deferred) {
+      try {
+        await interaction.reply({
+          content: "Processing...",
+          ephemeral: Boolean(options.flags),
+          fetchReply: false
+        });
+      } catch (replyErr) {
+        console.error("Fallback reply failed:", replyErr);
+      }
+    }
+    return false;
+  }
+}
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
     if (interaction.commandName === "ping") {
       return interaction.reply({
@@ -307,7 +337,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
 
 
   if (interaction.commandName === "login") {
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
   
     const username = interaction.options.getString("username");
     const password = interaction.options.getString("password");
@@ -319,7 +349,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       const isMatch = user ? await bcrypt.compare(password, user.password) : false;
 
       if (!isMatch) {
-        return interaction.editReply("Invalid username or password.");
+        return replyOrEdit(interaction, "Invalid username or password.");
       }
 
       user.discordId = interaction.user.id;
@@ -341,23 +371,23 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
 
       await user.save();
 
-      return interaction.editReply(`Success! Account **${user.username}** is now linked to your Discord.`);
+      return replyOrEdit(interaction, `Success! Account **${user.username}** is now linked to your Discord.`);
     }   catch (err) {
       console.error("Login command error:", err);
-      return interaction.editReply("Server error. Try again later.");
+      return replyOrEdit(interaction, "Server error. Try again later.");
     }
   }
 
 
   if (interaction.commandName === "logout") {
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
 
     try {
 
       const user = await User.findOne({ discordId: interaction.user.id });
 
       if (!user) {
-        return interaction.editReply("You do not have a Pixelit account linked to this Discord.");
+        return replyOrEdit(interaction, "You do not have a Pixelit account linked to this Discord.");
       }
 
       const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
@@ -377,16 +407,16 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       user.discordId = null;
       await user.save();
 
-      return interaction.editReply("Success! Your Discord account has been unlinked from your Pixelit account.");
+      return replyOrEdit(interaction, "Success! Your Discord account has been unlinked from your Pixelit account.");
     } catch (err) {
       console.error("Logout error:", err);
-      return interaction.editReply("An error occurred while logging out. Try again later.");
+      return replyOrEdit(interaction, "An error occurred while logging out. Try again later.");
     }
   }
 
 
   if (interaction.commandName === "user") {
-    await interaction.deferReply();
+    await safeDeferReply(interaction);
   
     const query = interaction.options.getString("username");
   
@@ -394,7 +424,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       const user = await User.findOne({ username: new RegExp(`^${query}$`, "i") });
 
       if (!user) {
-        return interaction.editReply(`Could not find a user named **${query}**.`);
+        return replyOrEdit(interaction, `Could not find a user named **${query}**.`);
       }
 
       const discordStatus = user.discordId 
@@ -415,15 +445,15 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
         )
         .setFooter({ text: `User ID: ${user.id}` });
 
-      return interaction.editReply({ embeds: [embed] });
+      return replyOrEdit(interaction, { embeds: [embed] });
     } catch (err) {
       console.error("User search error:", err);
-      return interaction.editReply("An error occurred while searching for the user.");
+      return replyOrEdit(interaction, "An error occurred while searching for the user.");
     }
   } 
 
   if (interaction.commandName === "pixel") {
-    await interaction.deferReply();
+    await safeDeferReply(interaction);
   
     const query = interaction.options.getString("name");
   
@@ -431,7 +461,7 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
       const blook = await Blook.findOne({ blookName: new RegExp(`^${query}$`, "i") });
 
       if (!blook) {
-        return interaction.editReply(`Could not find a Pixel named **${query}**.`);
+        return replyOrEdit(interaction, `Could not find a Pixel named **${query}**.`);
       }
 
       const embed = new EmbedBuilder()
@@ -445,25 +475,23 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
         )
         .setFooter({ text: `ID: ${blook._id}` });
 
-      return interaction.editReply({ embeds: [embed] });
+      return replyOrEdit(interaction, { embeds: [embed] });
     } catch (err) {
       console.error("Pixel command error:", err);
-      return interaction.editReply("An error occurred while fetching Pixel data.");
+      return replyOrEdit(interaction, "An error occurred while fetching Pixel data.");
     }
   }
 
   if (interaction.commandName === "accesskey") {
     try {
-      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
 
       const hasGeneratedBefore = await AccessKey.findOne({
         discordId: interaction.user.id
       });
 
       if (hasGeneratedBefore) {
-        return interaction.editReply(
-          "You have already generated an access key."
-        );
+        return replyOrEdit(interaction, "You have already generated an access key.");
       }
 
       const key = crypto.randomBytes(32).toString("hex");
@@ -476,20 +504,18 @@ client.on("guildMemberUpdate", async (oldMember, newMember) => {
         expiresAt
       });
 
-      return interaction.editReply(
-      `━━━━━━━━━━━━━━━━━━
+      return replyOrEdit(interaction, `━━━━━━━━━━━━━━━━━━
       ACCESS KEY GENERATED
 
       ${key}
 
       Expires in: 10 minutes
       One-time use only
-      ━━━━━━━━━━━━━━━━━━`
-      );
+      ━━━━━━━━━━━━━━━━━━`);
 
     } catch (err) {
       console.error("Access key error:", err);
-      return interaction.editReply("Failed to generate access key.");
+      return replyOrEdit(interaction, "Failed to generate access key.");
     }
   }
 });

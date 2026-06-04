@@ -90,8 +90,7 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px;
-  padding-bottom: 100px;
+  padding: 30px;
   background: rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;

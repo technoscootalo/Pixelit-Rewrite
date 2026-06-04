@@ -36,8 +36,9 @@ router.post('/listBlook', async (req, res) => {
       userId: userId,
       username: user.username,
       blookName: blookName,
-      imageUrl: blook.imageUrl, 
-      price: price
+      imageUrl: blook.imageUrl,
+      price: price,
+      rarity: blook.rarity
     }], { session });
 
     await session.commitTransaction();

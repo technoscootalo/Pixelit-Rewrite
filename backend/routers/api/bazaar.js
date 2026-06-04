@@ -6,7 +6,7 @@ const User = require("../../models/User");
 router.get('/listings', async (req, res) => {
   try {
     const listings = await BazaarListing.find().sort({ createdAt: -1 });
-    
+
     res.json({
         currentUser: req.session.userId || null,
         listings: listings
