@@ -28,7 +28,6 @@ const userBoosterSchema = new mongoose.Schema(
 );
 
 userBoosterSchema.index({ userId: 1, status: 1 });
-userBoosterSchema.index({ expiresAt: 1 });
 userBoosterSchema.index({ boosterId: 1 });
 
 module.exports = mongoose.model(
