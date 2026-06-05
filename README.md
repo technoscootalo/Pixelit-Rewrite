@@ -59,7 +59,7 @@ cp .env.example .env
 ### 3) Run the server
 
 ```bash
-npm start
+node server.js
 ```
 
 - Default port: `http://localhost:3000`
