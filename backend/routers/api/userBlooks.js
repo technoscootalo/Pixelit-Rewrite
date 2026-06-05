@@ -15,21 +15,38 @@ router.get("/", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const packs = await Pack.find({ visible: true }).populate("blooks");
+    const packs = await Pack.find({}).populate("blooks");
 
-    const formattedPacks = packs.map((pack) => ({
-      name: pack.name,
-      blooks: (pack.blooks || []).map((blook) => {
-        const ownedAmount = user.blooks ? (user.blooks[blook.blookName] || 0) : 0;
+
+
+    const MISC_PACK_ID = "6a2239b7b6623c0c0b5e8502";
+
+    const formattedPacks = packs
+      .map((pack) => {
+        const isMisc = String(pack._id) === MISC_PACK_ID;
+
+        const blooks = (pack.blooks || [])
+          .map((blook) => {
+            const ownedAmount = user.blooks ? (user.blooks[blook.blookName] || 0) : 0;
+            return {
+              name: blook.blookName,
+              rarity: blook.rarity,
+              imageUrl: blook.imageUrl,
+              backgroundUrl: blook.backgroundUrl,
+              owned: ownedAmount
+            };
+          })
+          .filter((b) => (isMisc ? b.owned > 0 : true));
+
         return {
-          name: blook.blookName,
-          rarity: blook.rarity,
-          imageUrl: blook.imageUrl,
-          backgroundUrl: blook.backgroundUrl,
-          owned: ownedAmount
+          name: pack.name,
+          visible: !!pack.visible,
+          blooks
         };
       })
-    }));
+      .filter((pack) => (String(pack._id) === MISC_PACK_ID ? pack.blooks.length > 0 : true));
+
+
 
     res.json({ packs: formattedPacks });
   } catch (err) {

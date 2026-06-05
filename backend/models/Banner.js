@@ -16,6 +16,6 @@ const bannerSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model("Banner", bannerSchema, "banners");

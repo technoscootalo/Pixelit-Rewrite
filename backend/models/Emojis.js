@@ -16,7 +16,8 @@ const EmojiSchema = new mongoose.Schema(
     },
     { 
         collection: "emojis", 
-        timestamps: true  
+        timestamps: true,
+        versionKey: false  
     }
 );
 

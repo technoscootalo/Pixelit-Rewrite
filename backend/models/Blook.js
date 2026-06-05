@@ -29,5 +29,5 @@ const BlookSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-});
+}, { versionKey: false });
 module.exports = mongoose.model("Blook", BlookSchema);

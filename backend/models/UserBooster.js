@@ -24,7 +24,7 @@ const userBoosterSchema = new mongoose.Schema(
 
     quantity: { type: Number, default: 1, min: 1 }
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 userBoosterSchema.index({ userId: 1, status: 1 });

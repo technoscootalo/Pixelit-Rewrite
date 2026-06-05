@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const mongoose = require("mongoose");
+
 const userReportSchema = new mongoose.Schema(
   {
     reporterUserId: { type: String, required: true },
@@ -10,11 +12,11 @@ const userReportSchema = new mongoose.Schema(
 
     createdAt: { type: Date, default: Date.now },
 
-    // basic moderation flags (optional)
     status: { type: String, default: "pending" },
   },
   {
     timestamps: false,
+    versionKey: false,
   }
 );
 

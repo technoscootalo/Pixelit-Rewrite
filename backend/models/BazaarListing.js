@@ -8,6 +8,6 @@ const BazaarListingSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   rarity: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('BazaarListing', BazaarListingSchema);

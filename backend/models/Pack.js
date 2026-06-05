@@ -30,7 +30,7 @@ const packSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Blook"
     }]
-});
+}, { versionKey: false });
 
 
 module.exports = mongoose.model("Pack", packSchema, "packs");

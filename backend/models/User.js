@@ -81,7 +81,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: () => new Date().toISOString(),
   },
-});
+}, { versionKey: false });
+
 
 
 module.exports = mongoose.model("User", userSchema, "accounts");
+

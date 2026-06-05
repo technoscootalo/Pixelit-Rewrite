@@ -14,6 +14,6 @@ const messageSchema = new mongoose.Schema({
   replyToUser: { type: String, default: null },
   replyToContent: { type: String, default: null }, 
   createdAt: { type: Date, default: Date.now },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model("Message", messageSchema, "public-chat-logs");

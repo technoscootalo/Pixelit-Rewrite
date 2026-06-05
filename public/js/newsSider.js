@@ -85,13 +85,13 @@
                 margin-bottom:10px;
                 gap:10px;
               ">
-                <h2 style="
+                <h1 style="
                   margin:0;
-                  font-size:24px;
-                  font-weight:700;
+                  font-size:34px;
+                  font-weight:bold;
                 ">
                   ${title}
-                </h2>
+                </h1>
               </div>
 
               ${
@@ -107,6 +107,7 @@
                         object-fit:cover;
                         border-radius:8px;
                         margin-bottom:12px;
+                        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
                       "
                     />
                   `

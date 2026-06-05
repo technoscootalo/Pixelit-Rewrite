@@ -13,6 +13,7 @@ const ipBlacklistSchema = new mongoose.Schema(
   },
   {
     timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+    versionKey: false,
   }
 );
 

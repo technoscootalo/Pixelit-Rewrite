@@ -36,7 +36,7 @@ const boosterSchema = new mongoose.Schema(
 
     visible: { type: Boolean, default: true }
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 module.exports = mongoose.model("Booster", boosterSchema, "boosters");

@@ -66,7 +66,7 @@ function generatePacksHTML(packsData) {
         type="text"
         id="blookSearch"
         class="blook-search"
-        placeholder="Search Blooks"
+        placeholder="Search Pixels"
       />
     </div>
   `;
@@ -94,9 +94,17 @@ function generatePacksHTML(packsData) {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
 
+    // For Miscellaneous: hide the title (and optionally the whole pack UI)
+    // if user doesn't own any blooks in that pack.
+    const isMisc = pack?.name === "Miscellaneous";
+    const hasOwnedBlooks = (Array.isArray(pack?.blooks) ? pack.blooks : []).some(b => Number(b?.owned ?? 0) > 0);
+
+    if (isMisc && !hasOwnedBlooks) return;
+
     const packTitle = document.createElement("h2");
     packTitle.className = "pack-title";
     packTitle.textContent = pack.name;
+
 
     if (pack.name === "Miscellaneous") {
       packTitle.style.color = "#ffe66d";

@@ -26,6 +26,6 @@ const accessKeySchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model("AccessKey", accessKeySchema, "accesskeys");

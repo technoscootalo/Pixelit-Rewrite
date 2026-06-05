@@ -22,6 +22,6 @@ const BadgeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model("Badge", BadgeSchema);
