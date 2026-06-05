@@ -16,10 +16,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png",
   },
+
   banner: {
     type: String,
     default: "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png",
   },
+
   badges: {
     type: [
       {
@@ -31,12 +33,18 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+
   role: { type: String, default: "Player" },
 
   tokens: { type: Number, default: 0 },
   opened: { type: Number, default: 0 },
   sent: { type: Number, default: 0 },
-  blooks: { type: Object, default: {} },
+
+  blooks: { 
+    type: Object, 
+    default: {} 
+  },
+
   items: {
     type: [{
       itemName: String,
