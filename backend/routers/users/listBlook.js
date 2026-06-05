@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const User = require("../../models/User");
 const BazaarListing = require("../../models/BazaarListing");
 const Blook = require("../../models/Blook"); 
-const webhookUrl = "https://discord.com/api/webhooks/1510852018514694255/6F68Xglo98yr5pYOihzLKOHn20OzPsgGnCJzUEgsrxJAdN7aLjqBSChdjlXw7Tx457j9";
+const DISCORD_WEBHOOK_BAZAAR = process.env.DISCORD_WEBHOOK_BAZAAR;
 
 router.post('/listBlook', async (req, res) => {
   const { blookName, price } = req.body;
@@ -43,13 +43,15 @@ router.post('/listBlook', async (req, res) => {
 
     await session.commitTransaction();
     
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content: `**${user.username}** has listed **${blookName}** for **${price.toLocaleString()}** tokens on the bazaar!`
-      })
-    }).catch(err => console.error("Discord Webhook failed:", err));
+    if (DISCORD_WEBHOOK_BAZAAR) {
+      fetch(DISCORD_WEBHOOK_BAZAAR, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `**${user.username}** has listed **${blookName}** for **${price.toLocaleString()}** tokens on the bazaar!`
+        })
+      }).catch(err => console.error("Discord Webhook failed:", err));
+    }
 
     res.json({ success: true });
 

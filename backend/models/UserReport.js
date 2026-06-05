@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const mongoose = require("mongoose");
-
 const userReportSchema = new mongoose.Schema(
   {
     reporterUserId: { type: String, required: true },

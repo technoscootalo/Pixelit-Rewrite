@@ -52,7 +52,7 @@ main h1 {
     inset 0 -0.265vw #53055c,
     3px 3px 15px rgba(0, 0, 0, 0.6);
 
-  z-index: 100;
+  z-index: 0;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }

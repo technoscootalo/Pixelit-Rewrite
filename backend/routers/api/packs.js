@@ -3,7 +3,7 @@ const router = express.Router();
 const Pack = require("../../models/Pack");
 const User = require("../../models/User");
 const { rateLimit } = require("../../middleware/rateLimit");
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1510120522988654812/PsMxHEN1nXdl1YSStCt1lal8qJIJUoKCmcwUouGue00AneEQlF0XZOXMtGCZ6x5avmhh";
+const DISCORD_WEBHOOK_PACK_OPEN = process.env.DISCORD_WEBHOOK_PACK_OPEN;
 
 router.get("/", async (req, res) => {
   try {
@@ -75,8 +75,8 @@ router.post(
       });
 
       const rarity = (wonBlook.rarity || wonBlook.rarityName || "").toString().toLowerCase();
-      if (["legendary", "chroma", "mystical"].includes(rarity)) {
-        fetch(DISCORD_WEBHOOK, {
+      if (["legendary", "chroma", "mystical"].includes(rarity) && DISCORD_WEBHOOK_PACK_OPEN) {
+        fetch(DISCORD_WEBHOOK_PACK_OPEN, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

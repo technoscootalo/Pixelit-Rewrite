@@ -4,8 +4,7 @@ const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
 
-const DISCORD_WEBHOOK =
-    "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
+const DISCORD_WEBHOOK_DAILY_WHEEL = process.env.DISCORD_WEBHOOK_DAILY_WHEEL;
 
 const COOLDOWN_MS = 1000 * 60 * 60 * 4;
 
@@ -82,17 +81,19 @@ router.post("/", rateLimit({ max: 3, windowMs: 20 * 1000 }), async (req, res) =>
         await user.save();
 
         try {
-            await fetch(DISCORD_WEBHOOK, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    content:
-                        `**${user.username}** has claimed ` +
-                        `**${reward.toLocaleString()}** tokens in Pixelit v3`
-                }),
-            });
+            if (DISCORD_WEBHOOK_DAILY_WHEEL) {
+                await fetch(DISCORD_WEBHOOK_DAILY_WHEEL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        content:
+                            `**${user.username}** has claimed ` +
+                            `**${reward.toLocaleString()}** tokens in Pixelit v3`
+                    }),
+                });
+            }
         } catch (webhookError) {
             console.error(
                 "Discord webhook failed:",

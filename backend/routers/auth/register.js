@@ -6,7 +6,7 @@ const User = require("../../models/User");
 const AccessKey = require("../../models/AccessKey");
 
 const router = express.Router();
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
+const DISCORD_WEBHOOK_AUTH = process.env.DISCORD_WEBHOOK_AUTH;
 
 router.post("/", async (req, res) => {
     try {
@@ -47,11 +47,13 @@ router.post("/", async (req, res) => {
         keyDoc.used = true;
         await keyDoc.save();
 
-        fetch(DISCORD_WEBHOOK, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: `**${username}** has created a Pixelit account` })
-        }).catch(err => console.error("Webhook failed:", err));
+        if (DISCORD_WEBHOOK_AUTH) {
+            fetch(DISCORD_WEBHOOK_AUTH, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: `**${username}** has created a Pixelit account` })
+            }).catch(err => console.error("Webhook failed:", err));
+        }
 
         return res.status(201).json({
             message: "User registered successfully",

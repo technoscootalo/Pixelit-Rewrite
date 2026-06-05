@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../../models/User");
 
 const router = express.Router();
+const DISCORD_WEBHOOK_AUTH = process.env.DISCORD_WEBHOOK_AUTH;
 
 router.post("/logout", async (req, res) => {
     let username = "A user";
@@ -22,15 +23,15 @@ router.post("/logout", async (req, res) => {
 
         res.clearCookie("pixelit.sid");
 
-        const webhookUrl = "https://discord.com/api/webhooks/1507830658729508886/zEfOc7csDlDzpM__QtJaBWvBfdlztZPt2aNzcj0RwEpXRwjWAKro0WFmdvLS0YPs0iLK";
-        
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                content: `**${username}** has logged out of Pixelit`
-            })
-        }).catch(err => console.error("Discord Webhook failed:", err));
+        if (DISCORD_WEBHOOK_AUTH) {
+            fetch(DISCORD_WEBHOOK_AUTH, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: `**${username}** has logged out of Pixelit`
+                })
+            }).catch(err => console.error("Discord Webhook failed:", err));
+        }
 
         return res.json({
             message: "Logged out"
