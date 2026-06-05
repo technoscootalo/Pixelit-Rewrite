@@ -75,7 +75,7 @@ router.post(
       });
 
       const rarity = (wonBlook.rarity || wonBlook.rarityName || "").toString().toLowerCase();
-      if (["Legendary", "Chroma", "Mystical"].includes(rarity)) {
+      if (["legendary", "chroma", "mystical"].includes(rarity)) {
         fetch(DISCORD_WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
