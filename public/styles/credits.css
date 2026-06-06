@@ -48,7 +48,7 @@ main {
 }
 
 .backButton {
-  position: fixed !important;
+  position: absolute;
   top: 20px;
   left: 20px;
 }

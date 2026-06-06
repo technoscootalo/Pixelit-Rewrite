@@ -263,6 +263,11 @@ function updateBlookInfo(blook) {
 }
 
 function sellBlook() {
+  if (!selectedBlook || !selectedBlook.name) {
+    showModal("Select a blook first");
+    return;
+  }
+  
   const blookName = document.getElementById("blookName").textContent;
   const ownedEl = document.getElementById("amountOwned");
   const owned = parseInt(ownedEl.textContent.split(" ")[0], 10);
@@ -279,7 +284,24 @@ function sellBlook() {
 
   const title = document.createElement("h3");
   title.className = "sell-blook-modal-title";
-  title.textContent = `Sell ${blookName}?`;
+
+  const getSellPerBlook = () => {
+    if (!selectedBlook?.rarity) return 10;
+    return blookName === "Pixel" ? 10 : (RARITY_VALUES[selectedBlook.rarity.toLowerCase()] || 100);
+  };
+
+  const pricePer = getSellPerBlook();
+
+  const formatCoins = (n) => Number(n).toLocaleString();
+
+  const updateSellTitle = () => {
+    const quantity = parseInt(input.value, 10) || 1;
+    const total = pricePer * quantity;
+
+    title.textContent = `Sell ${blookName} for ${formatCoins(total)} ${total === 1 ? "token" : "tokens"}?`;
+  };
+
+  title.textContent = `Sell ${blookName} for ${formatCoins(pricePer)} ${pricePer === 1 ? "token" : "tokens"}?`;
 
   const subtitle = document.createElement("div");
   subtitle.className = "sell-blook-modal-subtitle";
@@ -296,11 +318,30 @@ function sellBlook() {
   input.className = "sell-blook-modal-amount";
   input.type = "number";
   input.min = "1";
+  input.step = "1";
   input.max = String(owned);
   input.value = "1";
 
+  input.addEventListener("input", () => {
+    const max = owned;
+    if (!Number.isFinite(max)) return;
+
+    let v = parseInt(input.value, 10);
+    if (!v || v < 1) v = 1;
+    if (v > max) v = max;
+
+    if (String(v) !== input.value) input.value = String(v);
+    updateSellTitle();
+  });
+
+
   inputRow.appendChild(label);
   inputRow.appendChild(input);
+
+  input.addEventListener("input", () => {
+    updateSellTitle();
+  });
+
 
   const error = document.createElement("div");
   error.className = "sell-blook-modal-error";
@@ -461,7 +502,7 @@ function giftBlook() {
 
   const userLabel = document.createElement("label");
   userLabel.className = "sell-blook-modal-label";
-  userLabel.textContent =  "Player";
+  userLabel.textContent =  "To";
 
   const userInput = document.createElement("input");
   userInput.className = "sell-blook-modal-amount";
@@ -657,7 +698,34 @@ function listBlook() {
     mystical: 1000
   };
 
-  const defaultPrice = RARITY_VALUES[selectedBlook.rarity] || 100;
+  const defaultPrice = RARITY_VALUES[selectedBlook.rarity];
+
+  const prefillFromAllBazaarListings = async () => {
+    try {
+      const res = await fetch("/api/bazaar/listings", { credentials: "include" });
+      if (!res.ok) return null;
+      const data = await res.json();
+
+      const listings = Array.isArray(data?.listings) ? data.listings : [];
+
+      const prices = listings
+        .filter(
+          (l) => String(l?.blookName || "").toLowerCase() === String(blookName).toLowerCase()
+        )
+        .map((l) => Number(l?.price ?? 0))
+        .filter((p) => Number.isFinite(p) && p >= 1);
+
+      if (!prices.length) return null;
+
+      const lowest = Math.min(...prices);
+      const suggested = lowest - 1;
+
+      return suggested >= 1 ? suggested : 1;
+    } catch {
+      return null;
+    }
+  };
+
   
   const modal = document.createElement("div");
   modal.id = "list-blook-modal";
@@ -667,12 +735,13 @@ function listBlook() {
   box.className = "sell-blook-modal-box";
 
   box.innerHTML = `
-    <h3 class="sell-blook-modal-title">List ${blookName}</h3>
+    <h3 class="sell-blook-modal-title">List ${blookName}?</h3>
     <img src="${blookImage}" alt="${blookName}" style="width: auto;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); height: 130px; margin: 10px auto; display: block;">
     <div class="sell-blook-modal-input-row">
       <label class="sell-blook-modal-label">Price</label>
       <input type="number" id="listPrice" class="sell-blook-modal-amount" min="1" max="5000000" value="${defaultPrice}">
     </div>
+
     <div class="sell-blook-modal-error" id="listError"></div>
     <div class="sell-blook-modal-actions">
       <button type="button" id="confirmList" class="sell-blook-modal-btn sell-blook-modal-btn-primary">List</button>
@@ -685,7 +754,17 @@ function listBlook() {
 
   const close = () => modal.remove();
   document.getElementById("cancelList").onclick = close;
-  
+
+  (async () => {
+    const listPriceEl = document.getElementById("listPrice");
+    if (!listPriceEl) return;
+
+    const prefill = await prefillFromAllBazaarListings();
+    if (typeof prefill === "number" && Number.isFinite(prefill) && prefill >= 1) {
+      listPriceEl.value = String(prefill);
+    }
+  })();
+
   document.getElementById("confirmList").onclick = async () => {
     const price = parseInt(document.getElementById("listPrice").value, 10);
     const errorEl = document.getElementById("listError");
@@ -736,34 +815,4 @@ document.addEventListener("DOMContentLoaded", () => {
   if (listBtnEl) {
     listBtnEl.addEventListener("click", listBlook);
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadBlooks();
-
-  const btn = document.querySelector('.changePfpBtn');
-  if (!btn) return;
-
-  btn.addEventListener('click', async () => {
-    if (!selectedBlook || !selectedBlook.imageUrl) {
-      window.location.href = '/stats';
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/user/changePfp', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ pfp: selectedBlook.imageUrl })
-      });
-
-      window.location.href = '/stats';
-    } catch (e) {
-      console.error(e);
-      window.location.href = '/stats';
-    }
-  });
 });
