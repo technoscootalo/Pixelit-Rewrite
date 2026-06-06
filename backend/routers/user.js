@@ -5,11 +5,10 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        if (!req.session.userId) {
-            return res.status(401).json({
-                error: "Not logged in"
-            });
+        if (!req.session.userId) { 
+            return res.redirect('/'); 
         }
+
 
         const user = await User.findOne({
             id: req.session.userId
