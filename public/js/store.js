@@ -40,3 +40,7 @@ backButton.onmouseup = () => {
   backButton.style.transform = "translateY(-3px) scale(1)";
   backButton.style.boxShadow = "inset 0 -4px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.25)";
 };
+
+async function purchasePixelitPlusStripe() {
+  window.location.href = 'https://buy.stripe.com/test_bJe5kC1De92w7Qnd9ugMw02';
+}

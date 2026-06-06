@@ -566,7 +566,7 @@ function confirmPurchase(pack) {
     modalBox.style.cssText = `
       padding: 25px; width: 400px; border-radius: 8px; text-align: center;
       color: white; font-family: 'Pixelify Sans', sans-serif;
-      background: #6f057a; box-shadow: 3px 3px 15px rgba(0,0,0,0.6);
+      background: #5e046e; box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
     `;
 
     modalBox.innerHTML = `
