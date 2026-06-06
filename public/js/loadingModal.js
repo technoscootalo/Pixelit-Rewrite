@@ -65,7 +65,6 @@
       }
 
       .pixelit-loader-icon {
-        /* Apply the new snapping bounce animation */
         animation: pixelit-bouncing-snap 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         width: 78px;
         height: 78px;
@@ -138,6 +137,10 @@ window.hideLoader = function hideLoader() {
     loaderInterval = null;
   }
 };
+
+window.addEventListener("DOMContentLoaded", () => {
+    window.showLoader();
+  });
 
   window.addEventListener("load", () => {
     window.hideLoader();
