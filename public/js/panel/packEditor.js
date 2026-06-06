@@ -55,9 +55,10 @@ function renderPacks(packs) {
         <img src="${pack.packImageUrl}" style="width:50px;height:50px;border-radius:5px;object-fit:cover;">
         <div>
           <h3 style="margin:0;">${pack.name}</h3>
-          <p style="margin:0;opacity:0.8;">${pack.cost} coins</p>
+          <p style="margin:0;opacity:0.8;">${pack.cost} Tokens</p>
         </div>
       </div>
+      <br>
 
       <div style="color:${pack.visible ? "#00ff88" : "red"};font-weight:bold;">
         ${pack.visible ? "VISIBLE" : "HIDDEN"}
@@ -193,18 +194,19 @@ function createEditorPanel() {
     overflow-y: auto;
     transition: 0.3s;
     z-index: 9998;
+    scroll: visible;
   `;
 
   panel.innerHTML = `
     <h2 id="editorTitle">Pack Editor</h2>
     <img id="editorImg" style="width:100%;border-radius:6px;margin-bottom:10px;">
 
-    <h3>Current Blooks</h3>
+    <h3>Current Pixels</h3>
     <div id="packBlooks"></div>
 
     <hr>
 
-    <h3>Add Blooks</h3>
+    <h3>Add Pixels</h3>
     <div id="blookList"></div>
 
     <button id="savePack">Save</button>

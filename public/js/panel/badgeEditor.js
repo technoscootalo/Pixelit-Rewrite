@@ -27,8 +27,30 @@ function selectBadge(badge) {
   nameEl.innerText = badge.name;
   imageEl.src = badge.image;
 
-  openDeleteModal(badge);
+  // Enable delete button for the selected badge.
+  const deleteBtn = document.getElementById("deleteBadgeBtn");
+  if (deleteBtn) deleteBtn.disabled = false;
 }
+
+document.getElementById("deleteBadgeBtn").onclick = async () => {
+  if (!selectedBadge) return;
+
+  await fetch(`/api/badges/${selectedBadge._id}`, {
+    method: "DELETE"
+  });
+
+  // Reset UI
+  selectedBadge = null;
+  nameEl.innerText = "Select Badge";
+  imageEl.src = "";
+
+  const deleteBtn = document.getElementById("deleteBadgeBtn");
+  if (deleteBtn) deleteBtn.disabled = true;
+
+  loadBadges();
+};
+
+
 
 document.getElementById("addBadgeBtn").onclick = () => {
   createBadgeModal();
@@ -150,95 +172,6 @@ function createBadgeModal() {
   document.body.appendChild(modal);
 }
 
-function openDeleteModal(badge) {
-  const modal = document.createElement("div");
-  modal.style.cssText = `
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-  `;
 
-  const box = document.createElement("div");
-  box.style.cssText = `
-    padding: 20px;
-    border-radius: 6px;
-    width: 350px;
-    text-align: center;
-    background: #6f057a;
-    box-shadow: inset 0 -0.3vw #53055c,
-              3px 3px 10px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  `;
-
-  const title = document.createElement("h2");
-  title.innerText = `Delete "${badge.name}"?`;
-  box.appendChild(title);
-
-  const btnRow = document.createElement("div");
-  btnRow.style.cssText = `
-    display: flex;
-    gap: 10px;
-  `;
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.innerText = "Delete";
-  deleteBtn.style.cssText = `
-    flex: 1;
-    background: #6f057a;
-    box-shadow: inset 0 -0.3vw #53055c,
-              3px 3px 10px rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Pixelify Sans', sans-serif;
-  `;
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.innerText = "Cancel";
-  cancelBtn.style.cssText = `
-    flex: 1;
-    background: #6f057a;
-    box-shadow: inset 0 -0.3vw #53055c,
-              3px 3px 10px rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Pixelify Sans', sans-serif;
-  `;
-
-  deleteBtn.onclick = async () => {
-    await fetch(`/api/badges/${badge._id}`, {
-      method: "DELETE"
-    });
-
-    document.body.removeChild(modal);
-    loadBadges();
-
-    nameEl.innerText = "Select Badge";
-    imageEl.src = "";
-    selectedBadge = null;
-  };
-
-  cancelBtn.onclick = () => {
-    document.body.removeChild(modal);
-  };
-
-  btnRow.appendChild(deleteBtn);
-  btnRow.appendChild(cancelBtn);
-
-  box.appendChild(btnRow);
-  modal.appendChild(box);
-  document.body.appendChild(modal);
-}
 
 loadBadges();

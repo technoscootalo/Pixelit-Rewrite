@@ -45,7 +45,7 @@ main {
 .topBar {
   position: fixed;
   top: 80px;
-  left: 50%;
+  left: 35%;
   transform: translateX(-50%);
 
   width: 35%;
@@ -110,4 +110,111 @@ main {
 
 .badgeItem:hover {
   transform: scale(1.1);
+}
+
+.previewPanel {
+  position: fixed;
+  top: 210px;
+  right: 100px;
+
+  width: 415px;
+  height: 250px;
+
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c,
+              3px 3px 15px rgba(0, 0, 0, 0.6);
+
+  border-radius: 5px;
+  padding: 25px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  overflow: hidden;
+}
+
+.previewPanel h2 {
+  margin: 0 0 14px;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+}
+
+.previewPanel img {
+  width: 140px !important;
+  height: 140px !important;
+  object-fit: contain;
+  border-radius: 5px;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+#deleteBadgeBtn {
+  position: fixed;
+  top: 500px;
+  right: 230px;
+  width: 150px;
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+
+  background: #5e046e;
+  box-shadow: inset 0 -0.365vw #53055c,
+              3px 3px 14px rgba(0,0,0,0.5);
+  text-shadow: #000 1px 0 13px;
+
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+#deleteBadgeBtn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+#deleteBadgeBtn:active {
+  transform: translateY(2px);
+}
+
+#deleteBadgeBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.15);
+}
+
+@media screen and (max-width: 768px) {
+  .previewPanel {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    padding: 15px;
+  }
+
+  .previewPanel h2 {
+    font-size: 22px;
+  }
+
+  .previewPanel img {
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  #deleteBadgeBtn {
+    width: 60%;
+    font-size: 18px;
+    height: 45px;
+  }
 }
