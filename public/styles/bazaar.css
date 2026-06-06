@@ -98,8 +98,8 @@ main {
   width: auto;
   max-width: 1000px;
   margin: 0 auto;
+  position: absolute;
   padding: 6px 12px;
-  position: fixed;
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
@@ -165,7 +165,7 @@ main {
 
 @media screen and (max-width: 768px) {
   #bazaarSearch { width: 90%; font-size: 1rem; border-width: 2px; }
-  .bazaar-controls { left: 50%; transform: translateX(-50%); position: absolute; width: 95%; max-width: none; padding: 4px 6px; }
+  .bazaar-controls { left: 50%; transform: translateX(-50%); width: 95%; max-width: none; padding: 4px 6px; }
 }
 
 .sell-blook-modal-overlay {
