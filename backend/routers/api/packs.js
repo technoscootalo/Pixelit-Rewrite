@@ -35,18 +35,43 @@ router.post(
         return res.status(404).json({ error: "Pack unavailable" });
       }
 
-      const totalChance = pack.blooks.reduce((sum, b) => sum + (Number(b.chance) || 0), 0);
+      const UserBooster = require("../../models/UserBooster");
+      const boosterAgg = await UserBooster.find({
+        userId: req.session.userId,
+        status: "active",
+        expiresAt: { $gt: new Date() }
+      }).lean();
+
+
+
+
+      let finalMultiplier = 1;
+      if (boosterAgg && boosterAgg.length > 0) {
+        const boosterIds = [...new Set(boosterAgg.map((u) => String(u.boosterId)))];
+        const Booster = require("../../models/Booster");
+        const boosters = await Booster.find({ _id: { $in: boosterIds }, visible: true })
+          .select("multiplier")
+          .lean();
+        const mults = boosters.map((b) => Number(b.multiplier) || 1);
+        finalMultiplier = mults.reduce((acc, m) => acc * m, 1);
+      }
+
+      const totalChance = pack.blooks.reduce(
+        (sum, b) => sum + (Number(b.chance) || 0) * finalMultiplier,
+        0
+      );
       const roll = Math.random() * totalChance;
 
       let current = 0;
       let wonBlook = pack.blooks[0];
       for (const blook of pack.blooks) {
-        current += Number(blook.chance) || 0;
+        current += (Number(blook.chance) || 0) * finalMultiplier;
         if (roll <= current) {
           wonBlook = blook;
           break;
         }
       }
+
 
       const blookName = (wonBlook.name || wonBlook.title || wonBlook.blookName || "Unknown")
         .replace(/\./g, "_");
@@ -66,13 +91,19 @@ router.post(
 
       if (!updatedUser) return res.status(400).json({ error: "Not enough tokens" });
 
+      const adjustedChance = Number(wonBlook?.chance) * finalMultiplier;
+
       res.json({
         success: true,
-        blook: wonBlook,
+        blook: {
+          ...wonBlook,
+          adjustedChance,
+        },
         tokens: updatedUser.tokens,
         packs: updatedUser.packs,
-        blooks: updatedUser.blooks
+        blooks: updatedUser.blooks,
       });
+
 
       const rarity = (wonBlook.rarity || wonBlook.rarityName || "").toString().toLowerCase();
       if (["legendary", "chroma", "mystical"].includes(rarity) && DISCORD_WEBHOOK_PACK_OPEN) {

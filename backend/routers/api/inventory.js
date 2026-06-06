@@ -26,8 +26,9 @@ router.get("/", requireLoggedIn, requireNotBanned, async (req, res) => {
     const boosterIds = [...new Set(userBoosters.map((b) => String(b.boosterId)))];
 
     const boosters = await Booster.find({ _id: { $in: boosterIds }, visible: true })
-      .select("code name")
+      .select("code name durationMs multiplier")
       .lean();
+
 
     const boosterById = new Map(boosters.map((b) => [String(b._id), b]));
 
@@ -36,16 +37,20 @@ router.get("/", requireLoggedIn, requireNotBanned, async (req, res) => {
         const booster = boosterById.get(String(ub.boosterId));
         if (!booster) return null;
 
-
         if (!ub.quantity || ub.quantity <= 0) return null;
 
         return {
           code: booster.code,
           name: booster.name,
           quantity: ub.quantity,
+          status: ub.status,
+          expiresAt: ub.expiresAt,
+          multiplier: booster.multiplier,
+          durationMs: booster.durationMs,
         };
       })
       .filter(Boolean);
+
 
 
     return res.json({ items });

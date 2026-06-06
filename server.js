@@ -38,12 +38,19 @@ const blooksRoutes = require("./backend/routers/users/blooks");
 const userBlooksRoutes = require("./backend/routers/api/userBlooks");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
-const paypalWebhookRouter = require('./backend/routers/api/paypalWebhook')
 const inventoryRoute = require('./backend/routers/api/inventory');
 const listBlookRouter = require('./backend/routers/users/listBlook');
-const bazaarRouter = require('./backend/routers/api/bazaar'); 
+const bazaarRouter = require('./backend/routers/api/bazaar');
 const changeBannerRoute = require('./backend/routers/api/changeBanner');
-const sendTokensRouter = require('./backend/routers/api/sendTokens'); 
+const sendTokensRouter = require('./backend/routers/api/sendTokens');
+const boostersRoute = require('./backend/routers/api/boosters');
+const marketBoostersBuyRoute = require('./backend/routers/api/marketBoosterBuy');
+const boostersActivateRoute = require('./backend/routers/api/boostersActivate');
+const boostersActiveMultiplierRoute = require('./backend/routers/api/getActiveBoosters');
+
+
+
+
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -97,8 +104,17 @@ app.use("/api/users", blooksRoutes);
 app.use("/api/users/sell-blook", sellBlookRoute);
 app.use("/api/users/gift-blook", giftBlookRoute);
 app.use("/api/userBlooks", userBlooksRoutes);
-app.use('/api/boosters/paypal/webhook', paypalWebhookRouter);
+app.use("/api/boosters", boostersRoute);
+app.use("/api/boosters", boostersActiveMultiplierRoute);
+app.use("/api/boosters", boostersActivateRoute);
+
+app.use("/api/market/boosters", marketBoostersBuyRoute);
+const marketActiveBoostersRoute = require("./backend/routers/api/marketActiveBoosters");
+app.use("/api/market/boosters", marketActiveBoostersRoute);
+
 app.use("/api/inventory", inventoryRoute);
+
+
 app.use("/api/users", listBlookRouter);
 app.use("/api/bazaar", bazaarRouter);
 app.use("/api/sendTokens", sendTokensRouter);

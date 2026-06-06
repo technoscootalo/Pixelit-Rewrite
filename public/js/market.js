@@ -1,6 +1,7 @@
 let userTokens = 0;
 let userRole = null;
 let phaserGame = null;
+let marketBoosterActive = false;
 
 function triggerRaritySpecificParticles(rarity) {
   if (phaserGame) {
@@ -384,10 +385,13 @@ async function openPackTooltipsModal() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   fetchPacks();
+  fetchBoosters();
+  fetchMarketActiveBoosters();
 
   const btn = document.getElementById("packToolTips");
   if (btn) btn.addEventListener("click", openPackTooltipsModal);
 });
+
 
 async function fetchUser() {
   try {
@@ -439,6 +443,194 @@ async function fetchPacks() {
     console.error(err);
     showModal("Error loading packs");
   }
+}
+
+async function fetchBoosters() {
+  try {
+    const res = await fetch("/api/boosters");
+    if (!res.ok) throw new Error("Failed to load boosters");
+
+    const data = await res.json();
+    const boosters = Array.isArray(data?.boosters) ? data.boosters : [];
+
+    const container = document.getElementById("boosterContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    boosters.forEach((booster) => {
+      container.appendChild(createBoosterCard(booster));
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function upsertMarketActiveBoostersSection(boosters) {
+
+  const parent = document.getElementById("boosterContainer") || document.body;
+
+  let section = document.getElementById("marketActiveBoostersSection");
+  if (!section) {
+    section = document.createElement("div");
+    section.id = "marketActiveBoostersSection";
+    section.className = "marketActiveBoostersSection";
+    section.style.cssText = `margin-top:18px; padding:12px; border-radius:12px; background:rgba(0,0,0,0.25); color:#fff;`;
+    parent.appendChild(section);
+  }
+
+  if (!boosters || boosters.length === 0) {
+    section.innerHTML = `<div style="opacity:0.85;font-size:14px;">No active boosters right now.</div>`;
+    return section;
+  }
+
+  const cardsHtml = boosters
+    .map((b, idx) => {
+      const expiresAtIso = b?.expiresAt || null;
+      const expiresAtLocal = formatDateTime(expiresAtIso);
+      return `
+        <div class="marketActiveBoosterCard" data-idx="${idx}" style="display:flex;gap:10px;align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.12);">
+          <div style="min-width:38px;text-align:center; font-weight:700; color:#7CFF6B;">x${b?.multiplier ?? 1}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;">Activated by ${b?.activatedBy || "Unknown"}</div>
+            <div style="opacity:0.85;font-size:13px;">${b?.boosterName || "Booster"} • ${expiresAtLocal ? `expires ${expiresAtLocal}` : "expires"}</div>
+            <div class="marketActiveBoosterCountdown" style="opacity:0.9; font-size:13px;" data-expires-at-ms="${b?._expiresAtMs ?? 0}"></div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  section.innerHTML = `
+    <div style="font-weight:800; margin-bottom:8px;">Active Booster in Market</div>
+    ${cardsHtml}
+  `;
+
+  const els = section.querySelectorAll(".marketActiveBoosterCountdown");
+  els.forEach((el) => {
+    const expiresAtMs = Number(el.getAttribute("data-expires-at-ms") || 0);
+    if (!expiresAtMs) return;
+    startExpiryCountdown(el, () => expiresAtMs);
+  });
+
+  return section;
+}
+
+async function fetchMarketActiveBoosters() {
+
+  try {
+    const res = await fetch("/api/market/boosters/market-active-boosters", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!res.ok) throw new Error("Failed to load market active boosters");
+
+    const data = await res.json();
+    const boosters = Array.isArray(data?.boosters) ? data.boosters : [];
+
+    const enriched = boosters.map((b) => {
+      let ms = 0;
+      if (b?.expiresAt) {
+        const d = new Date(b.expiresAt);
+        ms = Number(d.getTime());
+      }
+      return { ...b, _expiresAtMs: ms };
+    });
+
+    marketBoosterActive = enriched.length > 0;
+
+    upsertMarketActiveBoostersSection(enriched);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function createBoosterCard(booster) {
+  const div = document.createElement("div");
+  div.className = "boosterCard";
+
+  const img = document.createElement("img");
+  img.className = "boosterCardImg";
+  img.src = booster?.image || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png";
+  img.alt = booster?.name || "Booster";
+
+  const meta = document.createElement("div");
+  meta.className = "boosterCardMeta";
+
+  const name = document.createElement("div");
+  name.className = "boosterCardName";
+  name.textContent = booster?.name || "Unknown";
+
+  const desc = document.createElement("div");
+  desc.className = "boosterCardDesc";
+  desc.textContent = booster?.description || "";
+
+  const priceRow = document.createElement("div");
+  priceRow.className = "boosterCardPriceRow";
+
+  const tokenIcon = document.createElement("img");
+  tokenIcon.className = "boosterTokenIcon";
+  tokenIcon.src = "https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png";
+  tokenIcon.alt = "Token";
+
+  const price = document.createElement("div");
+  price.className = "boosterCardPrice";
+  price.textContent = `${booster?.price ?? 0}`;
+
+  priceRow.appendChild(tokenIcon);
+  priceRow.appendChild(price);
+
+  const buyBtn = document.createElement("button");
+  buyBtn.className = "boosterBuyBtn";
+  buyBtn.textContent = "Buy";
+  buyBtn.onclick = async (e) => {
+    e.stopPropagation();
+    if (userTokens < Number(booster?.price ?? 0)) {
+      showModal("Not enough tokens!");
+      return;
+    }
+
+    try {
+      if (typeof window.showLoader === "function") window.showLoader();
+      const res = await fetch(`/api/market/boosters/buy/${encodeURIComponent(booster?.code || "")}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Accept": "application/json" },
+      });
+
+      if (res.status === 401) {
+        showModal("Not logged in", true);
+        return;
+      }
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showModal(data?.error || "Failed to buy booster");
+        return;
+      }
+
+      userTokens = data?.tokens ?? userTokens;
+      updateTokens();
+      showModal(`Purchased ${booster?.name || "booster"}!`);
+
+    } catch (err) {
+      console.error(err);
+      showModal("Failed to buy booster");
+    } finally {
+      if (typeof window.hideLoader === "function") window.hideLoader();
+    }
+  };
+
+  meta.appendChild(name);
+  meta.appendChild(desc);
+  meta.appendChild(priceRow);
+  meta.appendChild(buyBtn);
+
+  div.appendChild(img);
+  div.appendChild(meta);
+
+  return div;
 }
 
 function displayPacks(packs) {
@@ -675,6 +867,12 @@ function animateBox(box, keyframes, options) {
 async function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
   const skipIntro = !!pack?.skipIntro;
+
+  const adjustedChance = Number.isFinite(Number(blook?.adjustedChance))
+    ? Number(blook.adjustedChance)
+    : null;
+
+
   const baseCenter = "translate(-50%, -50%)";
 
   const phase = pack?.phase || "reveal";
@@ -767,7 +965,10 @@ async function showResult(blook, pack = null) {
     </p>
     <img src="${blook.imageUrl}" style="width:165px;height:170px;object-fit:contain;">
     <p style="font-size:30px;font-weight:bold;">${blook.chance}%</p>
+    ${(adjustedChance !== null && marketBoosterActive) ? `<p style="font-size:18px;opacity:0.95;margin-top:-6px;">Boosted chance: ${adjustedChance}%</p>` : ``}
+
   `;
+
 
   overlay.appendChild(box);
   document.body.appendChild(overlay);
