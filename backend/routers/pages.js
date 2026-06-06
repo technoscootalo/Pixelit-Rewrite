@@ -61,10 +61,11 @@ router.get("/bazaar", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/bazaar.html"));
 });
 
-
+/*
 router.get("/store", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/store.html"));
 });
+*/
 
 router.get("/credits", requireLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
@@ -87,7 +88,6 @@ router.get("/users", requirePanelAccess(), (req, res) => {
 router.get("/developer", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/developer.html"));
 });
-
 
 router.get("/pixelseditor", requireDeveloperAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/panel/pixelseditor.html"));
