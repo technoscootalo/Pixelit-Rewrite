@@ -229,6 +229,14 @@ const commands = [
       .setRequired(true)),
 
   new SlashCommandBuilder()
+    .setName("quantity")
+    .setDescription("See the total circulation for a Pixel")
+    .addStringOption(option =>
+      option.setName("name")
+        .setDescription("The exact name of the Pixel")
+        .setRequired(true)),
+
+  new SlashCommandBuilder()
     .setName("user")
     .setDescription("Search for a Pixelit user by username")
     .addStringOption(option => 
@@ -494,6 +502,54 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (err) {
       console.error("Pixel command error:", err);
       return await replyOrEdit(interaction, "An error occurred while fetching Pixel data.");
+    }
+  }
+
+  if (interaction.commandName === "quantity") {
+    await safeDeferReply(interaction);
+
+    const query = interaction.options.getString("name");
+
+    try {
+      const escaped = query.trim().replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+      const blook = await Blook.findOne({ blookName: new RegExp(`^${escaped}$`, "i") });
+
+      if (!blook) {
+        return await replyOrEdit(interaction, `Could not find a blook named **${query}**.`);
+      }
+
+      const users = await User.find({ [`blooks.${blook.blookName}`]: { $exists: true } }).select('username blooks').lean();
+
+      const holders = [];
+      for (const u of users) {
+        const val = u.blooks?.[blook.blookName];
+        let amt = 0;
+        if (typeof val === 'number') amt = val;
+        else if (val && typeof val.amount !== 'undefined') amt = Number(val.amount) || 0;
+        if (Number.isFinite(amt) && amt > 0) {
+          holders.push({ username: u.username, amount: amt });
+        }
+      }
+
+      const total = holders.reduce((s, h) => s + h.amount, 0);
+      const top = holders.sort((a, b) => b.amount - a.amount).slice(0, 10);
+
+      const topText = top.length ? top.map((t, i) => `${i + 1}. ${t.username} — ${t.amount.toLocaleString()}`).join('\n') : 'No holders';
+
+      const embed = new EmbedBuilder()
+        .setColor(0x6f057a)
+        .setTitle(`${blook.blookName} — Circulation`)
+        .setThumbnail(blook.imageUrl)
+        .addFields(
+          { name: 'Total Circulating', value: total.toLocaleString(), inline: true },
+          { name: 'Top Holders', value: topText, inline: false }
+        )
+        .setFooter({ text: `ID: ${blook._id}` });
+
+      return await replyOrEdit(interaction, { embeds: [embed] });
+    } catch (err) {
+      console.error('Quantity command error:', err);
+      return await replyOrEdit(interaction, 'An error occurred while calculating circulation.');
     }
   }
 
