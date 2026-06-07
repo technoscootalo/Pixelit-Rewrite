@@ -9,7 +9,6 @@ body {
   overflow-x: hidden;
 }
 
-
 body {
   font-family: 'Pixelify Sans', sans-serif;
   color: white;
@@ -32,7 +31,6 @@ body {
 }
 
 main {
-  padding: 100px 16px 110px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -46,7 +44,9 @@ main h1 {
 #tokenDisplay {
   position: fixed;
   right: 0px;
+  top: 150px;
   display: flex;
+  z-index: 100;
   align-items: center;
   gap: 10px;
   padding: 14px 18px;
@@ -57,7 +57,6 @@ main h1 {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
-
 .tokenDisplay {
   font-family: 'Pixelify Sans', sans-serif;
 }
