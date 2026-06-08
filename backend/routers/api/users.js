@@ -2,31 +2,29 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
 
-
 const { requirePanelAccess } = require("../../middleware/panelAuth");
 const { requireDeveloperAccess } = require("../../middleware/panelAuth");
 const { rateLimit } = require("../../middleware/rateLimit");
 const { requireNotBanned } = require("../../middleware/sessionUser");
 
-
-
 router.get("/", requirePanelAccess(), requireNotBanned, rateLimit({ max: 10, windowMs: 60 * 1000 }), async (req, res) => {
+  if (req.headers["sec-fetch-mode"] === "navigate") {
+    return res.status(403).json({ error: "Access denied." });
+  }
 
   try {
     const users = await User.find().select(
       "username pfp role badges muted banned muteReason banReason muteDuration banDuration"
     );
 
-    res.json(users);
+    return res.json(users);
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to load users"
     });
   }
 });
-
-
 
 router.put("/:id/mute", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
 
