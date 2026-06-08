@@ -211,6 +211,7 @@ main {
   }
 
   .accountRedirect {
+    bottom: 5px;
     left: auto;
     display: block;
     text-align: center;
