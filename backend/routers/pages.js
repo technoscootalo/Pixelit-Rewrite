@@ -23,6 +23,12 @@ router.get("/blacklisted", (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/blacklisted.html"));
 });
 
+/*
+router.get("/game", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../src/views/game.html"));
+});
+*/
+
 const { requireLoggedIn, requireNotBanned } = require("../middleware/sessionUser");
 
 router.get("/stats", requireLoggedIn, requireNotBanned, (req, res) => {

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelit - Play Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pixelify Sans', sans-serif;
+      background: #6f0083;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+      color: white;
+    }
+
+    .background {
+      position: fixed;
+      width: 250%;
+      height: 250%;
+      top: 50%;
+      left: 50%;
+      z-index: -1;
+      background-size: 550px;
+      background-position: -100px -100px;
+      background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+      transform: translate(-50%, -50%) rotate(15deg);
+      opacity: 0.1;
+    }
+
+    .top-bar {
+      background-color: #5e046e;
+      border-bottom: 4px solid #53055c;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 24px;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+
+    .left-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.1s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      opacity: 0.9;
+    }
+
+    .right-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .token-icon {
+      height: 35px;
+      width: auto;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+      image-rendering: pixelated;
+    }
+
+    .question-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .question-image {
+      max-width: 30%;
+      max-height: 40vh;
+      border: 4px solid rgb(83, 5, 92);
+      border-radius: 5px;
+      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.6);
+      display: none;
+      object-fit: contain;
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+    
+    .question-image.enlarged {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90vh;
+      z-index: 100;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+    
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 99;
+      display: none;
+    }
+    
+    .overlay.visible {
+      display: block;
+    }
+
+    .question-card {
+      background: #5e046e;
+      box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0, 0, 0, 0.6);
+      border: 4px solid rgb(83, 5, 92);
+      border-radius: 5px;
+      padding: 30px 40px;
+      width: min(100%, 850px);
+      text-align: center;
+      max-height: 35vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .question-text {
+      font-size: 38px;
+      color: white;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1.3;
+    }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 16px;
+      padding: 0 20px 20px 20px;
+      height: 45vh;
+      min-height: 260px;
+    }
+    
+    .answers-grid.two-choices {
+      grid-template-rows: 1fr;
+      height: 25vh;
+    }
+
+    .answer-card {
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 15px 20px;
+      text-align: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn-orange {
+      background-color: #f29913;
+      box-shadow: inset 0 -0.325vw #b56f03, 3px 3px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-blue {
+      background-color: #2f7bf6;
+      box-shadow: inset 0 -0.325vw #164fa8, 3px 3px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-green {
+      background-color: #00ce7d;
+      box-shadow: inset 0 -0.325vw #008a54, 3px 3px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-red {
+      background-color: #fa4234;
+      box-shadow: inset 0 -0.325vw #b32217, 3px 3px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .answer-card:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    .btn-orange:hover:not(:disabled) { box-shadow: inset 0 -3px #b56f03, 0 4px 10px rgba(0,0,0,0.2); }
+    .btn-blue:hover:not(:disabled)   { box-shadow: inset 0 -3px #164fa8, 0 4px 10px rgba(0,0,0,0.2); }
+    .btn-green:hover:not(:disabled)  { box-shadow: inset 0 -3px #008a54, 0 4px 10px rgba(0,0,0,0.2); }
+    .btn-red:hover:not(:disabled)    { box-shadow: inset 0 -3px #b32217, 0 4px 10px rgba(0,0,0,0.2); }
+
+    .answer-card:active:not(:disabled) {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .answer-card.reveal-correct {
+      background-color: #00ce7d !important;
+      box-shadow: inset 0 -0.325vw #008a54, 3px 3px 15px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .answer-card.reveal-wrong {
+      background-color: #fa4234 !important;
+      box-shadow: inset 0 -0.325vw #b32217, 3px 3px 15px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .answer-card.dimmed {
+      opacity: 0.3;
+      transform: scale(0.98);
+      pointer-events: none;
+    }
+
+    .reading-highlight {
+      text-decoration: underline;
+      text-decoration-thickness: 4px;
+      text-underline-offset: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .question-text {
+        font-size: 24px;
+      }
+      .question-card {
+        padding: 20px;
+      }
+      .answer-card {
+        font-size: 18px;
+        padding: 10px;
+      }
+      .top-bar {
+        font-size: 20px;
+        height: 50px;
+      }
+      .token-icon {
+        height: 28px;
+      }
+      .question-area {
+        flex-direction: column;
+      }
+      .question-image {
+        max-width: 60%;
+        max-height: 20vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background"></div>
+  <div class="overlay" id="imageOverlay"></div>
+
+  <header class="top-bar">
+    <div class="left-info">
+      <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+        <svg class="icon" viewBox="0 0 24 24" id="fullscreenIcon">
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+      </button>
+      
+      <button class="icon-btn" id="audioBtn" onclick="speakQuestionText()" title="Read Aloud">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+      </button>
+      
+      <span>user</span>
+    </div>
+    <div class="right-info">
+      <span id="tokenCount">0</span>
+      <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png" class="token-icon" alt="Token">
+    </div>
+  </header>
+
+  <main class="question-area">
+    <img src="" class="question-image" id="questionImage" onclick="toggleEnlargeImage()" />
+    <div class="question-card">
+      <div class="question-text" id="questionBox">Loading Questions...</div>
+    </div>
+  </main>
+
+  <section class="answers-grid" id="answersGrid">
+  </section>
+
+  <script>
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let active = false;
+    let speechQueue = [];
+    
+    const colorClasses = ['btn-orange', 'btn-blue', 'btn-green', 'btn-red'];
+
+    function cleanText(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return doc.body.textContent || "";
+    }
+
+    async function loadQuizData() {
+      try {
+        const response = await fetch('https://media.blooket.com/raw/upload/qqn2bu6tqmfk1cohi579.json');
+        const data = await response.json();
+        
+        questions = (Array.isArray(data) ? data : data.questions).sort(() => Math.random() - 0.5);
+        
+        if (questions.length > 0) {
+          nextQuestion();
+        } else {
+          document.getElementById('questionBox').textContent = "Error: No questions found.";
+        }
+      } catch (error) {
+        console.error("Failed to load quiz data:", error);
+        document.getElementById('questionBox').textContent = "Failed to load questions.";
+      }
+    }
+
+    function nextQuestion() {
+      window.speechSynthesis.cancel();
+      clearHighlights();
+
+      if (currentQuestionIndex >= questions.length) {
+        questions.sort(() => Math.random() - 0.5);
+        currentQuestionIndex = 0;
+      }
+
+      active = true;
+      const currentQ = questions[currentQuestionIndex];
+      
+      document.getElementById('questionBox').textContent = cleanText(currentQ.question);
+
+      const imgElement = document.getElementById('questionImage');
+      let imageUrl = "";
+      if (currentQ.image) {
+        imageUrl = typeof currentQ.image === 'string' ? currentQ.image : (currentQ.image.url || "");
+      }
+
+      if (imageUrl) {
+        imgElement.src = imageUrl;
+        imgElement.style.display = 'block';
+      } else {
+        imgElement.style.display = 'none';
+        imgElement.src = "";
+      }
+
+      const grid = document.getElementById('answersGrid');
+      grid.innerHTML = '';
+
+      let normalizedChoices = [];
+      if (currentQ.choices) {
+        normalizedChoices = currentQ.choices.map(c => ({ text: c.answer, isCorrect: !!c.correct }));
+      } else if (currentQ.answers) {
+        const correctSet = new Set(currentQ.correctAnswers || []);
+        normalizedChoices = currentQ.answers.map(ans => ({ text: ans, isCorrect: correctSet.has(ans) }));
+      }
+
+      if (normalizedChoices.length === 2) {
+        grid.classList.add('two-choices');
+      } else {
+        grid.classList.remove('two-choices');
+      }
+
+      let mixedChoices = [...normalizedChoices].sort(() => Math.random() - 0.5);
+
+      mixedChoices.forEach((choice, index) => {
+        const btn = document.createElement('button');
+        btn.className = `answer-card ${colorClasses[index % colorClasses.length]}`;
+        btn.textContent = cleanText(choice.text);
+        
+        if (choice.isCorrect) {
+          btn.dataset.correct = "true";
+        }
+
+        btn.addEventListener('click', () => checkAnswer(btn));
+        grid.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selectedBtn) {
+      if (!active) return;
+      active = false;
+      
+      window.speechSynthesis.cancel();
+      clearHighlights();
+
+      const btns = document.querySelectorAll('.answer-card');
+      const isCorrect = selectedBtn.dataset.correct === "true";
+
+      btns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.correct === "true") {
+          btn.classList.add('reveal-correct');
+        } else if (btn === selectedBtn) {
+          btn.classList.add('reveal-wrong');
+        } else {
+          btn.classList.add('dimmed');
+        }
+      });
+
+      if (isCorrect) {
+        score += 10;
+        document.getElementById('tokenCount').textContent = score;
+      }
+
+      currentQuestionIndex++;
+      setTimeout(nextQuestion, 1600);
+    }
+    
+    function toggleEnlargeImage() {
+      const img = document.getElementById('questionImage');
+      const overlay = document.getElementById('imageOverlay');
+      
+      img.classList.toggle('enlarged');
+      overlay.classList.toggle('visible');
+      
+      if (img.classList.contains('enlarged')) {
+        overlay.addEventListener('click', toggleEnlargeImage, { once: true });
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error enabling fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function updateFullscreenIcon() {
+      const fsIcon = document.getElementById('fullscreenIcon');
+      if (document.fullscreenElement) {
+        fsIcon.innerHTML = `<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>`;
+      } else {
+        fsIcon.innerHTML = `<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>`;
+      }
+    }
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+    function speakQuestionText() {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        clearHighlights();
+        return;
+      }
+
+      const questionBox = document.getElementById('questionBox');
+      const answerButtons = document.querySelectorAll('.answer-card');
+      
+      speechQueue = [];
+      speechQueue.push({ text: questionBox.textContent, element: questionBox });
+      
+      answerButtons.forEach((btn) => {
+        speechQueue.push({ text: btn.textContent, element: btn });
+      });
+
+      playSpeechQueue(0);
+    }
+
+    function playSpeechQueue(index) {
+      if (index >= speechQueue.length) {
+        clearHighlights();
+        return;
+      }
+
+      const currentItem = speechQueue[index];
+      const utterance = new SpeechSynthesisUtterance(currentItem.text);
+
+      utterance.onstart = () => {
+        clearHighlights();
+        currentItem.element.classList.add('reading-highlight');
+      };
+
+      utterance.onend = () => {
+        playSpeechQueue(index + 1);
+      };
+
+      utterance.onerror = () => {
+        clearHighlights();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function clearHighlights() {
+      document.getElementById('questionBox').classList.remove('reading-highlight');
+      document.querySelectorAll('.answer-card').forEach(btn => {
+        btn.classList.remove('reading-highlight');
+      });
+    }
+
+    window.onload = loadQuizData;
+  </script>
+
+</body>
+</html>

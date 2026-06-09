@@ -50,6 +50,7 @@
       .pixelit-loader-icon {
         width: 78px;
         height: 78px;
+        border-radius: 5px;
         object-fit: contain;
       }
 
@@ -99,7 +100,7 @@
           <div class="pixelit-loader-icon-wrap" aria-hidden="true">
           <img
             class="pixelit-loader-icon"
-            src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png"
+            src="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico"
             alt="Loading"
           />
         </div>
