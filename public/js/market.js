@@ -867,11 +867,9 @@ function animateBox(box, keyframes, options) {
 async function showResult(blook, pack = null) {
   const overlay = document.createElement("div");
   const skipIntro = !!pack?.skipIntro;
-
   const adjustedChance = Number.isFinite(Number(blook?.adjustedChance))
     ? Number(blook.adjustedChance)
     : null;
-
 
   const baseCenter = "translate(-50%, -50%)";
 
@@ -965,7 +963,7 @@ async function showResult(blook, pack = null) {
     </p>
     <img src="${blook.imageUrl}" style="width:165px;height:170px;object-fit:contain;">
     <p style="font-size:30px;font-weight:bold;">${blook.chance}%</p>
-    ${(adjustedChance !== null && marketBoosterActive) ? `<p style="font-size:18px;opacity:0.95;margin-top:-6px;">Boosted chance: ${adjustedChance}%</p>` : ``}
+    ${(adjustedChance !== null) ? `<p style="font-size:18px;opacity:0.95;margin-top:-6px;">Boosted chance: ${adjustedChance}%</p>` : ``}
 
   `;
 

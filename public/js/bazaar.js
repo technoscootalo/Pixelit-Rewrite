@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sendTokensBtn?.addEventListener('click', openSendTokensModal);
 });
 
-
 function showModal(message) {
     const modal = document.createElement("div");
     modal.style.cssText = `position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 10000;`;

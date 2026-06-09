@@ -20,6 +20,34 @@ const User = require("../backend/models/User");
 const AccessKey = require("../backend/models/AccessKey");
 const Blook = require("../backend/models/Blook");
 
+const DISCORD_WEBHOOK_DAILY_WHEEL = process.env.DISCORD_WEBHOOK_DAILY_WHEEL;
+
+const COOLDOWN_MS = 1000 * 60 * 60 * 4; // a 4 hour cooldown for claiming
+
+const DAILY_REWARDS = [
+  { amount: 500, weight: 20 },
+  { amount: 550, weight: 18 },
+  { amount: 600, weight: 16 },
+  { amount: 650, weight: 14 },
+  { amount: 700, weight: 12 },
+  { amount: 750, weight: 10 },
+  { amount: 800, weight: 8 },
+  { amount: 850, weight: 6 },
+  { amount: 900, weight: 4 },
+  { amount: 950, weight: 2 },
+  { amount: 1000, weight: 1 },
+];
+
+function chooseDailyReward() {
+  const totalWeight = DAILY_REWARDS.reduce((sum, r) => sum + r.weight, 0);
+  let rand = Math.random() * totalWeight;
+  for (const reward of DAILY_REWARDS) {
+    if (rand < reward.weight) return reward.amount;
+    rand -= reward.weight;
+  }
+  return DAILY_REWARDS[DAILY_REWARDS.length - 1].amount;
+}
+
 mongoose.set("strictQuery", true);
 mongoose.set("bufferCommands", false);
 
@@ -201,6 +229,10 @@ const commands = [
     .setDescription("Generate a secure one-time access key"),
 
   new SlashCommandBuilder()
+    .setName("claim")
+    .setDescription("Claim your Pixelit tokens with one Discord command"),
+
+  new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Check bot latency"),
 
@@ -314,11 +346,25 @@ async function replyOrEdit(interaction, response) {
   } catch (err) {
     console.error("replyOrEdit failed:", err);
     try {
-      if (!interaction.replied && !interaction.deferred) {
-        // best-effort fallback
-        return await interaction.reply(typeof response === "string" ? { content: response } : response);
+      if (err && err.code === 10062) {
+        const content = typeof response === "string" ? response : (response.content || JSON.stringify(response));
+        const channel = interaction.channel;
+        if (channel && typeof channel.send === "function") {
+          return await channel.send(content);
+        }
+
+        try {
+          const user = await client.users.fetch(interaction.user.id).catch(() => null);
+          if (user) return await user.send(content);
+        } catch (dmErr) {
+          console.error("DM fallback failed:", dmErr);
+        }
+      } else {
+        if (!interaction.replied && !interaction.deferred) {
+          return await interaction.reply(typeof response === "string" ? { content: response } : response);
+        }
+        return await interaction.followUp(typeof response === "string" ? { content: response } : response);
       }
-      return await interaction.followUp(typeof response === "string" ? { content: response } : response);
     } catch (err2) {
       console.error("Fallback replyOrEdit failed:", err2);
     }
@@ -334,15 +380,24 @@ async function safeDeferReply(interaction, options = {}) {
     return true;
   } catch (err) {
     console.error("Failed to defer reply:", err);
-    if (!interaction.replied && !interaction.deferred) {
-      try {
+    try {
+      if (err && err.code === 10062) {
+        const content = "Processing...";
+        const channel = interaction.channel;
+        if (channel && typeof channel.send === "function") {
+          await channel.send(content).catch(() => null);
+        } else {
+          const user = await client.users.fetch(interaction.user.id).catch(() => null);
+          if (user) await user.send(content).catch(() => null);
+        }
+      } else if (!interaction.replied && !interaction.deferred) {
         const replyOpts = { content: "Processing..." };
         if (options.flags) replyOpts.flags = options.flags;
         else if (options.ephemeral) replyOpts.flags = MessageFlags.Ephemeral;
         await interaction.reply(replyOpts);
-      } catch (replyErr) {
-        console.error("Fallback reply failed:", replyErr);
       }
+    } catch (replyErr) {
+      console.error("Fallback reply failed:", replyErr);
     }
     return false;
   }
@@ -587,6 +642,54 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (err) {
       console.error("Access key error:", err);
       return await replyOrEdit(interaction, "Failed to generate access key.");
+    }
+  }
+  
+  if (interaction.commandName === "claim") {
+    await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
+
+    try {
+      const user = await User.findOne({ discordId: interaction.user.id });
+
+      if (!user) {
+        return await replyOrEdit(interaction, "You do not have a Pixelit account linked to this Discord. Use /login to link your account.");
+      }
+
+      const now = new Date();
+      const last = user.lastClaim ? new Date(user.lastClaim) : null;
+
+      if (last) {
+        const nextClaim = new Date(last.getTime() + COOLDOWN_MS);
+        if (nextClaim > now) {
+          const msLeft = nextClaim - now;
+          const hours = Math.floor(msLeft / (1000 * 60 * 60));
+          const minutes = Math.floor((msLeft % (1000 * 60 * 60)) / 60000);
+          const seconds = Math.floor((msLeft % 60000) / 1000);
+          return await replyOrEdit(interaction, `You have already claimed recently. Try again in ${hours}h ${minutes}m ${seconds}s.`);
+        }
+      }
+
+      const reward = chooseDailyReward();
+      user.tokens = (user.tokens || 0) + reward;
+      user.lastClaim = now;
+      await user.save();
+
+      try {
+        if (DISCORD_WEBHOOK_DAILY_WHEEL) {
+          await fetch(DISCORD_WEBHOOK_DAILY_WHEEL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: `**${user.username}** has claimed **${reward.toLocaleString()}** tokens via bot` })
+          });
+        }
+      } catch (webhookErr) {
+        console.error("Daily wheel webhook error:", webhookErr);
+      }
+
+      return await replyOrEdit(interaction, `You claimed **${reward.toLocaleString()}** tokens! You now have ${user.tokens.toLocaleString()} tokens.`);
+    } catch (err) {
+      console.error("Claim command error:", err);
+      return await replyOrEdit(interaction, "An error occurred while claiming tokens. Try again later.");
     }
   }
 });
