@@ -28,11 +28,12 @@ router.get("/", async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch packs" });
   }
+  
 });
 
 router.post(
   "/open/:packName",
-  rateLimit({ max: 10, windowMs: 8000 }),
+  rateLimit({ max: 30, windowMs: 60000 }),
   async (req, res) => {
     try {
       const packName = req.params.packName?.trim();
