@@ -25,9 +25,8 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 0;
-  padding-left: 10px;
-  text-shadow: #000 1px 0 13px;
+  margin-top: 6px;
+  padding-left: 6px;
 }
 
 .icons a {
@@ -36,17 +35,22 @@ nav {
   gap: 12px;
   height: 44px;
   padding: 0 18px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   color: white;
   text-shadow: #000 1px 0 13px;
   text-decoration: none;
   font-size: 22px;
-  transition: 0.2s linear;
+  transition: 0.16s linear;
 }
 
 .icons a:hover {
-  opacity: 0.75;
+  background-color: rgba(255, 255, 255, 0.183);
+}
+
+.icons a.active {
+  background-color: rgba(255, 255, 255, 0.165);
+  box-shadow: inset 0 -0.365vw rgba(0,0,0,0.2);
 }
 
 .buttonGap {
@@ -58,27 +62,27 @@ nav {
 }
 
 .bottomIcons {
-  display: flex;            
-  flex-direction: row;       
-  justify-content: center;   
-  gap: 24px;           
-  margin-top: auto;       
-  padding-bottom: 10px;   
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 24px;
+  margin-top: auto;
+  padding-bottom: 10px;
 }
 
 .bottomIcons a {
   align-items: center;
-    text-shadow: #000 1px 0 13px;
   justify-content: center;
-  font-size: 22px;    
-  color: rgb(255, 255, 255); 
+  font-size: 22px;
+  color: rgb(255, 255, 255);
   text-decoration: none;
+  text-shadow: #000 1px 0 13px;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .bottomIcons a.discord {
-  color: #5865F2;         
-  transform: scale(1.1);   
+  color: #5865F2;
+  transform: scale(1.05);
 }
 
 .bottomIcons a.github {
@@ -86,16 +90,17 @@ nav {
   transform: scale(1.1);
 }
 
-
 .bottomIcons a.store {
   color: #ffffff;           
   transform: scale(1.1);
 }
 
 .logo {
-  display: flex;
-  justify-content: end;
-  flex: 1;
+  margin: 0 auto 0.521vw;
+  font-size: 54px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: #000 1px 0 13px;
 }
 
 #panelLink {
@@ -139,15 +144,16 @@ body.panel-allowed #panelLink {
     flex: 1;
     text-decoration: none;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    opacity: 0.75;
-    transition: 0.2s ease, transform 0.2s ease;
-    padding: 4px 2px;
+    opacity: 0.86;
+    transition: transform 160ms ease, opacity 160ms ease, color 160ms ease;
+    padding: 6px 8px;
+    border-radius: 8px;
   }
 
   .mobile_nav a span {
@@ -156,12 +162,15 @@ body.panel-allowed #panelLink {
 
   .mobile_nav a:hover {
     opacity: 1;
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    color: #ffd43b;
   }
 
   .mobile_nav a.active {
     opacity: 1;
     color: #ffd43b;
+    background: rgba(255,212,59,0.06);
+    box-shadow: 0 6px 18px rgba(86,3,87,0.25);
   }
 }
 

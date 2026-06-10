@@ -546,6 +546,7 @@ async function fetchMarketActiveBoosters() {
   }
 }
 
+/* 
 function createBoosterCard(booster) {
   const div = document.createElement("div");
   div.className = "boosterCard";
@@ -574,9 +575,9 @@ function createBoosterCard(booster) {
   tokenIcon.src = "https://izumiihd.github.io/pixelitcdn/assets/img/icons/token.png";
   tokenIcon.alt = "Token";
 
-  const price = document.createElement("div");
-  price.className = "boosterCardPrice";
-  price.textContent = `${booster?.price ?? 0}`;
+  const price = document.createElement("div"); 
+  price.className = "boosterCardPrice"; 
+  price.textContent = (booster?.price ?? 0).toLocaleString();
 
   priceRow.appendChild(tokenIcon);
   priceRow.appendChild(price);
@@ -632,6 +633,7 @@ function createBoosterCard(booster) {
 
   return div;
 }
+*/
 
 function displayPacks(packs) {
   const container = document.getElementById("packContainer");
