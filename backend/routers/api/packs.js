@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Pack = require("../../models/Pack");
+const Blook = require("../../models/Blook");
 const User = require("../../models/User");
 const { rateLimit } = require("../../middleware/rateLimit");
 const DISCORD_WEBHOOK_PACK_OPEN = process.env.DISCORD_WEBHOOK_PACK_OPEN;
@@ -43,6 +44,17 @@ router.post(
       if (!pack) {
         pack = await Pack.findOne({ name: packName }).populate("blooks").lean();
         if (pack) global.packCache[packName] = pack;
+      } else {
+        try {
+          const ids = (pack.blooks || []).map(b => b._id || b);
+          if (ids.length) {
+            const fresh = await Blook.find({ _id: { $in: ids } }).lean();
+            pack.blooks = ids.map(id => fresh.find(f => f._id.toString() === id.toString())).filter(Boolean);
+            global.packCache[packName] = pack;
+          }
+        } catch (e) {
+          console.error('Failed to refresh cached blooks for pack:', e);
+        }
       }
 
       if (!pack || !pack.visible || !pack.blooks?.length) {
