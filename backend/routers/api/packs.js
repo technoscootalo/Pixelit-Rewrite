@@ -7,8 +7,22 @@ const DISCORD_WEBHOOK_PACK_OPEN = process.env.DISCORD_WEBHOOK_PACK_OPEN;
 
 router.get("/", async (req, res) => {
   try {
-    const packs = await Pack.find({ visible: true }).populate("blooks");
-    return res.json(packs);
+    const packs = await Pack.find({ visible: true }).populate("blooks").lean();
+    const transformed = packs.map((pack) => {
+      const blooks = Array.isArray(pack.blooks) ? pack.blooks : [];
+      const total = blooks.reduce((s, b) => s + (Number(b.chance) || 0), 0) || 1;
+      const blooksWithPercent = blooks.map((b) => ({
+        ...b,
+        chancePercent: Number(((Number(b.chance) || 0) / total * 100).toFixed(2))
+      }));
+
+      return {
+        ...pack,
+        blooks: blooksWithPercent
+      };
+    });
+
+    return res.json(transformed);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch packs" });
