@@ -2,11 +2,6 @@ const form = document.getElementById("loginForm");
 const errorEl = document.getElementById("error");
 const redirectEl = document.getElementById("redirect");
 const submitBtn = document.getElementById("submitBtn");
-const goHome = document.getElementById("goHome");
-
-goHome.addEventListener("click", () => {
-    window.location.href = "/";
-});
 
 (async function autoLoginIfAlreadyLoggedIn() {
     try {
@@ -19,7 +14,6 @@ goHome.addEventListener("click", () => {
     } catch {
     }
 })();
-
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();

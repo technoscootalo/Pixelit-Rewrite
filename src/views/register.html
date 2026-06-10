@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
-
     <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
 
     <link rel="stylesheet" href="/styles/register.css">
@@ -17,18 +17,21 @@
 
 <body>
 
+<nav>
+    <div class="logo"><h1>Pixelit</h1></div>
+    <div class="loginRedirect">
+        <a href="/login" title="Login">Login</a>
+    </div>
+</nav>
+
 <img class="background" alt="background"/>
 
 <main>
-
     <div class="register-wrapper">
 
-        <img
-            src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Space/TimTheAlien.gif"
-            class="animated-blook"
-            id="goLogin"
-            style="cursor:pointer;"
-            alt="blook"
+        <img src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Space/TimTheAlien.gif" 
+            class="animated-blook" 
+            alt="blook" 
         />
 
         <div class="register-form-container">
@@ -37,21 +40,16 @@
 
             <form id="registerForm">
 
-                <input type="text" id="username" placeholder="Username" required>
-                <br>
+                <input type="text" id="username" placeholder="Username" required> <br>
 
-                <input type="password" id="password" placeholder="Password" required>
-                <br>
+                <input type="password" id="password" placeholder="Password" required> <br>
 
-                <input type="text" id="accessKey" placeholder="Access Key" required>
-                <br>
+                <input type="text" id="accessKey" placeholder="Access Key" required> <br>
 
                 <p class="register-error" id="error"></p>
 
                 <div style="text-align:center;">
-                    <button type="submit" id="submitBtn">
-                        Register
-                    </button>
+                    <button type="submit" id="submitBtn">Register</button>
                 </div>
 
             </form>
@@ -62,15 +60,14 @@
                 By registering, you acknowledge and agree to our 
                 <a href="/terms" class="tos-link">Terms of Service.</a>
             </span>
-            <br />
-            <br />
+
         </div>
 
     </div>
 
-    <span class="accessKeyDiscord" onclick="window.open('https://discord.gg/jRJVFYyJJj', '_blank')">Need an Access key?</span>    
+    <span class="accessKeyDiscord" onclick="window.open('https://discord.gg/jRJVFYyJJj', '_blank')">Need an Access key?</span>
     <span class="terms">Running version 3.0.0</span>
-
+    
 </main>
 
 <script src="/js/loadingModal.js"></script>

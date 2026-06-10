@@ -1,12 +1,6 @@
 const form = document.getElementById("registerForm");
 const errorEl = document.getElementById("error");
 const submitBtn = document.getElementById("submitBtn");
-const goLogin = document.getElementById("goLogin");
-
-goLogin.addEventListener("click", () => {
-    window.location.href = "/login";
-});
-
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
