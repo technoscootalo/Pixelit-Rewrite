@@ -51,10 +51,6 @@ const marketBoostersBuyRoute = require('./backend/routers/api/marketBoosterBuy')
 const boostersActivateRoute = require('./backend/routers/api/boostersActivate');
 const boostersActiveMultiplierRoute = require('./backend/routers/api/getActiveBoosters');
 
-
-
-
-
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
