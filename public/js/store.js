@@ -42,5 +42,21 @@ backButton.onmouseup = () => {
 };
 
 async function purchasePixelitPlusStripe() {
-  window.location.href = 'https://buy.stripe.com/test_bJe5kC1De92w7Qnd9ugMw02';
+  try {
+    const resp = await fetch('/api/stripe/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: 'price_1TfB4PAE7YDfnyYkNHE8Zs93' })
+    });
+
+    const data = await resp.json();
+    if (data && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+    alert('Failed to create Stripe session');
+  } catch (err) {
+    console.error('checkout error', err);
+    alert('Checkout error');
+  }
 }

@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const http = require("http");
+const bodyParser = require('body-parser');
 const { Server: SocketIOServer } = require("socket.io");
 const path = require("path");
 const session = require("express-session");
@@ -10,6 +11,8 @@ const connectDB = require("./backend/utils/db");
 const User = require("./backend/models/User");
 const Message = require("./backend/models/Messages");
 const Emoji = require("./backend/models/Emojis.js");
+
+const stripeHandlers = require("./backend/routers/api/stripe");
 
 const pages = require("./backend/routers/pages");
 const registerRoute = require("./backend/routers/auth/register");
@@ -70,6 +73,8 @@ const sessionMiddleware = session({
     }
 });
 
+app.post('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }), stripeHandlers.webhookHandler);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
@@ -118,6 +123,8 @@ app.use("/api/inventory", inventoryRoute);
 app.use("/api/users", listBlookRouter);
 app.use("/api/bazaar", bazaarRouter);
 app.use("/api/sendTokens", sendTokensRouter);
+
+app.use('/api/stripe', stripeHandlers.router);
 
 
 app.use("/", pages);
