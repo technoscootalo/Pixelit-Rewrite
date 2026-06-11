@@ -67,9 +67,12 @@ router.get("/bazaar", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/bazaar.html"));
 });
 
+/*
 router.get("/store", requireLoggedIn, requireNotBanned, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/store.html"));
 });
+*/
+
 
 router.get("/credits", requireLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, "../../src/views/credits.html"));
