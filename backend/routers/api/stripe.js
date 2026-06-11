@@ -15,7 +15,28 @@ router.post('/create-checkout-session', async (req, res) => {
     const priceId = req.body.priceId || 'price_1TfB4PAE7YDfnyYkNHE8Zs93';
     const userId = req.session?.userId || req.body.userId || '';
 
-    const successUrl = `${process.env.SITE_URL || 'https://izumiihd.xyz'}/store?session_id={CHECKOUT_SESSION_ID}`;
+    const PLUS_PRICE = 'price_1TfB4PAE7YDfnyYkNHE8Zs93';
+    const PLUS_BADGE_ID = '6a2464132913ade4a5b95544';
+
+    if (priceId === PLUS_PRICE && userId) {
+      let user = null;
+      try {
+        user = await User.findOne({ id: userId });
+        if (!user) {
+          try { user = await User.findOne({ _id: userId }); } catch (e) {}
+        }
+      } catch (e) {}
+
+      if (user) {
+        const hasPlusRole = user.role === 'Plus';
+        const hasPlusBadge = Array.isArray(user.badges) && user.badges.some(b => String(b.badgeId) === String(PLUS_BADGE_ID));
+        if (hasPlusRole || hasPlusBadge) {
+          return res.status(400).json({ error: 'User already owns Plus and cannot purchase it again.' });
+        }
+      }
+    }
+
+    const successUrl = `${process.env.SITE_URL || 'https://izumiihd.xyz'}/stats`;
     const cancelUrl = `${process.env.SITE_URL || 'https://izumiihd.xyz'}/store`;
 
     const session = await stripe.checkout.sessions.create({
