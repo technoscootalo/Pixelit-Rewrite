@@ -14,6 +14,12 @@ const Emoji = require("./backend/models/Emojis.js");
 
 const stripeHandlers = require("./backend/routers/api/stripe");
 
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn('Warning: STRIPE_SECRET_KEY is not set. Stripe checkout endpoints will return 500.');
+} else {
+    console.log('Stripe secret key detected in environment.');
+}
+
 const pages = require("./backend/routers/pages");
 const registerRoute = require("./backend/routers/auth/register");
 const loginRoute = require("./backend/routers/auth/login");

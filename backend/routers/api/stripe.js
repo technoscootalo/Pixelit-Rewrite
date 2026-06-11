@@ -34,6 +34,15 @@ router.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+router.get('/config', (req, res) => {
+  try {
+    return res.json({ configured: !!stripe });
+  } catch (err) {
+    console.error('stripe config check error', err);
+    return res.status(500).json({ error: 'failed to check stripe config' });
+  }
+});
+
 async function webhookHandler(req, res) {
   if (!stripe) return res.status(500).send('Stripe not configured');
 
