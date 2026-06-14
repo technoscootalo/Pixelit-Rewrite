@@ -16,6 +16,7 @@ const RARITY_COLORS = {
 };
 
 const RARITY_VALUES = {
+  common: 0,
   uncommon: 5,
   rare: 20,
   epic: 75,
@@ -690,6 +691,7 @@ function listBlook() {
   const blookImage = selectedBlook.imageUrl; 
   
   const RARITY_VALUES = {
+    common: 0,
     uncommon: 5,
     rare: 20,
     epic: 75,

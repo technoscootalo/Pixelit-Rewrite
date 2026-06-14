@@ -8,6 +8,8 @@
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
+      @font-face { font-family: 'DaydreamWeb'; src: url('styles/Daydream DEMO.otf') format('opentype'); font-display: swap;}
+
       #${MODAL_ID} {
         position: fixed;
         inset: 0;
@@ -31,7 +33,8 @@
 
       .pixelit-loader-title {
         font-weight: 800;
-        font-size: 48px;
+        font-size: 38px;
+        font-family: 'DaydreamWeb';
         margin: 0 0 10px;
         text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
       }
@@ -78,6 +81,7 @@
         font-size: 26px;
         opacity: 0.9;
       }
+
     `;
 
     document.head.appendChild(style);
@@ -104,7 +108,7 @@
             alt="Loading"
           />
         </div>
-        <div id="pixelit-loader-subtext" class="pixelit-loader-subtext">Loading</div>
+        <div id="pixelit-loader-subtext" class="pixelit-loader-subtext">Please wait</div>
       </div>
     `;
 
@@ -150,9 +154,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function displayWarning() {
     setTimeout(() => {
-        console.log(`%cWARNING!`, `font-size: 35px; color: red;`);
-        console.log(`%cAttention! This console is a tool for developers. If you've been instructed to paste code here to unlock special features or gain unauthorized access, it’s a scam! Be cautious, as it could compromize your account.`, `font-size: 20px; color: red;`);
-        console.log("Running Pixelit version [3.0.0]");
+      console.log(`%cWARNING!`, `font-size: 35px; color: red;`);
+      console.log(`%cAttention! This console is a tool for developers. If you've been instructed to paste code here to unlock special features or gain unauthorized access, it’s a scam! Be cautious, as it could compromize your account.`, `font-size: 20px; color: red;`);
+      console.log("Running Pixelit version [3.0.1]");
     }, 1);
 }
 

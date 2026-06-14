@@ -7,8 +7,8 @@
 
 body {
   font-family: 'Pixelify Sans', sans-serif;
-  color: white;
   background: #6f0083;
+  color: white;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -195,12 +195,13 @@ h1 {
 }
 
 .accessKeyDiscord {
-  position: fixed;
+  position: absolute;
   bottom: 2rem;
   left: 2rem;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
+  color: white;
   text-decoration: underline;
 }
 

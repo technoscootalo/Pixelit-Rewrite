@@ -5,6 +5,7 @@ const User = require("../../models/User");
 const Blook = require("../../models/Blook");
 
 const RARITY_SELL_VALUES = {
+  common: 0,
   uncommon: 5,
   rare: 20,
   epic: 75,
@@ -76,4 +77,3 @@ router.post("/", async (req, res) => {
 });
 
 module.exports = router;
-
