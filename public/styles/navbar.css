@@ -96,7 +96,6 @@ nav {
   color: #ffffff;
   text-shadow: #000 1px 0 13px;
   font-family: 'DaydreamWeb';
-
 }
 
 #panelLink {
@@ -340,9 +339,9 @@ body.panel-allowed #panelLink {
 }
 
 .pixelitLogo {
-  font-family: 'DaydreamWeb';
-  font-size: 25px;
-  font-weight: 900;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 36px;
+  font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 

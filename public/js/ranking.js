@@ -48,13 +48,14 @@ function renderLeaderboard(users) {
     : `<i class="fa-solid fa-coins"></i> Tokens`;
 
   title.style.cssText = `
-    font-size: 28px;
+    font-size: 18px;
     font-weight: bold;
     color: white;
     font-family: Pixelify Sans;
     text-shadow: 0px 3px 8px rgba(0,0,0,0.6);
     display: flex;
     align-items: center;
+    font-family: 'DaydreamWeb';
     gap: 8px;
   `;
 

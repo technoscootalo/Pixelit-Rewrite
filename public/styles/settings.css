@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
 
 * {
   box-sizing: border-box;
@@ -33,16 +34,18 @@ body {
 .page-title {
   color: white;
   text-shadow: 0px 0px 10px #000;
-  font-size: 50px;
+  font-size: 40px;
   text-align: center;
+  font-family: 'DaydreamWeb';
   margin-bottom: 20px;
 }
 
 .edit-info-title,
 .profile-title {
   color: white;
-  font-size: 32px;
+  font-size: 22px;
   text-align: left;
+  font-family: 'DaydreamWeb';
 }
 
 .content-container {

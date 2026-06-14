@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
 
 :root {
   color-scheme: dark;
@@ -70,6 +71,11 @@ body {
     right: min(420px, 90vw);
     width: calc(100vw - 220px - min(420px, 90vw));
   }
+}
+
+.chat-header-text {
+  font-family: 'DaydreamWeb';
+  font-size: 24px;
 }
 
 .chat-header {

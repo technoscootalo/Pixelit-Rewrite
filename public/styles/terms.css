@@ -1,3 +1,5 @@
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
+
 body {
   margin: 0;
   padding: 0;
@@ -56,11 +58,12 @@ body {
 }
 
 .title {
-  font-size: 58px;
+  font-size: 38px;
   font-weight: 700;
   margin-bottom: 8px;
   color: white;
   text-shadow: #000 1px 0 13px;
+  font-family: 'DaydreamWeb';
 }
 
 .lastUpdated {
@@ -75,11 +78,13 @@ body {
 }
 
 .sectionTitle {
-  font-size: 34px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 12px;
   color: #ffd5ff;
   text-shadow: #000 1px 0 13px;
+  font-family: 'DaydreamWeb';
+
 }
 
 .sectionText {

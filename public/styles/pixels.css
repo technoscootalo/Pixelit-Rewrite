@@ -233,8 +233,9 @@ main {
 }
 
 .blookName {
-  font-size: 38px;
+  font-size: 32px;
   font-weight: bold;
+  font-family: 'DaydreamWeb';
   color: #ffffff;
 }
 

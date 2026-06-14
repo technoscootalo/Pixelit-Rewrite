@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
 
 html,
 body {
@@ -37,5 +38,6 @@ main {
 main h1 {
   color: white;
   margin: 0 0 14px 0;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: 32px;
+  font-family: 'DaydreamWeb';
 }

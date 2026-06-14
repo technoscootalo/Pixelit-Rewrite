@@ -960,7 +960,7 @@ async function showResult(blook, pack = null) {
     `;
 
   box.innerHTML = `
-    <h1 style="font-size:34px;font-weight:bold;">${blook.blookName}</h1>
+    <h1 style="font-size:24px;font-weight:bold;font-family: 'DaydreamWeb';">${blook.blookName}</h1>
     <p style="color:${color};font-size:26px;font-weight:bold;">
       ${capitalize(rarity)}
     </p>
