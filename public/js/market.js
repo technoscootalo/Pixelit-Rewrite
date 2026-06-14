@@ -677,7 +677,7 @@ function createPack(pack) {
     "Space Pack": "radial-gradient(circle, #808080, #00008B)",
     "Technology Pack": "radial-gradient(circle, #346136, #2faa34)",
     "School Pack": "radial-gradient(circle, #836048, #66423a)",
-    "Emoji Pack": "radial-gradient(circle, #fff176 0%, #fbc02d 60%, #f57f17 100%);",
+    "Emoji Pack": "radial-gradient(circle, #fff176 0%, #fbc02d 60%, #f57f17 100%)",
     "Miscellaneous": "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
   };
 
