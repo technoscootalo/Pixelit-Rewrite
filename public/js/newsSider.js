@@ -89,6 +89,7 @@
                   margin:0;
                   font-size:34px;
                   font-weight:bold;
+                  font-family: 'Pixelify Sans', sans-serif;
                 ">
                   ${title}
                 </h1>
