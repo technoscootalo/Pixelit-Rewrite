@@ -1,10 +1,4 @@
-.logo {
-  margin: 0 auto 0.521vw;
-  font-size: 54px;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: #000 1px 0 13px;
-}
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
 
 nav {
   position: fixed;
@@ -97,10 +91,12 @@ nav {
 
 .logo {
   margin: 0 auto 0.521vw;
-  font-size: 54px;
+  font-size: 28px;
   font-weight: bold;
   color: #ffffff;
   text-shadow: #000 1px 0 13px;
+  font-family: 'DaydreamWeb';
+
 }
 
 #panelLink {

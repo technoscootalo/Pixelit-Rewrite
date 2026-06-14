@@ -1,12 +1,18 @@
-body {
-    margin: 0;
-    padding: 0;
-    background: #6f0083;
-    color: white;
-    font-family: Pixelify Sans;
-    overflow: hidden;
-}    
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+@font-face { font-family: 'DaydreamWeb'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #6f0083;
+  color: white;
+  font-family: Pixelify Sans;
+  overflow: hidden;
+}    
 
 .background {
 	position: fixed;
@@ -140,8 +146,9 @@ h1 {
 }
 
 .login-form-container h1 {
-  font-size: 58px;
+  font-size: 44px;
   margin-bottom: 20px;
+  font-family: 'DaydreamWeb';
 }
 
 .login-form-container input {
@@ -225,7 +232,6 @@ h1 {
   .login-wrapper {
     flex-direction: column;
     gap: 40px;
-    padding: 20px;
     align-items: center;
   }
 

@@ -385,7 +385,7 @@ async function openPackTooltipsModal() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   fetchPacks();
-  fetchBoosters();
+  //fetchBoosters();
   fetchMarketActiveBoosters();
 
   const btn = document.getElementById("packToolTips");
@@ -445,7 +445,7 @@ async function fetchPacks() {
   }
 }
 
-async function fetchBoosters() {
+/* async function fetchBoosters() {
   try {
     const res = await fetch("/api/boosters");
     if (!res.ok) throw new Error("Failed to load boosters");
@@ -465,6 +465,7 @@ async function fetchBoosters() {
     console.error(err);
   }
 }
+*/
 
 function upsertMarketActiveBoostersSection(boosters) {
 
@@ -1093,6 +1094,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!instantOpenElement) return;
 
+
   let instantOpen = localStorage.getItem("instantOpen") === "On";
 
   function updateText() {
@@ -1113,3 +1115,258 @@ document.addEventListener("DOMContentLoaded", () => {
     updateText();
   });
 });
+
+let __autoOpenInFlight = false;
+
+function openAutoOpenerModal() {
+  const existing = document.getElementById("auto-opener-modal");
+  existing?.remove();
+
+  const STORAGE = {
+    running: "autoOpenerRunning",
+    pack: "autoOpenerPack",
+    interval: "autoOpenerIntervalMs",
+    max: "autoOpenerMaxOpens",
+  };
+
+  const savedRunning = localStorage.getItem(STORAGE.running) === "On";
+  const savedPack = localStorage.getItem(STORAGE.pack) || "";
+  const savedInterval = Number(localStorage.getItem(STORAGE.interval) || "1200");
+  const savedMax = Number(localStorage.getItem(STORAGE.max) || "10");
+
+  const overlay = document.createElement("div");
+  overlay.id = "auto-opener-modal";
+  overlay.className = "sell-blook-modal-overlay";
+
+  const box = document.createElement("div");
+  box.className = "sell-blook-modal-box";
+
+  box.innerHTML = `
+    <h3 class="sell-blook-modal-title">Auto Opener</h3>
+
+    <div class="sell-blook-modal-subtitle" id="autoOpenStatus">Off</div>
+
+    <div class="sell-blook-modal-input-row" style="flex-direction: column; align-items: stretch;">
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top: 10px;">
+        <label class="sell-blook-modal-label">Pack</label>
+        <select id="autoOpenPackSelect" class="sell-blook-modal-amount" style="width: 220px; height: 42px;"></select>
+      </div>
+
+      <div style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top: 12px;">
+        <label class="sell-blook-modal-label">Interval (ms)</label>
+        <input id="autoOpenIntervalInput" class="sell-blook-modal-amount" type="number" min="200" step="100" value="${Number.isFinite(savedInterval) ? savedInterval : 1200}" />
+      </div>
+
+      <div style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top: 12px;">
+        <label class="sell-blook-modal-label">Max opens</label>
+        <input id="autoOpenMaxOpensInput" class="sell-blook-modal-amount" type="number" min="1" step="1" value="${Number.isFinite(savedMax) ? savedMax : 10}" />
+      </div>
+    </div>
+
+    <div class="sell-blook-modal-actions">
+      <button type="button" id="autoOpenToggle" class="sell-blook-modal-btn sell-blook-modal-btn-primary">Start</button>
+      <button type="button" id="autoOpenCancel" class="sell-blook-modal-btn sell-blook-modal-btn-secondary">Cancel</button>
+    </div>
+  `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  const toggleEl = overlay.querySelector("#autoOpenToggle");
+  const packSelectEl = overlay.querySelector("#autoOpenPackSelect");
+
+  if (toggleEl) {
+    toggleEl.textContent = savedRunning ? "Stop" : "Start";
+  }
+
+  const intervalInputEl = overlay.querySelector("#autoOpenIntervalInput");
+  const maxOpensInputEl = overlay.querySelector("#autoOpenMaxOpensInput");
+  const statusEl = overlay.querySelector("#autoOpenStatus");
+  const cancelBtn = overlay.querySelector("#autoOpenCancel");
+
+  const close = () => overlay.remove();
+
+  cancelBtn.onclick = close;
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) close();
+  });
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape") close();
+    },
+    { once: true }
+  );
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
+  async function getPackCostByName(name) {
+    if (!window.__autoOpenPacksCache) {
+      const res = await fetch("/api/packs");
+      if (!res.ok) return null;
+      window.__autoOpenPacksCache = await res.json();
+    }
+    const packs = window.__autoOpenPacksCache || [];
+    return packs.find((p) => p?.name === name)?.cost ?? null;
+  }
+
+  async function refreshPackOptions() {
+    const packs = window.__autoOpenPacksCache || (await (await fetch("/api/packs")).json());
+    window.__autoOpenPacksCache = packs;
+
+    packSelectEl.innerHTML = (packs || [])
+      .map((p) => `<option value="${p.name}">${p.name}</option>`)
+      .join("");
+
+    if (savedPack && (packs || []).some((p) => p?.name === savedPack)) {
+      packSelectEl.value = savedPack;
+    } else if ((packs || [])[0]?.name) {
+      packSelectEl.value = packs[0].name;
+    }
+  }
+
+  async function startAutoOpener() {
+    if (__autoOpenInFlight) return;
+    if (!packSelectEl.value) {
+      setStatus("Select a pack");
+      return;
+    }
+
+    const packName = packSelectEl.value;
+    const intervalMs = Math.max(200, Number(intervalInputEl.value || "1200"));
+    const maxOpens = Math.max(1, Number(maxOpensInputEl.value || "10"));
+
+    localStorage.setItem(STORAGE.pack, packName);
+    localStorage.setItem(STORAGE.interval, String(intervalMs));
+    localStorage.setItem(STORAGE.max, String(maxOpens));
+
+    window.__autoOpenRunning = true;
+    localStorage.setItem(STORAGE.running, "On");
+
+    toggleEl.textContent = "Stop";
+    setStatus(`Running • 0/${maxOpens}`);
+    __autoOpenInFlight = true;
+
+    try {
+      let openedCount = 0;
+      while (window.__autoOpenRunning && openedCount < maxOpens) {
+        const packCost = await getPackCostByName(packName);
+        if (packCost === null) {
+          setStatus("Error: can't load pack cost");
+          break;
+        }
+
+        if (userTokens < packCost) {
+          setStatus("Stopped (not enough tokens)");
+          break;
+        }
+
+        let response;
+        try {
+          response = await fetch(`/api/packs/open/${encodeURIComponent(packName)}`, {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch (err) {
+          console.error("Network error:", err);
+          await new Promise((r) => setTimeout(r, 2000));
+          continue;
+        }
+
+        if (response.status === 429) {
+          setStatus("Rate limited • cooldown...");
+          await new Promise((r) => setTimeout(r, 5000));
+          continue;
+        }
+
+        if (response.status === 401) {
+          setStatus("Not logged in • retry...");
+          await new Promise((r) => setTimeout(r, 2000));
+          continue;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          console.log("Server error:", data?.error || "Unknown error");
+          await new Promise((r) => setTimeout(r, 2000));
+          continue;
+        }
+
+        userTokens = data.tokens;
+        updateTokens();
+
+        openedCount += 1;
+        setStatus(`Running • ${openedCount}/${maxOpens}`);
+
+        const packBg = (window.__autoOpenPacksCache || []).find((p) => p?.name === packName)?.packBackground || "";
+        showResult(data.blook, {
+          packBackground: packBg,
+          phase: "reveal",
+          revealDelayMs: 0,
+          skipIntro: true,
+        });
+
+        await new Promise((r) => setTimeout(r, intervalMs));
+      }
+    } catch (err) {
+      console.error("Auto opener unexpected error:", err);
+      setStatus("Auto opener error");
+    } finally {
+      window.__autoOpenRunning = false;
+      localStorage.setItem(STORAGE.running, "Off");
+      toggleEl.textContent = "Start";
+      __autoOpenInFlight = false;
+    }
+  }
+
+  function stopAutoOpener() {
+    window.__autoOpenRunning = false;
+    localStorage.setItem(STORAGE.running, "Off");
+    toggleEl.textContent = "Start";
+    setStatus("Stopped");
+  }
+
+  toggleEl.onclick = async () => {
+    if (window.__autoOpenRunning) {
+      stopAutoOpener();
+      return;
+    }
+
+    if (__autoOpenInFlight) return;
+
+    close();
+    await refreshPackOptions();
+    await startAutoOpener();
+  };
+
+  intervalInputEl.addEventListener("change", () => {
+    localStorage.setItem(STORAGE.interval, intervalInputEl.value);
+  });
+
+  maxOpensInputEl.addEventListener("change", () => {
+    localStorage.setItem(STORAGE.max, maxOpensInputEl.value);
+  });
+
+  packSelectEl.addEventListener("change", () => {
+    localStorage.setItem(STORAGE.pack, packSelectEl.value);
+  });
+
+  refreshPackOptions()
+    .then(() => {
+      setStatus(savedRunning ? "Running..." : "Off");
+    })
+    .catch(() => setStatus("Error loading packs"));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById("autoOpenMenuBtn");
+  if (!menuBtn) return;
+
+  menuBtn.addEventListener("click", () => {
+    openAutoOpenerModal();
+  });
+});
+
+

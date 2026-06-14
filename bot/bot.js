@@ -216,9 +216,179 @@ connectDB().then(connection => {
   });
 });
 
+// --- Moderation helpers and scheduled punishment checks ---
+function getActionColor(action) {
+  const colors = {
+    Ban: 0x008000,
+    Unban: 0x008000,
+    Mute: 0x008000,
+    Unmute: 0x008000,
+    Kick: 0x008000,
+    Warn: 0x008000
+  };
+  return colors[action] || 0x2B2D31;
+}
+
+function formatDuration(minutes) {
+  if (!minutes || isNaN(minutes)) return 'N/A';
+  if (minutes < 60) return `${minutes} minute(s)`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)} hour(s)`;
+  return `${Math.floor(minutes / 1440)} day(s)`;
+}
+
+function createModEmbed(action, target, reason, duration, moderator, caseId) {
+  const embed = new EmbedBuilder()
+    .setColor(getActionColor(action))
+    .setAuthor({ name: `${action} | ${target.user ? target.user.tag : target.tag}`, iconURL: target.user ? target.user.displayAvatarURL() : target.displayAvatarURL() })
+    .addFields(
+      { name: 'User', value: `${target} (${target.user ? target.user.tag : target.tag})`, inline: true },
+      { name: 'Moderator', value: `${moderator}`, inline: true },
+      { name: 'Reason', value: reason || 'No reason provided' },
+      { name: 'Case ID', value: `#${caseId}`, inline: true }
+    )
+    .setFooter({ text: `ID: ${target.id}` })
+    .setTimestamp();
+
+  if (duration) {
+    embed.addFields({ name: 'Duration', value: formatDuration(duration), inline: true });
+  }
+
+  return embed;
+}
+
+async function logModAction(action, target, moderator, reason, duration = null, caseId) {
+  try {
+    const db = mongoose.connection.db;
+    const casesCollection = db.collection('DiscordCases');
+
+    await casesCollection.insertOne({
+      caseId,
+      action,
+      targetId: target.id,
+      targetTag: target.user ? target.user.tag : target.tag,
+      moderatorId: moderator.id,
+      moderatorTag: moderator.tag || moderator.user?.tag || String(moderator),
+      reason: reason || 'No reason provided',
+      duration,
+      timestamp: new Date(),
+      active: true
+    });
+  } catch (err) {
+    console.error('Failed to log mod action:', err);
+  }
+}
+
+async function sendDM(user, embed) {
+  try {
+    await user.send({ embeds: [embed] });
+    return true;
+  } catch (error) {
+    console.log(`Could not send DM to ${user.tag || user.id}: ${error.message}`);
+    return false;
+  }
+}
+
+function canModerate(moderator, target) {
+  if (!moderator || !target) return { canModerate: false, reason: 'Invalid members.' };
+  if (moderator.id === target.id) return { canModerate: false, reason: 'You cannot moderate yourself.' };
+
+  if (target.user?.bot && target.id === client.user.id) return { canModerate: false, reason: 'I cannot moderate myself.' };
+
+  const allowedRoleIds = ['1276630724417683487', '1276630172472180746', '1276630034441961505', '1276629987046461580'];
+
+  const targetHasPermissionRole = target.roles?.cache ? target.roles.cache.some(role => allowedRoleIds.includes(role.id)) : false;
+
+  if (targetHasPermissionRole) {
+    if (moderator.roles.highest.position <= target.roles.highest.position) {
+      return { canModerate: false, reason: 'You cannot moderate a staff member with an equal or higher role.' };
+    }
+  }
+
+  if (moderator.roles.highest.position <= target.roles.highest.position) {
+    return { canModerate: false, reason: 'You cannot moderate someone with an equal or higher role.' };
+  }
+
+  const moderatorHasPermissionRole = moderator.roles?.cache ? moderator.roles.cache.some(role => allowedRoleIds.includes(role.id)) : false;
+  if (!moderatorHasPermissionRole) {
+    return { canModerate: false, reason: 'You do not have the required staff role to moderate members.' };
+  }
+
+  return { canModerate: true };
+}
+
+async function checkExpiredPunishments() {
+  try {
+    if (!mongoose.connection || !mongoose.connection.db) {
+      // Mongo connection not ready yet
+      return;
+    }
+
+    const db = mongoose.connection.db;
+    const casesCollection = db.collection('DiscordCases');
+    const mutesCollection = db.collection('DiscordMutes');
+
+
+    const now = new Date();
+    const guild = client.guilds.cache.get(process.env.GUILD_ID) || await client.guilds.fetch(process.env.GUILD_ID).catch(() => null);
+    if (!guild) return;
+
+    const expiredBans = await casesCollection.find({ action: 'Ban', active: true, duration: { $gt: 0 }, timestamp: { $exists: true } }).toArray();
+
+    for (const ban of expiredBans) {
+      const expiryTime = new Date(ban.timestamp.getTime() + (ban.duration * 60000));
+      if (now >= expiryTime) {
+        try {
+          await guild.members.unban(ban.targetId, 'Automatic unban - ban duration expired');
+          await casesCollection.updateOne({ caseId: ban.caseId }, { $set: { active: false } });
+          console.log(`Automatically unbanned ${ban.targetTag} after ban duration expired`);
+        } catch (error) {
+          console.error(`Failed to auto-unban ${ban.targetTag}:`, error);
+        }
+      }
+    }
+
+    const expiredMutes = await mutesCollection.find({ expiresAt: { $lte: now } }).toArray();
+
+    for (const mute of expiredMutes) {
+      try {
+        const member = await guild.members.fetch(mute.userId).catch(() => null);
+        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+
+        if (muteRole && member && member.roles.cache.has(muteRole.id)) {
+          await member.roles.remove(muteRole);
+          await mutesCollection.deleteOne({ _id: mute._id });
+          console.log(`Automatically unmuted ${member.user.tag} after mute duration expired`);
+        }
+      } catch (error) {
+        console.error(`Failed to auto-unmute user ${mute.userId}:`, error);
+        await mutesCollection.deleteOne({ _id: mute._id });
+      }
+    }
+  } catch (error) {
+    console.error('Error checking expired punishments:', error);
+  }
+}
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+});
+
+client.on('guildMemberAdd', async (member) => {
+  try {
+    const db = mongoose.connection.db;
+    const mutesCollection = db.collection('DiscordMutes');
+
+    const activeMute = await mutesCollection.findOne({ userId: member.id });
+    if (activeMute && new Date() < activeMute.expiresAt) {
+      const muteRole = member.guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+      if (muteRole) {
+        await member.roles.add(muteRole);
+        console.log(`Re-applied mute role to ${member.user.tag} on rejoin`);
+      }
+    }
+  } catch (error) {
+    console.error('Error re-applying mute on member join:', error);
+  }
 });
 
 // -------------------- COMMANDS --------------------
@@ -227,6 +397,39 @@ const commands = [
   new SlashCommandBuilder()
     .setName("accesskey")
     .setDescription("Generate a secure one-time access key"),
+  new SlashCommandBuilder()
+    .setName('kick')
+    .setDescription('Kicks a user from the server')
+    .addUserOption(option => option.setName('target').setDescription('The user to kick').setRequired(true))
+    .addStringOption(option => option.setName('reason').setDescription('Reason for the kick').setRequired(false)),
+  new SlashCommandBuilder()
+    .setName('ban')
+    .setDescription('Bans a user from the server')
+    .addUserOption(option => option.setName('target').setDescription('The user to ban').setRequired(true))
+    .addIntegerOption(option => option.setName('duration').setDescription('Duration in minutes (optional)').setRequired(false))
+    .addStringOption(option => option.setName('reason').setDescription('Reason for the ban').setRequired(false)),
+  new SlashCommandBuilder()
+    .setName('mute')
+    .setDescription('Mutes a user by adding the mute role')
+    .addUserOption(option => option.setName('target').setDescription('The user to mute').setRequired(true))
+    .addIntegerOption(option => option.setName('duration').setDescription('Duration in minutes (optional)').setRequired(false))
+    .addStringOption(option => option.setName('reason').setDescription('Reason for the mute').setRequired(false)),
+  new SlashCommandBuilder()
+    .setName('unmute')
+    .setDescription('Unmutes a user by removing the mute role')
+    .addUserOption(option => option.setName('target').setDescription('The user to unmute').setRequired(true)),
+  new SlashCommandBuilder()
+    .setName('warn')
+    .setDescription('Warns a user')
+    .addUserOption(option => option.setName('target').setDescription('The user to warn').setRequired(true))
+    .addStringOption(option => option.setName('reason').setDescription('Reason for the warning').setRequired(false)),
+
+  new SlashCommandBuilder()
+    .setName('unban')
+    .setDescription('Unbans a user from the server')
+    .addUserOption(option => option.setName('target').setDescription('The user to unban').setRequired(true))
+    .addStringOption(option => option.setName('reason').setDescription('Reason for the unban').setRequired(false)),
+
 
   new SlashCommandBuilder()
     .setName("claim")
@@ -270,11 +473,16 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName("user")
-    .setDescription("Search for a Pixelit user by username")
+    .setDescription("Search for a Pixelit user by username or Discord ID")
     .addStringOption(option => 
       option.setName("username")
         .setDescription("The Pixelit username to search for")
-        .setRequired(true)
+        .setRequired(false)
+    )
+    .addStringOption(option =>
+      option.setName("discord")
+        .setDescription("A Discord ID or mention to search for (e.g. 123456789012345678 or <@123...>)")
+        .setRequired(false)
     ) 
 ].map(cmd => cmd.toJSON()); 
 
@@ -300,13 +508,15 @@ async function registerCommands() {
 
 registerCommands();
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
   console.log(`Logged in as ${client.user.tag}`);
   console.log(`Bot is active and ready to serve.`);
 
   const activities = [
     { name: "Playing with the Pixelit API", type: ActivityType.Playing },
-    { name: "/login to link account", type: ActivityType.Listening }
+    { name: "Watching the developers code", type: ActivityType.Watching },
+    { name: "/login to link account", type: ActivityType.Listening },
+    { name: "Watching out for new members", type: ActivityType.Watching }
   ];
 
   let i = 0;
@@ -316,7 +526,14 @@ client.once(Events.ClientReady, () => {
       status: "online"
     });
     i = (i + 1) % activities.length;
-  }, 30000); 
+  }, 20000); 
+  try {
+    await checkExpiredPunishments();
+  } catch (err) {
+    console.error('Initial checkExpiredPunishments failed:', err);
+  }
+
+  setInterval(checkExpiredPunishments, 60000);
 });
 
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
@@ -406,19 +623,179 @@ async function safeDeferReply(interaction, options = {}) {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === "ping") {
-      return interaction.reply({
+  if (interaction.commandName === "ping") {
+    return interaction.reply({
       content: `Pong: ${client.ws.ping}ms`,
       flags: MessageFlags.Ephemeral
     });
   }
 
+  // -------------------- MODERATION COMMANDS --------------------
+  if (
+    interaction.commandName === 'kick' ||
+    interaction.commandName === 'ban' ||
+    interaction.commandName === 'unban' ||
+    interaction.commandName === 'mute' ||
+    interaction.commandName === 'unmute' ||
+    interaction.commandName === 'warn'
+  ) {
+
+    await safeDeferReply(interaction, { ephemeral: false });
+
+    const action = interaction.commandName[0].toUpperCase() + interaction.commandName.slice(1); 
+
+    const targetMember = interaction.options.getUser('target', true);
+    const reason = interaction.options.getString('reason') || 'No reason provided';
+    const duration = interaction.options.getInteger('duration') || null;
+
+    const guild = interaction.guild;
+    const moderator = interaction.member;
+
+    try {
+      const moderatorMember = interaction.guild.members.cache.get(moderator.user.id) || await interaction.guild.members.fetch(moderator.user.id);
+
+      let resolvedTarget = null;
+      if (action !== 'Unban') {
+        resolvedTarget = await guild.members.fetch(targetMember.id).catch(() => null);
+        if (!resolvedTarget) {
+          return await replyOrEdit(interaction, `Could not find that user in this server.`);
+        }
+      } else {
+        resolvedTarget = {
+          id: targetMember.id,
+          tag: targetMember.tag,
+          user: targetMember,
+          roles: { cache: new Map() },
+          toString() {
+            return `<@${targetMember.id}>`;
+          }
+        };
+      }
+
+      const modCheck = action === 'Unban' ? { canModerate: true } : canModerate(moderatorMember, resolvedTarget);
+
+      if (!modCheck.canModerate) {
+        return await replyOrEdit(interaction, `${modCheck.reason}`);
+      }
+
+      const db = mongoose.connection.db;
+
+      const caseId = new mongoose.Types.ObjectId().toString().slice(-6);
+
+      if (action === 'Kick') {
+        await resolvedTarget.kick(reason);
+        await logModAction(action, resolvedTarget, moderatorMember, reason, null, caseId);
+
+        const embed = createModEmbed(action, resolvedTarget, reason, null, moderatorMember, caseId);
+        await sendDM(resolvedTarget.user, embed);
+
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+      if (action === 'Ban') {
+        await guild.members.ban(resolvedTarget.id, { reason });
+        await logModAction(action, resolvedTarget, moderatorMember, reason, duration, caseId);
+
+        const embed = createModEmbed(action, resolvedTarget, reason, duration, moderatorMember, caseId);
+        await sendDM(resolvedTarget.user, embed);
+
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+      if (action === 'Mute') {
+        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+        if (!muteRole) return await replyOrEdit(interaction, `Mute role is not configured (MUTE_ROLE_ID).`);
+
+        await resolvedTarget.roles.add(muteRole, reason);
+
+        const mutesCollection = db.collection('DiscordMutes');
+        if (duration && duration > 0) {
+          await mutesCollection.updateOne(
+            { userId: resolvedTarget.id },
+            {
+              $set: {
+                userId: resolvedTarget.id,
+                roleId: muteRole.id,
+                duration,
+                expiresAt: new Date(Date.now() + duration * 60000),
+                moderatorId: moderatorMember.id,
+                moderatorTag: moderatorMember.user?.tag || String(moderatorMember),
+                reason
+              }
+            },
+            { upsert: true }
+          );
+        } else {
+          await mutesCollection.deleteOne({ userId: resolvedTarget.id });
+        }
+
+        await logModAction(action, resolvedTarget, moderatorMember, reason, duration, caseId);
+
+        const embed = createModEmbed(action, resolvedTarget, reason, duration, moderatorMember, caseId);
+        await sendDM(resolvedTarget.user, embed);
+
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+      if (action === 'Unmute') {
+        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+        if (!muteRole) return await replyOrEdit(interaction, `Mute role is not configured (MUTE_ROLE_ID).`);
+
+        await resolvedTarget.roles.remove(muteRole, reason);
+
+        const mutesCollection = db.collection('DiscordMutes');
+        await mutesCollection.deleteOne({ userId: resolvedTarget.id }).catch(() => null);
+
+        await logModAction(action, resolvedTarget, moderatorMember, reason, null, caseId);
+
+        const embed = createModEmbed(action, resolvedTarget, reason, null, moderatorMember, caseId);
+        await sendDM(resolvedTarget.user, embed);
+
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+      if (action === 'Unban') {
+        await guild.members.unban(resolvedTarget.id, { reason });
+
+        try {
+          const casesCollection = db.collection('DiscordCases');
+          await casesCollection.updateMany(
+            { targetId: resolvedTarget.id, action: 'Ban', active: true },
+            { $set: { active: false } }
+          );
+        } catch (e) {
+          console.error('Unban case deactivation failed:', e);
+        }
+
+        await logModAction(action, resolvedTarget, moderatorMember, reason, null, caseId);
+        const embed = createModEmbed(action, resolvedTarget, reason, null, moderatorMember, caseId);
+        if (resolvedTarget.user) await sendDM(resolvedTarget.user, embed);
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+      if (action === 'Warn') {
+        await logModAction(action, resolvedTarget, moderatorMember, reason, null, caseId);
+        const embed = createModEmbed(action, resolvedTarget, reason, null, moderatorMember, caseId);
+        await sendDM(resolvedTarget.user, embed);
+        return await replyOrEdit(interaction, { embeds: [embed] });
+      }
+
+
+      return await replyOrEdit(interaction, `Unsupported moderation action.`);
+    } catch (err) {
+      console.error(`${interaction.commandName} error:`, err);
+
+      const msg = err?.message ? String(err.message) : 'Unknown error while executing moderation command.';
+      return await replyOrEdit(interaction, `Failed to execute ${interaction.commandName}: ${msg}`);
+    }
+  }
 
   if (interaction.commandName === "login") {
     await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
   
     const username = interaction.options.getString("username");
     const password = interaction.options.getString("password");
+
 
     try {
       const user = await User.findOne({ username: new RegExp(`^${username}$`, "i") });
@@ -495,18 +872,35 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   if (interaction.commandName === "user") {
     await safeDeferReply(interaction);
-  
-    const query = interaction.options.getString("username");
-  
-    try {
-      const user = await User.findOne({ username: new RegExp(`^${query}$`, "i") });
+    const usernameQuery = interaction.options.getString("username");
+    const discordQuery = interaction.options.getString("discord");
 
-      if (!user) {
-        return await replyOrEdit(interaction, `Could not find a user named **${query}**.`);
+    try {
+      let user = null;
+
+      if (discordQuery) {
+        const match = discordQuery.match(/\d{17,19}/);
+        const discordId = match ? match[0] : discordQuery.replace(/\D/g, "");
+        if (!discordId) {
+          return await replyOrEdit(interaction, `Invalid Discord ID provided.`);
+        }
+        user = await User.findOne({ discordId: discordId });
+        if (!user) {
+          return await replyOrEdit(interaction, `Could not find a user linked to Discord ID **${discordId}**.`);
+        }
+      } else if (usernameQuery) {
+        const query = usernameQuery;
+        user = await User.findOne({ username: new RegExp(`^${query}$`, "i") });
+
+        if (!user) {
+          return await replyOrEdit(interaction, `Could not find a user named **${query}**.`);
+        }
+      } else {
+        return await replyOrEdit(interaction, `Please provide a username or a Discord ID to search.`);
       }
 
-      const discordStatus = user.discordId 
-        ? `<@${user.discordId}>` 
+      const discordStatus = user.discordId
+        ? `<@${user.discordId}>`
         : "Not Linked";
 
       const embed = new EmbedBuilder()

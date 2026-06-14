@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
+@font-face { font-family: 'Daydream'; src: url('/styles/Daydream DEMO.otf') format('opentype');}
+
+
 body {
-	font-family: 'Pixelify Sans', sans-serif;
 	color: #ffffff;
 	background-color: #6f0083;
 	margin: 0;
@@ -20,8 +22,9 @@ main {
 }
 
 h1 {
-	font-size: 2rem;
-	font-weight: bold;
+  font-family: 'Daydream', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 h1,
@@ -75,8 +78,8 @@ color {
 
 .registerButton{
   flex: 1;
-  width: 25vh;
-  height: 9vh;
+  width: 19vh;
+  height: 7.5vh;
   border: none;
   border-radius: 10px;
   font-family: 'Pixelify Sans', sans-serif;

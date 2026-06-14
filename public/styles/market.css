@@ -57,6 +57,7 @@ main h1 {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
+
 .tokenDisplay {
   font-family: 'Pixelify Sans', sans-serif;
 }
@@ -114,6 +115,145 @@ main h1 {
   padding: 6px 10px;
   box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
   user-select: none;
+  border: none;
+  font-weight: bold;
+  font-family: pixelify sans, sans-serif;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.autoOpenMenuBtn {
+  position: fixed;
+  right: 0px;
+  top: 150px;
+  display: flex;
+  z-index: 100;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: #5e046e;
+  box-shadow:
+    inset 0 -0.265vw #53055c,
+    3px 3px 15px rgba(0, 0, 0, 0.6);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
+.instantOpen:hover {
+  transform: translateX(-50%) translateY(-2px);
+  background-color: #6f057a;
+}
+
+.instantOpen:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+.marketTopRowButtons {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 101;
+  pointer-events: auto;
+}
+
+.autoOpenerInlineTitle {
+  display: none;
+}
+
+.autoOpenerPanel {
+  display: none;
+}
+
+.autoOpenerMenuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.autoOpenerMenuOverlay.is-open {
+  display: flex;
+}
+
+.autoOpenerMenu {
+  width: min(700px, 100%);
+  background: #5e046e;
+  border-radius: 12px;
+  box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0,0,0,0.6);
+  color: white;
+  font-family: 'Pixelify Sans', sans-serif;
+  overflow: hidden;
+}
+
+.autoOpenerMenuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px;
+  border-bottom: 2px solid rgba(255,255,255,0.15);
+}
+
+.autoOpenerMenuTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.autoOpenerMenuClose {
+  border: none;
+  cursor: pointer;
+  background: rgba(0,0,0,0);
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.autoOpenerMenuClose:hover {
+  filter: brightness(1.1);
+}
+
+.autoOpenerMenuBody {
+  padding: 14px 16px 18px;
+}
+
+.autoOpenerMenuBody .autoOpenerControls {
+  margin-top: 0;
+}
+
+.autoOpenerTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.autoOpenToggleBtn {
+  position: absolute;
+  top: 20px;
+  left: 30%;
+  transform: translateX(-50%);
+  margin: 0;
+  cursor: pointer;
+  font-size: 12px;
+  background-color: #5e046e;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: inset 0 -3px #0003, 3px 3px 12px rgba(0,0,0,0.4);
+  user-select: none;
   transition: transform 0.15s ease, background 0.2s ease;
 }
 
@@ -125,6 +265,54 @@ main h1 {
 .instantOpen:active {
   transform: translateX(-50%) scale(0.97);
 }
+
+.autoOpenToggleBtn.on {
+  background: #3aab3a;
+}
+
+.autoOpenerControls {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  align-items: center;
+}
+
+.autoOpenerLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.95);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.autoOpenerSelect,
+.autoOpenerInput {
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.25);
+  color: white;
+  padding: 8px 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 800;
+  outline: none;
+}
+
+.autoOpenerSelect {
+  min-width: 200px;
+}
+
+.autoOpenerInput {
+  width: 140px;
+}
+
+.autoOpenerStatus {
+  font-weight: 900;
+  opacity: 0.95;
+  min-width: 140px;
+}
+
 
 #animationCanvas {
   display: none;
@@ -573,6 +761,119 @@ main h1 {
   min-width: 220px;
 }
 
+.sell-blook-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+
+.sell-blook-modal-box {
+  text-align: center;
+  width: 440px;
+  max-width: 92vw;
+  background: #5e046e;
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+  box-shadow: inset 0 -0.365vw #53055c, 3px 3px 18px rgba(0, 0, 0, 0.65);
+  color: #fff;
+}
+
+.sell-blook-modal-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.sell-blook-modal-subtitle {
+  margin-top: 6px;
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+.sell-blook-modal-input-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.sell-blook-modal-label {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sell-blook-modal-amount {
+  width: 110px;
+  height: 42px;
+  font-size: 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 800;
+  text-align: center;
+  color: #fff;
+  background: #4f0462;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  outline: none;
+}
+
+.sell-blook-modal-amount:focus {
+  border-color: #00ccff;
+  box-shadow: 0 0 0 3px rgba(0, 204, 255, 0.25);
+}
+
+.sell-blook-modal-error {
+  margin-top: 10px;
+  min-height: 22px;
+  color: #ff4d4d;
+  font-weight: 700;
+}
+
+.sell-blook-modal-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.sell-blook-modal-btn {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sell-blook-modal-btn-primary {
+  background: #3aab3a;
+  color: white;
+  box-shadow: inset 0 -0.265vw rgba(0, 0, 0, 0.25), 3px 3px 14px rgba(0,0,0,0.5);
+}
+
+.sell-blook-modal-btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.sell-blook-modal-btn-secondary {
+  background: #5e046e;
+  color: white;
+  box-shadow: inset 0 -0.265vw #53055c, 3px 3px 14px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.sell-blook-modal-btn-secondary:hover {
+  filter: brightness(1.08);
+}
+
 @media screen and (max-width: 1024px) {
   #packContainer {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -593,9 +894,17 @@ main h1 {
 }
 
 @media screen and (max-width: 768px) {
+  .marketTopRowButtons {
+    top: 12px;
+    bottom: auto;
+    transform: translateX(-50%);
+    gap: 10px;
+  }
+
   main {
     padding: 90px 14px 120px;
   }
+
 
   main h1 {
     font-size: clamp(1.4rem, 4.6vw, 2.1rem);
