@@ -1,18 +1,18 @@
-# 🎮 Pixelit
+# Pixelit
 
 <p align="center">
-  <img src="https://i.postimg.cc/59Z7dfVf/image.png" width="800"/>
+  <img src="https://i.postimg.cc/RVfdNdt7/Screenshot-from-2026-06-15-18-47-17.png" width="800"/>
 </p>
 
 ---
 
-## 📖 About
+## About
 
-Pixelit is the **1st ever Pixelated Blooket Private Server** rewritten entirely in **NodeJS** for a better in game experience.
+Pixelit is **The #1 Pixelated Web Trading Game**, Rebuilt entirely in NodeJS.
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 <p align="center">
 
@@ -25,7 +25,7 @@ Pixelit is the **1st ever Pixelated Blooket Private Server** rewritten entirely 
 
 ---
 
-## ✅ Self-host guide
+## Self-host guide
 
 ### Prerequisites
 
@@ -95,23 +95,7 @@ node bot/bot.js
 
 ---
 
-## 👥 Contributers
-
-- **IzumiiHD**
-- **Iamgamedude**
-- **Lemon**
-- **SOUNDGOD**
-- **Packman28**
-- **Buenar**
-- **Dylan**
-- **Prq**
-- **Hjr**
-- **FastyJay**
-- **FrostyIce109**
-
----
-
-## 📎 Notes
+## Notes
 
 > Pixelit is an independent project and is not affiliated with Blooket LLC in any sort of way.
 
