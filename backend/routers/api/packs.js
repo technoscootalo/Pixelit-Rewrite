@@ -42,9 +42,20 @@ router.post(
       if (!global.packCache) global.packCache = {};
       let pack = global.packCache[packName];
 
+      const originalPackName = packName;
+
       if (!pack) {
         pack = await Pack.findOne({ name: packName }).populate("blooks").lean();
-        if (pack) global.packCache[packName] = pack;
+
+        if (!pack) {
+          const fallbackName = originalPackName.replace(/\s*:\d+\s*$/, "");
+          if (fallbackName && fallbackName !== originalPackName) {
+            pack = await Pack.findOne({ name: fallbackName }).populate("blooks").lean();
+            if (pack) global.packCache[fallbackName] = pack;
+          }
+        }
+
+        if (pack) global.packCache[originalPackName] = pack;
       } else {
         try {
           const ids = (pack.blooks || []).map(b => b._id || b);
