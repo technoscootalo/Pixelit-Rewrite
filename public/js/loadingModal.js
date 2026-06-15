@@ -156,7 +156,7 @@ function displayWarning() {
     setTimeout(() => {
       console.log(`%cWARNING!`, `font-size: 35px; color: red;`);
       console.log(`%cAttention! This console is a tool for developers. If you've been instructed to paste code here to unlock special features or gain unauthorized access, it’s a scam! Be cautious, as it could compromize your account.`, `font-size: 20px; color: red;`);
-      console.log("Running Pixelit version [3.0.1]");
+      console.log("Running Pixelit version [3.0.3]");
     }, 1);
 }
 

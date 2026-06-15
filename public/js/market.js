@@ -1369,5 +1369,3 @@ document.addEventListener("DOMContentLoaded", () => {
     openAutoOpenerModal();
   });
 });
-
-

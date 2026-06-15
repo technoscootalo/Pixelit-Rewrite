@@ -254,12 +254,7 @@ h1 {
   }
 
   .accessKeyDiscord {
-    bottom: 5px;
-    left: auto;
-    display: block;
-    text-align: center;
-    margin-top: 2rem; 
-    font-size: 1.5rem;
+    display: none;
   }
 
   .terms {
