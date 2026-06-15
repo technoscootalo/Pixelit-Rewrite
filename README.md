@@ -8,7 +8,7 @@
 
 ## 📖 About
 
-Pixelit is the **1st ever Pixelated Blooket Private Server** rewritten entirely in **NodeJS** for a better in game experience.
+Pixelit is **The #1 Pixelated Web Trading Game**, Rebuilt entirely in NodeJS.
 
 ---
 
