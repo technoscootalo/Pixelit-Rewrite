@@ -1,4 +1,4 @@
-# 🎮 Pixelit
+# Pixelit
 
 <p align="center">
   <img src="https://i.postimg.cc/59Z7dfVf/image.png" width="800"/>
@@ -6,13 +6,13 @@
 
 ---
 
-## 📖 About
+## About
 
 Pixelit is **The #1 Pixelated Web Trading Game**, Rebuilt entirely in NodeJS.
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 <p align="center">
 
@@ -25,7 +25,7 @@ Pixelit is **The #1 Pixelated Web Trading Game**, Rebuilt entirely in NodeJS.
 
 ---
 
-## ✅ Self-host guide
+## Self-host guide
 
 ### Prerequisites
 
@@ -95,7 +95,7 @@ node bot/bot.js
 
 ---
 
-## 👥 Contributers
+## Contributers
 
 - **IzumiiHD**
 - **Iamgamedude**
@@ -111,7 +111,7 @@ node bot/bot.js
 
 ---
 
-## 📎 Notes
+## Notes
 
 > Pixelit is an independent project and is not affiliated with Blooket LLC in any sort of way.
 
