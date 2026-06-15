@@ -134,7 +134,7 @@ app.use('/api/stripe', stripeHandlers.router);
 app.use("/", pages);
 
 app.get("/*path", (req, res) => {
-    res.sendFile(path.join(__dirname, "src/views/404.html"));
+    res.sendFile(path.join(__dirname, "frontend/src/views/404.html"));
 });
 
 const allowedCorsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
