@@ -95,22 +95,6 @@ node bot/bot.js
 
 ---
 
-## Contributers
-
-- **IzumiiHD**
-- **Iamgamedude**
-- **Lemon**
-- **SOUNDGOD**
-- **Packman28**
-- **Buenar**
-- **Dylan**
-- **Prq**
-- **Hjr**
-- **FastyJay**
-- **FrostyIce109**
-
----
-
 ## Notes
 
 > Pixelit is an independent project and is not affiliated with Blooket LLC in any sort of way.
