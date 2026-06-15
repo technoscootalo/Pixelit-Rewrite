@@ -1,7 +1,7 @@
 # Pixelit
 
 <p align="center">
-  <img src="https://i.postimg.cc/DZ2dD3pL/Screenshot-from-2026-06-15-18-40-36.png" width="800"/>
+  <img src="https://i.postimg.cc/RVfdNdt7/Screenshot-from-2026-06-15-18-47-17.png" width="800"/>
 </p>
 
 ---
