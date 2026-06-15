@@ -19,6 +19,8 @@ const crypto = require("crypto");
 const User = require("../backend/models/User"); 
 const AccessKey = require("../backend/models/AccessKey");
 const Blook = require("../backend/models/Blook");
+const BazaarListing = require("../backend/models/BazaarListing");
+
 
 const DISCORD_WEBHOOK_DAILY_WHEEL = process.env.DISCORD_WEBHOOK_DAILY_WHEEL;
 
@@ -985,15 +987,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       const topText = top.length ? top.map((t, i) => `${i + 1}. ${t.username} — ${t.amount.toLocaleString()}`).join('\n') : 'No holders';
 
+      const bazaarListedAmount = await BazaarListing.countDocuments({ blookName: blook.blookName });
+
       const embed = new EmbedBuilder()
         .setColor(0x6f057a)
         .setTitle(`${blook.blookName} — Circulation`)
         .setThumbnail(blook.imageUrl)
         .addFields(
           { name: 'Total Circulating', value: total.toLocaleString(), inline: true },
+          { name: 'In Bazaar', value: bazaarListedAmount.toLocaleString(), inline: true },
           { name: 'Top Holders', value: topText, inline: false }
         )
         .setFooter({ text: `ID: ${blook._id}` });
+
 
       return await replyOrEdit(interaction, { embeds: [embed] });
     } catch (err) {

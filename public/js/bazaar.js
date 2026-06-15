@@ -73,12 +73,23 @@ function getSelectedPack() {
   return packsCache.find((p) => p && p.name === selectedPackName) || null;
 }
 
+const RARITY_COLORS = {
+  common: "#ffffff",
+  uncommon: "#4bc22e",
+  rare: "#2f6cff",
+  epic: "#be0000",
+  legendary: "#ff910f",
+  chroma: "#00ccff",
+  mystical: "#9935dd"
+};
+
 function renderBlooksForSelectedPack({ filter = '' } = {}) {
   const container = document.getElementById('listingsContainer');
   if (!container) return;
 
   const pack = getSelectedPack();
   const mainEl = container.querySelector('#packDetails');
+
 
   if (!pack) {
     if (mainEl) {
@@ -94,15 +105,35 @@ function renderBlooksForSelectedPack({ filter = '' } = {}) {
   const filtered = lower
     ? blooks.filter((b) => ((b.blookName || b.name) + '').toLowerCase().includes(lower))
     : blooks;
+    
+  const rarityOrder = {
+    uncommon: 0,
+    rare: 1,
+    epic: 2,
+    legendary: 3,
+    chroma: 4,
+    mystical: 5,
+    common: 6
+  };
 
-  const blooksHtml = filtered.length === 0
+  const sortedForRender = [...filtered].sort((b1, b2) => {
+    const r1 = (b1?.rarity || "").toString().toLowerCase().trim();
+    const r2 = (b2?.rarity || "").toString().toLowerCase().trim();
+    const o1 = Object.prototype.hasOwnProperty.call(rarityOrder, r1) ? rarityOrder[r1] : 999;
+    const o2 = Object.prototype.hasOwnProperty.call(rarityOrder, r2) ? rarityOrder[r2] : 999;
+    if (o1 !== o2) return o1 - o2;
+    return ((b1?.blookName || b1?.name || "").toString()).localeCompare((b2?.blookName || b2?.name || "").toString());
+  });
+
+  const blooksHtml = sortedForRender.length === 0
     ? '<p class="noListingText">No Pixels match your search.</p>'
-    : filtered
+    : sortedForRender
         .map((b) => {
           const blookName = (b.blookName || b.name || '').toString();
           const listings = listingsByBlookName.get(blookName) || [];
           const isListed = listings.length > 0;
           const listing = listings[0];
+
 
           const isOwner = isListed && String(listing.userId) === String(currentUser);
 
@@ -139,7 +170,10 @@ function renderBlooksForSelectedPack({ filter = '' } = {}) {
                 <img src="${b.imageUrl || listing?.imageUrl || ''}" alt="${escapeHtml(blookName)}" class="bazaar-blook-img">
                 <div class="pack-blook-meta">
                   <div class="blook-name"><strong>${escapeHtml(blookName)}</strong></div>
-                  ${rarity ? `<div class="blook-rarity">${escapeHtml(rarity)}</div>` : ''}
+                  ${rarity
+                    ? `<div class="blook-rarity" style="color:${RARITY_COLORS[(rarity || '').toString().toLowerCase()] || '#ffffff'};">${escapeHtml(rarity)}</div>`
+                    : ''}
+
                   ${priceHtml}
                 </div>
               </div>
