@@ -95,8 +95,7 @@ function generatePacksHTML(packsData) {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
 
-    // For Miscellaneous: hide the title (and optionally the whole pack UI)
-    // if user doesn't own any blooks in that pack.
+    // misc hide the ui if user doesn't own anything in that pack
     const isMisc = pack?.name === "Miscellaneous";
     const hasOwnedBlooks = (Array.isArray(pack?.blooks) ? pack.blooks : []).some(b => Number(b?.owned ?? 0) > 0);
 
