@@ -1,6 +1,7 @@
-const express = require("express");
+ const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
+const DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY = process.env.DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY;
 
 router.put("/sendTokens", async (req, res) => {
 
@@ -70,6 +71,16 @@ router.put("/sendTokens", async (req, res) => {
 
     req.app?.locals?.io?.to(`user:${recipient.username}`).emit("inbox:new", notification);
 
+    if (DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY) {
+      fetch(DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `**${senderUpdate.username}** gifted **${recipient.username}** ${numericAmount.toLocaleString()} tokens!`
+        })
+      }).catch(err => console.error("Discord Webhook (token gifting) failed:", err));
+    }
+
     return res.json({
       success: true,
       sender: { id: senderUpdate.id, username: senderUpdate.username, tokens: senderUpdate.tokens },
@@ -90,4 +101,3 @@ router.put("/sendTokens", async (req, res) => {
 });
 
 module.exports = router;
-
