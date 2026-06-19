@@ -236,7 +236,7 @@ io.on("connection", async (socket) => {
                 });
             }
 
-            const earnedTokens = Math.floor(Math.random() * 5) + 1;
+            const earnedTokens = Math.floor(Math.random() * 6) + 10;
 
             await User.findOneAndUpdate(
                 { id: socket.user.id },
