@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+  
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,17 @@
 
   <link rel="stylesheet" href="/styles/panel/developer.css">
   <link rel="stylesheet" href="/styles/navbar.css">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
     integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
     crossorigin="anonymous" 
     referrerpolicy="no-referrer">
   
   <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
-  </head>
+
+  <script src="/js/all.js"></script>
+  <script src="/js/game.js"></script>
+</head>
 
 <body>
 
@@ -137,56 +142,62 @@
 </main>
 
 <div class="mobile_nav">
-  <a href="/stats" class="active">
-    <i class="fa-solid fa-chart-column"></i>
-    <span>Stats</span>
-  </a>
+  <div class="mobile_nav_top">
+    <div class="mobile_brand" onclick="window.location.href='/'" role="button" tabindex="0">
+      Pixelit
+    </div>
 
-  <a href="/chat">
-    <i class="fa-solid fa-comments"></i>
-    <span>Chat</span>
-  </a>
+    <button class="mobile_menu_button" type="button" aria-label="Open menu" aria-controls="mobileSidebar" aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
 
-  <a href="/ranking">
-    <i class="fa-solid fa-trophy"></i>
-    <span>Ranking</span>
-  </a>
+  <div class="mobile_nav_overlay" id="mobileSidebarOverlay" aria-hidden="true"></div>
 
-  <a href="/market">
-    <i class="fa-solid fa-store"></i>
-    <span>Market</span>
-  </a>
+  <aside id="mobileSidebar" class="mobile_sidebar" aria-hidden="true">
+    <div class="mobile_sidebar_header">
+      <div class="mobile_sidebar_title">
+        <span class="pixelitLogo">Pixelit</span>
+      </div>
+      <button class="mobile_sidebar_close" type="button" aria-label="Close menu">
+        &times;
+      </button>
+    </div>
 
-  <a href="/pixels">
-    <i class="fa-solid fa-suitcase"></i>
-    <span>Pixels</span>
-  </a>
-
-  <a href="/inventory">
-    <i class="fa-solid fa-box-open"></i>
-    <span>Inventory</span>
-  </a>
-
-  <a href="/panel" id="panelLink">
-    <i class="fa-solid fa-wrench"></i>
-    <span>Panel</span>
-  </a>
-
-  <a href="/settings">
-    <i class="fa-solid fa-gear"></i>
-    <span>Settings</span>
-  </a>
-
-  <a href="/credits">
-    <i class="fa-solid fa-heart"></i>
-    <span>Credits</span>
-  </a>
+    <nav class="mobile_sidebar_links">
+      <a href="/stats" class="active" data-mobile-nav-link>
+        <i class="fa-solid fa-chart-column"></i><span>Stats</span>
+      </a>
+      <a href="/chat" data-mobile-nav-link>
+        <i class="fa-solid fa-comments"></i><span>Chat</span>
+      </a>
+      <a href="/ranking" data-mobile-nav-link>
+        <i class="fa-solid fa-trophy"></i><span>Ranking</span>
+      </a>
+      <a href="/market" data-mobile-nav-link>
+        <i class="fa-solid fa-store"></i><span>Market</span>
+      </a>
+      <a href="/pixels" data-mobile-nav-link>
+        <i class="fa-solid fa-suitcase"></i><span>Pixels</span>
+      </a>
+      <a href="/bazaar" data-mobile-nav-link>
+        <i class="fa-solid fa-gavel"></i><span>Bazaar</span>
+      </a>
+      <a href="/inventory" data-mobile-nav-link>
+        <i class="fa-solid fa-box-open"></i><span>Inventory</span>
+      </a>
+      <a href="/panel" id="panelLink" data-mobile-nav-link>
+        <i class="fa-solid fa-wrench"></i><span>Panel</span>
+      </a>
+      <a href="/settings" data-mobile-nav-link>
+        <i class="fa-solid fa-gear"></i><span>Settings</span>
+      </a>
+      <a href="/credits" data-mobile-nav-link>
+        <i class="fa-solid fa-heart"></i><span>Credits</span>
+      </a>
+    </nav>
+  </aside>
 </div>
-
-<script src="/js/profile-dropdown.js"></script>
-<script src="/js/auth/checkSession.js"></script>
-<script src="/js/auth/panelAuth.js"></script>
 <script src="/js/auth/developerAuth.js"></script>
-
 </body>
 </html>

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function loadPacks() {
-  const res = await fetch("/api/packs");
+  const res = await fetch("/api/bazaar/packs");
   allPacks = await res.json();
   renderPacks(allPacks);
 }
@@ -34,39 +34,26 @@ async function loadBlooks() {
 function renderPacks(packs) {
   packGrid.innerHTML = "";
 
-  packs.forEach(pack => {
+  packs.forEach((pack) => {
     const card = document.createElement("div");
-
     card.className = "packCard";
-    card.style.cssText = `
-      height: 80px;
-      padding: 10px;
-      background: #6f057a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 6px;
-      box-shadow: inset 0 -0.3vw #53055c, 3px 3px 10px rgba(0,0,0,0.4);
-      cursor: pointer;
-    `;
 
     card.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;">
-        <img src="${pack.packImageUrl}" style="width:50px;height:50px;border-radius:5px;object-fit:cover;">
+        <img src="${pack.packImageUrl}" alt="${pack.name}" />
         <div>
-          <h3 style="margin:0;">${pack.name}</h3>
-          <p style="margin:0;opacity:0.8;">${pack.cost} Tokens</p>
+          <h3>${pack.name}</h3>
+          <p>${pack.cost} Tokens</p>
         </div>
       </div>
-      <br>
 
-      <div style="color:${pack.visible ? "#00ff88" : "red"};font-weight:bold;">
+      <div class="packStatus" style="color:${pack.visible ? "#00ff88" : "#ff4d4d"};">
+        <span class="dot" style="background:${pack.visible ? "#00ff88" : "#ff4d4d"};"></span>
         ${pack.visible ? "VISIBLE" : "HIDDEN"}
       </div>
     `;
 
     card.onclick = () => openEditor(pack);
-
     packGrid.appendChild(card);
   });
 }
@@ -106,14 +93,18 @@ function createModal({ title, fields = [], onSave }) {
     input.placeholder = ph;
 
     input.style.cssText = `
-      width: 90%;
-      height: 40px;
-      margin: 6px 0;
-      text-align: center;
+      width: 100%;
       background: transparent;
-      border: 2px solid #5e046e;
+      padding: 10px 14px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 10px;
+      border: 3px solid white;
       color: white;
-      border-radius: 4px;
+      font-size: 24px;
+      font-family: "Pixelify Sans";
+      outline: none;
+      margin-bottom: 10px;
     `;
 
     box.appendChild(input);
@@ -123,14 +114,22 @@ function createModal({ title, fields = [], onSave }) {
   const btn = document.createElement("button");
   btn.innerText = "Save";
   btn.style.cssText = `
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    background: #53055c;
+    flex: 1;
+    height: 52px;
     border: none;
-    color: white;
-    border-radius: 5px;
+    border-radius: 10px;
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
     cursor: pointer;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, filter 0.15s ease;
+    background: #3aab3a;
+    color: white;
+    box-shadow: inset 0 -0.265vw rgba(0, 0, 0, 0.25), 3px 3px 14px rgba(0, 0, 0, 0.5);
   `;
 
   btn.onclick = async () => {
@@ -153,9 +152,6 @@ addPackBtn.onclick = () => {
     fields: ["Pack Name", "Image URL", "Background URL", "Cost", "Visible (true/false)"],
     onSave: async (v) => {
       const [name, image, background, cost, visible] = v;
- 
-      // allow packBackground to be any CSS-ready value (hex, gradients, etc.)
-      // If empty, default to ""
       const packBackground = (background ?? "").toString().trim();
 
       const res = await fetch("/api/packs", {
@@ -201,13 +197,19 @@ function createEditorPanel() {
     <h2 id="editorTitle">Pack Editor</h2>
     <img id="editorImg" style="width:100%;border-radius:6px;margin-bottom:10px;">
 
-    <h3>Current Pixels</h3>
-    <div id="packBlooks"></div>
+    <div class="editorSection">
+      <h3>Current Pixels</h3>
+      <div id="packBlooks" class="editorList"></div>
+    </div>
 
     <hr>
 
-    <h3>Add Pixels</h3>
-    <div id="blookList"></div>
+    <div class="editorSection">
+      <h3>Add Pixels</h3>
+      <button id="openBlookPicker" class="editorPrimaryBtn">Add Pixels</button>
+      <p class="editorHint">Choose blooks from the picker modal.</p>
+    </div>
+
 
     <button id="savePack">Save</button>
     <button id="deletePack">Delete</button>
@@ -219,7 +221,14 @@ function createEditorPanel() {
     if (e.target === panel) closeEditor();
   };
 
+
+
+  document.getElementById("openBlookPicker").onclick = () => {
+    openBlookPickerModal();
+  };
+
   document.getElementById("savePack").onclick = async () => {
+
     const blookIds = (selectedPack.blooks || [])
       .map(b => (typeof b === "string" ? b : b?._id || b?.id))
       .filter(Boolean);
@@ -305,43 +314,88 @@ function renderPackBlooks() {
   });
 }
 
-function renderBlookList() {
-  const box = document.getElementById("blookList");
-  box.innerHTML = "";
+function renderBlookListInto(containerEl, list = allBlooks) {
+  if (!containerEl) return;
+  containerEl.innerHTML = "";
 
-  allBlooks.forEach(b => {
-    const div = document.createElement("div");
+  list.forEach((b) => {
+    const item = document.createElement("div");
+    item.className = "blookPickItem";
 
-    div.style.cssText = `
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:6px;
-      margin:5px 0;
-      border-radius:5px;
-      background:#53055c;
-      cursor:pointer;
-    `;
-
-    div.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;">
-        <img src="${b.imageUrl}" style="width:35px;height:35px;border-radius:4px;">
-        <span>${b.blookName}</span>
+    item.innerHTML = `
+      <div class="blookPickLeft">
+        <img class="blookPickThumb" src="${b.imageUrl || ''}" alt="${b.blookName || ''}" />
+        <span class="blookPickName">${b.blookName || 'Unknown blook'}</span>
       </div>
 
-      <span style="
-        color:${rarityColors[b.rarity] || "white"};
-        font-weight:bold;
-      ">
-        ${b.rarity}
+      <span class="blookPickRarity" style="color:${rarityColors[b.rarity] || "white"};">
+        ${b.rarity || ''}
       </span>
     `;
 
-    div.onclick = () => {
+    item.onclick = () => {
       selectedPack.blooks.push(b._id);
       renderPackBlooks();
     };
 
-    box.appendChild(div);
+    containerEl.appendChild(item);
   });
+}
+
+function openBlookPickerModal() {
+  if (!selectedPack) return;
+
+  const existing = document.getElementById("blookPickModalOverlay");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "blookPickModalOverlay";
+  overlay.className = "blookPickOverlay";
+
+  const modal = document.createElement("div");
+  modal.className = "blookPickModal";
+
+  modal.innerHTML = `
+    <div class="blookPickHeader">
+      <h2 class="blookPickTitle">Pick Pixels</h2>
+      <button type="button" class="blookPickClose" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="blookPickControls">
+      <input id="blookPickSearch" class="blookPickSearch" type="text" placeholder="Search blooks..." />
+    </div>
+
+    <div id="blookPickList" class="blookPickList"></div>
+
+    <div class="blookPickFooter">
+      <button type="button" class="blookPickFooterBtn" id="blookPickAddAllBtn">Done</button>
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  const closeBtn = modal.querySelector(".blookPickClose");
+  closeBtn.onclick = () => overlay.remove();
+
+  overlay.onclick = (e) => {
+    if (e.target === overlay) overlay.remove();
+  };
+
+  const searchInput = modal.querySelector("#blookPickSearch");
+  const listEl = modal.querySelector("#blookPickList");
+
+  const applyFilter = () => {
+    const q = (searchInput?.value || "").trim().toLowerCase();
+    const list = q
+      ? allBlooks.filter((b) => (b.blookName || "").toLowerCase().includes(q))
+      : allBlooks;
+    renderBlookListInto(listEl, list);
+  };
+
+  if (searchInput) searchInput.addEventListener("input", applyFilter);
+
+  applyFilter();
+
+  modal.querySelector("#blookPickAddAllBtn").onclick = () => overlay.remove();
 }

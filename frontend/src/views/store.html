@@ -1,75 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-    />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
 
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 
-    <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
+  <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
+  <link rel="stylesheet" href="/styles/store.css">
 
-    <link rel="stylesheet" href="/styles/store.css">
+  <script src="/js/all.js"></script>
 </head>
 
 <body>
+  <div class="background" aria-hidden="true"></div>
 
-<div class="background"></div>
-
-<main>
-    <button class="backButton" onclick="history.back()">
-        <i class="fa-solid fa-reply"></i>
+  <main class="store-page">
+    <button class="backButton" type="button" onclick="history.back()" aria-label="Go back">
+      <i class="fa-solid fa-reply" aria-hidden="true"></i>
     </button>
 
-    <div class="store-container">
+    <header class="store-header">
+      <h1 class="store-title">Store</h1>
+      <p class="store-subtitle">Support Pixelit with Boosters, Plus, or Donations of any amount.</p>
+    </header>
 
-        <div class="store-item">
-            <div class="item-name">Booster</div>
-            <div class="price">$1.99</div>
-            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png" alt="booster" class="plus-badge">
-            <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">Purchase</div>
-            <p>Boost your luck. Increase your drop chance rates for rare pixels when opening packs in the market.</p>
-            <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
-        </div>
-      
-        <div class="store-item">
-            <div class="item-name">Pixelit Plus</div>
-            <div class="price">$2.75</div>
-            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/badges/Plus.png" alt="Plus" class="plus-badge">
-            <div class="pixelitPlusPurchase" onclick="purchasePixelitPlusStripe()">Purchase</div>
-            <p>Unlock premium, exclusive features and help fuel the growth of the Pixelit community!</p>
+    <section class="store-grid" aria-label="Store items">
+      <article class="store-card store-card--booster">
+        <header class="store-card__header">
+          <h2 class="store-card__title">Booster</h2>
+          <div class="store-card__price">$1.99</div>
+        </header>
 
-            <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
-        </div>
-
-        <div class="donation-item">
-            <div class="item-name">Donate</div>
-            <div class="price">Custom</div>
-            <img src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/moneyBag.png" alt="Donate" class="donate-badge">
-            <div class="pixelitPlusPurchase" onclick="window.location.href='https://paypal.me/technoscootalo'">DONATE</div>
-            <p>Every contribution helps! Support our project directly by donating an amount of your choice.</p>
-            <p class="support-email">Need assistance? Contact customer support at <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a></p>
+        <div class="store-card__media">
+          <img
+            src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/placeholder.png"
+            alt="Booster"
+            class="store-card__image"
+          >
         </div>
 
-        <p class="funds-explanation">
-          Every purchase and donation directly funds server maintenance, hosting infrastructure, and domain expenses. Thank you for supporting the Pixelit community and helping us expand!
+        <p class="store-card__desc">Boost your luck. Increase your drop chance rates for rare pixels when opening packs in the market.</p>
+
+        <div class="store-card__actions">
+          <button
+            type="button"
+            class="store-card__btn store-card__btn--primary"
+            onclick="triggerBoostersModal()"
+          >
+            Purchase
+          </button>
+        </div>
+
+        <p class="store-card__support">
+          Need assistance? Contact customer support at
+          <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a>
         </p>
-        
-    </div>
-</main>
+      </article>
 
+      <article class="store-card store-card--plus">
+        <header class="store-card__header">
+          <h2 class="store-card__title">Pixelit Plus</h2>
+          <div class="store-card__price">$2.75</div>
+        </header>
+
+        <div class="store-card__media">
+          <img
+            src="https://izumiihd.github.io/pixelitcdn/assets/img/badges/Plus.png"
+            alt="Pixelit Plus"
+            class="store-card__image"
+          >
+        </div>
+
+        <p class="store-card__desc">Unlock premium, exclusive features and help fuel the growth of the Pixelit community!</p>
+
+        <div class="store-card__actions">
+          <button
+            type="button"
+            class="store-card__btn store-card__btn--primary store-card__btn--plus"
+            onclick="purchasePixelitPlusStripe()"
+          >
+            Purchase
+          </button>
+        </div>
+
+        <p class="store-card__support">
+          Need assistance? Contact customer support at
+          <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a>
+        </p>
+      </article>
+
+      <article class="store-card store-card--donate">
+        <header class="store-card__header">
+          <h2 class="store-card__title">Donate</h2>
+          <div class="store-card__price">Custom</div>
+        </header>
+
+        <div class="store-card__media">
+          <img
+            src="https://izumiihd.github.io/pixelitcdn/assets/img/icons/moneyBag.png"
+            alt="Donate"
+            class="store-card__image"
+          >
+        </div>
+
+        <p class="store-card__desc">Every contribution helps! Support our project directly by donating an amount of your choice.</p>
+
+        <div class="store-card__actions">
+          <button
+            type="button"
+            class="store-card__btn store-card__btn--primary"
+            onclick="window.location.href='https://paypal.me/technoscootalo'"
+          >
+            DONATE
+          </button>
+        </div>
+
+        <p class="store-card__support">
+          Need assistance? Contact customer support at
+          <a href="mailto:izumiihd@outlook.com">izumiihd@outlook.com</a>
+        </p>
+      </article>
+    </section>
+
+    <footer class="store-footer">
+      <p class="funds-explanation">
+        Every purchase and donation directly funds server maintenance, hosting infrastructure, and domain expenses.
+        Thank you for supporting the Pixelit community and helping us expand!
+      </p>
+    </footer>
+  </main>
 <script src="/js/store.js"></script>
-<script src="/js/loadingModal.js"></script>
-
-</body>
 </html>

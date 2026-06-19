@@ -1,157 +1,280 @@
+@font-face {
+  font-family: "DaydreamWeb";
+  src: url("/styles/Daydream DEMO.otf") format("opentype");
+}
+
+:root {
+  --bg: #6f0083;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.14);
+  --text: rgba(255, 255, 255, 0.96);
+  --muted: rgba(255, 255, 255, 0.78);
+  --muted-2: rgba(255, 255, 255, 0.6);
+  --accent: #6f057a;
+  --accent-2: #61056b;
+  --accent-soft: rgba(111, 5, 122, 0.25);
+  --radius: 16px;
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  --shadow-inset: inset 0 -0.25vw rgba(97, 5, 107, 0.85);
+  --focus: rgba(0, 204, 255, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  background: #6f0083;
-  color: white;
-  font-family: Pixelify Sans;
-}    
+}
 
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Pixelify Sans, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  overflow-x: hidden;
+}
 
 .background {
-	position: fixed;
-	width: 250%;
-	height: 250%;
-	top: 50%;
-	left: 50%;
-	z-index: -1;
-	background-size: 550px;
-	background-position: -100px -100px;
-	background-image: url('https://izumiihd.github.io/pixelitcdn/assets/background.png');
-	transform: translate(-50%, -50%) rotate(15deg);
-	opacity: 0.1;
+  position: fixed;
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  background-size: 550px;
+  background-position: -100px -100px;
+  background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+  transform: translate(-50%, -50%) rotate(15deg);
+  opacity: 0.12;
 }
 
-main {
+.store-page {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.backButton {
-  position: fixed !important;
-  top: 20px;
-  left: 20px;
-}
-
-.store-container {
-  display: flex; 
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center; 
-  align-items: stretch;
-  gap: 45px;
-  min-height: 70vh; 
-  padding: 40px 20px 100px 20px;
-}
-
-.store-item,
-.donation-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 25px 20px;
-  background: radial-gradient(circle, #61056b, #6f057a);
-  box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0, 0, 0, 0.6);
-  width: 300px;
-  border-radius: 5px;
-  box-sizing: border-box;
+  padding: 88px 18px 70px;
 }
 
-.store-item p,
-.donation-item p {
-  margin-top: 15px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #e0e0e0;
-}
-
-.item-name {
-  font-size: 36px;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: #000 1px 0 13px;
-}
-
-.price {
-  font-size: 54px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-top: 5px;
-    text-shadow: #000 1px 0 13px;
-}
-
-.support-email {
-  margin-top: auto !important; 
-  font-size: 11px !important;
-  color: #a0a0a0;
-}
-
-.support-email a {
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-.plus-badge,
-.donate-badge {
-  width: 160px; 
-  height: auto;
-  margin: 20px 0;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-}
-
-.pixelitPlusPurchase {
-  font-weight: bold; 
-  color: white; 
-  text-shadow: 2px 2px 4px #000000;
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
   background: #6f057a;
-  box-shadow: inset 0 -0.245vw #570066, 3px 3px 15px rgba(0, 0, 0, 0.6);
-  width: 100%;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: white;
   cursor: pointer;
-  border-radius: 5px;
-  text-transform: uppercase;
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.pixelitPlusPurchase:hover {
-  transform: scale(0.98);
-  filter: brightness(1.1);
-}
-
-.funds-explanation {
-  position: fixed; 
-  bottom: 0; 
-  left: 0;
-  width: 100%; 
-  text-align: center; 
-  background-color: rgba(50, 50, 50, 0.12);
-  backdrop-filter: blur(5px);
-  color: #ffffff; 
-  padding: 12px 20px;
-  margin: 0;
-  box-sizing: border-box;
-  font-size: 13px;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 -3px rgba(0, 0, 0, 0.2),
+    0 10px 25px rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s ease, filter 0.15s ease, background 0.2s ease;
   z-index: 10;
 }
 
-@media screen and (max-width: 680px) {
-  .store-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .store-item,
-  .donation-item {
-    width: 100%;
-    max-width: 340px;
+.backButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.backButton:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.backButton:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.store-header {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  margin-bottom: 22px;
+  padding: 0 10px;
+}
+
+.store-title {
+  font-family: "DaydreamWeb", "Pixelify Sans", sans-serif;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+.store-subtitle {
+  margin: 10px auto 0;
+  max-width: 760px;
+  color: var(--muted);
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  line-height: 1.4;
+}
+
+.store-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.store-card {
+  border-radius: var(--radius);
+  background: rgba(94, 4, 110, 0.22);
+  box-shadow: inset 0 -0.225vw rgba(87, 0, 102, 0.5), 3px 3px 15px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--card-border);
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  min-height: 420px;
+}
+
+.store-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.store-card__title {
+  margin: 0;
+  font-family: "DaydreamWeb", "Pixelify Sans", sans-serif;
+  font-size: clamp(1.55rem, 2.2vw, 1.9rem);
+  letter-spacing: 0.2px;
+}
+
+.store-card__price {
+  font-family: "DaydreamWeb", "Pixelify Sans", sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  color: white;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.store-card__media {
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.store-card__image {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+}
+
+.store-card__desc {
+  margin: 10px 0 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.store-card__actions {
+  margin-top: 10px;
+}
+
+.store-card__btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  font-family: Pixelify Sans, sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: #5e046e;
+  color: white;
+  box-shadow: inset 0 -0.265vw #53055c, 3px 3px 14px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.store-card__btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.store-card__btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.store-card__btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.store-card__support {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.store-card__support a {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.store-footer {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.funds-explanation {
+  margin: 0;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+@media (max-width: 980px) {
+  .store-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .funds-explanation {
-    position: static;
+  .store-card {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 680px) {
+  .store-page {
+    padding-top: 92px;
+  }
+
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .store-card {
+    min-height: auto;
+  }
+
+  .store-card__image {
+    width: 140px;
   }
 }

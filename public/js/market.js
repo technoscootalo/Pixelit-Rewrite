@@ -385,7 +385,7 @@ async function openPackTooltipsModal() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   fetchPacks();
-  //fetchBoosters();
+  // fetchBoosters();
   fetchMarketActiveBoosters();
 
   const btn = document.getElementById("packToolTips");
@@ -445,7 +445,8 @@ async function fetchPacks() {
   }
 }
 
-/* async function fetchBoosters() {
+/* 
+async function fetchBoosters() {
   try {
     const res = await fetch("/api/boosters");
     if (!res.ok) throw new Error("Failed to load boosters");
@@ -547,7 +548,6 @@ async function fetchMarketActiveBoosters() {
   }
 }
 
-/* 
 function createBoosterCard(booster) {
   const div = document.createElement("div");
   div.className = "boosterCard";
@@ -634,7 +634,6 @@ function createBoosterCard(booster) {
 
   return div;
 }
-*/
 
 function displayPacks(packs) {
   const container = document.getElementById("packContainer");

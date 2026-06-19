@@ -51,13 +51,46 @@ function formatTimeLeft(expiresAt) {
   }
 }
 
+function showModal(message) {
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  `;
+
+  const box = document.createElement("div");
+  box.style.cssText = `
+    background-color: #6f057a;
+    box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 280px;
+    color: white;
+    font-family: Pixelify Sans;
+    font-size: 18px;
+  `;
+
+  box.innerText = message;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  modal.onclick = () => modal.remove();
+}
+
 async function activateBooster(boosterCode) {
   try {
+
     const res = await fetch(`/api/boosters/activate/${encodeURIComponent(boosterCode)}`, {
       method: "POST",
       credentials: "include",
       headers: { "Accept": "application/json" },
     });
+
 
     const data = await res.json().catch(() => ({}));
 
@@ -65,6 +98,15 @@ async function activateBooster(boosterCode) {
       alert(data?.error || "Failed to activate booster");
       return;
     }
+
+    try {
+      const mult = Number(data?.multiplier) || 1;
+
+      showModal(`Activated\n${mult}X booster`);
+    } catch (mErr) {
+      console.error(mErr);
+    }
+
 
     const { items } = await fetchInventory();
     renderBoosters(items);
@@ -141,7 +183,8 @@ function renderBoosters(items) {
       }
       card.classList.add('booster-pulse');
     } else {
-      status.textContent = `Inactive`;
+      const qty = Number(item.quantity) || 0;
+      status.textContent = `Owned • x${qty}`;
       status.style.color = "rgba(255,255,255,0.75)";
     }
 
@@ -196,5 +239,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { items } = await fetchInventory();
   renderBoosters(items);
 });
-
-

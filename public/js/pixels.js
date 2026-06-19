@@ -43,18 +43,45 @@ async function loadBlooks() {
 
     if (!res.ok) {
       if (res.status === 401) {
-        window.location.href = "/login";
+        if (container) {
+          container.innerHTML = `
+            <div class="pixels-error" style="color:#fff; padding:18px; text-align:center;">
+              Please log in to view your pixels.
+            </div>
+          `;
+        }
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 250);
         return;
       }
-      throw new Error(data.error || "Request failed");
+
+      const message = data?.error || "Request failed";
+      console.error("loadBlooks failed:", { status: res.status, message, data });
+
+      if (container) {
+        container.innerHTML = `
+          <div class="pixels-error" style="color:#fff; padding:18px; text-align:center;">
+            Failed to load pixels (HTTP ${res.status}).\n${String(message)}
+          </div>
+        `;
+      }
+
+      return;
     }
 
     allPacks = data.packs || [];
     generatePacksHTML(allPacks);
-
-
   } catch (err) {
     console.error("loadBlooks error:", err);
+
+    if (container) {
+      container.innerHTML = `
+        <div class="pixels-error" style="color:#fff; padding:18px; text-align:center;">
+          Failed to load pixels.\n${String(err?.message || err)}
+        </div>
+      `;
+    }
   }
 }
 
@@ -94,9 +121,6 @@ function generatePacksHTML(packsData) {
   sortedPacksWithMiscLast.forEach((pack) => {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
-
-    // For Miscellaneous: hide the title (and optionally the whole pack UI)
-    // if user doesn't own any blooks in that pack.
     const isMisc = pack?.name === "Miscellaneous";
     const hasOwnedBlooks = (Array.isArray(pack?.blooks) ? pack.blooks : []).some(b => Number(b?.owned ?? 0) > 0);
 
@@ -151,7 +175,7 @@ function generatePacksHTML(packsData) {
       if (blook.owned > 0) {
         const img = document.createElement("img");
         img.className = "blook-image";
-        img.src = blook.imageUrl || "https://github.io";
+        img.src = blook.imageUrl || "https://github.com/technoscootalo/pixelitcdn-1/blob/gh-pages/assets/img/blooks/placeholder.png?raw=true";
         img.alt = blook.name;
 
         itemDiv.appendChild(img);
@@ -444,10 +468,7 @@ function sellBlook() {
         selectedBlook.owned = updated;
       }
 
-
       close();
-
-
 
     } catch (err) {
       console.error(err);
@@ -635,7 +656,7 @@ function giftBlook() {
 
         const updated = Number(fresh?.owned ?? fresh?.owned?.amount ?? 0);
         amtEl.textContent = `${updated} Owned`;
-        selectedBlook.owned = updated;
+        selectedBlook.wned = updated;
       }
 
       close();

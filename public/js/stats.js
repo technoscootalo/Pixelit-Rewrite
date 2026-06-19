@@ -1,56 +1,6 @@
 let user = null;
 const DAILY_WHEEL_COOLDOWN_MS = 1000 * 60 * 60 * 4;
 
-const STATS_AUTOPLAY_AUDIO_URL = "/js/iChaseDih.mp3";
-const STATS_SPINNER_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0JMx6kUfK-Vt-G1-SQJMmkcD3XIOD0EX3wA&s";
-
-/*
-function ensureStatsSpinOverlay() {
-  if (document.getElementById("statsSpinOverlay")) return;
-
-  const overlay = document.createElement("div");
-  overlay.id = "statsSpinOverlay";
-
-  const img = document.createElement("img");
-  img.src = STATS_SPINNER_IMAGE_URL;
-  img.alt = "Spinning";
-  overlay.appendChild(img);
-
-  document.body.appendChild(overlay);
-}
-
-function tryAutoplayStatsAudio() {
-  try {
-    const audio = new Audio(STATS_AUTOPLAY_AUDIO_URL);
-    audio.loop = true;
-
-    const playPromise = audio.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {
-        const resume = () => {
-          document.removeEventListener("pointerdown", resume);
-          document.removeEventListener("keydown", resume);
-          audio
-            .play()
-            .then(() => {})
-            .catch(() => {});
-        };
-        document.addEventListener("pointerdown", resume, { once: true });
-        document.addEventListener("keydown", resume, { once: true });
-      });
-    }
-
-    window.__statsAudio = audio;
-  } catch (e) {
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  ensureStatsSpinOverlay();
-  tryAutoplayStatsAudio();
-});
-*/
-
 function formatRemaining(ms) {
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);
@@ -1550,6 +1500,7 @@ if (viewUserButton) {
   const url = new URL(window.location.href);
   const name = url.searchParams.get('name');
   if (!name) return loadUser();
+
 
   if (window.__profileViewMode === 'other') return;
 

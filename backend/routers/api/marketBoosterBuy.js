@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
 const Booster = require("../../models/Booster");
 const UserBooster = require("../../models/UserBooster");
 const User = require("../../models/User");
 const { requireLoggedIn, requireNotBanned } = require("../../middleware/sessionUser");
-
 
 router.post("/buy/:boosterCode", requireLoggedIn, requireNotBanned, async (req, res) => {
   try {
@@ -60,6 +58,24 @@ router.post("/buy/:boosterCode", requireLoggedIn, requireNotBanned, async (req, 
         expiresAt: null,
         quantity: 1,
       });
+    }
+
+    try {
+      const DISCORD_WEBHOOK_BOOSTER = process.env.DISCORD_WEBHOOK_BOOSTER;
+      if (DISCORD_WEBHOOK_BOOSTER) {
+        const user = await User.findOne({ id: userId }).select("username").lean();
+        const boosterType = booster?.name || "Booster";
+
+        fetch(DISCORD_WEBHOOK_BOOSTER, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: `**${String(user?.username || userId)}** has purchased a **${boosterType}**`,
+          }),
+        }).catch((err) => console.error("Discord Webhook failed:", err));
+      }
+    } catch (webhookErr) {
+      console.error("Discord webhook booster buy error:", webhookErr);
     }
 
     return res.json({ success: true, tokens: updatedUser.tokens });

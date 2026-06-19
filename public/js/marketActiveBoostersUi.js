@@ -36,4 +36,3 @@ function startExpiryCountdown(el, getExpiresAtMs) {
   const id = setInterval(tick, 1000);
   return () => clearInterval(id);
 }
-

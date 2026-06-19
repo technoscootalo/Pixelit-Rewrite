@@ -54,7 +54,7 @@ cp .env.example .env
 - `MONGO_URI`
 - `SESSION_SECRET`
 
-> `PAYPAL_WEBHOOK_SECRET` is optional (only needed if you use the PayPal booster activation webhook).
+> `STRIPE_WEBHOOK_SECRET` is optional (only needed if you use the Stripe booster activation webhook).
 
 ### 3) Run the server
 
@@ -73,7 +73,7 @@ node server.js
 | `SESSION_SECRET` | ✅ | Express session signing |
 | `PORT` | — | Server port (default `3000`) |
 | `CORS_ORIGIN` | — | Socket.IO/CORS origin (default `http://localhost:3000`) |
-| `PAYPAL_WEBHOOK_SECRET` | (optional) | PayPal webhook authorization |
+| `STRIPE_WEBHOOK_SECRET` | (optional) | Stripe webhook authorization |
 | `BOT_TOKEN` | (optional) | Discord bot token |
 | `CLIENT_ID` | (optional) | Discord app/client id |
 | `GUILD_ID` | (optional) | Discord guild/server id |
@@ -83,7 +83,7 @@ node server.js
 If you want the Discord slash commands / badge syncing:
 
 ```bash
-node bot/bot.js
+node discord/bot.js
 ```
 
 ### Common self-host checklist

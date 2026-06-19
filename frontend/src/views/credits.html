@@ -1,242 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Credits</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credits</title>
 
-  <link rel="stylesheet" href="/styles/credits.css">
-  <link rel="stylesheet" href="/styles/navbar.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
-    crossorigin="anonymous" 
-    referrerpolicy="no-referrer">
-  <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
-</head>
+    <link rel="stylesheet" href="/styles/credits.css" />
+    <link rel="stylesheet" href="/styles/navbar.css" />
 
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
-<div class="background"></div>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico"
+    />
+  </head>
 
-<main>
-  <button class="backButton" onclick="history.back()">
-    <i class="fa-solid fa-reply"></i>
-  </button>
+  <body>
+    <div class="background" aria-hidden="true"></div>
 
-  <h1 class="creditsTitle">Credits</h1>
-  <br>
+    <main class="credits-page">
+      <button class="backButton" type="button" onclick="history.back()" aria-label="Go back">
+        <i class="fa-solid fa-reply" aria-hidden="true"></i>
+      </button>
 
-  <div class="credits-containers">
+      <header class="credits-header">
+        <h1 class="creditsTitle">Credits</h1>
+        <p class="credits-subtitle">Thanks to the community members who helped build and improve Pixelit.</p>
+      </header>
 
-    <div class="credits-container">
-      <h3>IzumiiHD</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/IzumiiHD.png"
-        alt="IzumiiHD"
-        draggable="false"
-        onclick="window.location.href='/stats?name=IzumiiHD'"
-      />
-      <h4>The creator and developer of Pixelit.</h4>
-    </div>
+      <section class="credits-section" aria-label="Credits">
+        <div class="credits-grid">
+          <article class="credit-card">
+            <h2 class="credit-card__name">IzumiiHD</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/IzumiiHD.png"
+              alt="IzumiiHD"
+              draggable="false"
+              onclick="window.location.href='/stats?name=IzumiiHD'"
+            />
+            <p class="credit-card__role">The creator and developer of Pixelit.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>Iamgamedude</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Iamgamedude.png"
-        alt="Iamgamedude"
-        draggable="false"
-        onclick="window.location.href='/stats?name=Iamgamedude'"
-      />
-      <h4>
-        Long time contributor to Pixelit's development, an amazing developer
-        and an owner of Pixelit.
-      </h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">Iamgamedude</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Iamgamedude.png"
+              alt="Iamgamedude"
+              draggable="false"
+              onclick="window.location.href='/stats?name=Iamgamedude'"
+            />
+            <p class="credit-card__role">Long time contributor to Pixelit&#39;s development, an amazing developer and an owner of Pixelit.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>Lemon</h3>
-<img
-        src="https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/refs/heads/gh-pages/assets/img/blooks/OG/Lemon.png"
-        alt="Lemon"
-        draggable="false"
-        onclick="window.location.href='/stats?name=Lemon'"
-      />
-      <h4>Long time contributor to Pixelit's development, an amazing developer and Helped a lot with the release of v2.</h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">Lemon</h2>
+            <img
+              class="credit-card__image"
+              src="https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/refs/heads/gh-pages/assets/img/blooks/OG/Lemon.png"
+              alt="Lemon"
+              draggable="false"
+              onclick="window.location.href='/stats?name=Lemon'"
+            />
+            <p class="credit-card__role">Long time contributor to Pixelit&#39;s development, an amazing developer and helped a lot with the release of v2.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>SOUNDGOD</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/SOUNDGOD.png"
-        alt="SOUNDGOD"
-        draggable="false"
-        onclick="window.location.href='/stats?name=SOUNDGOD'"
-      />
-      <h4>
-        An amazing developer, helped us patch multiple bugs and a Developer of
-        Pixelit.
-      </h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">SOUNDGOD</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/SOUNDGOD.png"
+              alt="SOUNDGOD"
+              draggable="false"
+              onclick="window.location.href='/stats?name=SOUNDGOD'"
+            />
+            <p class="credit-card__role">An amazing developer, helped us patch multiple bugs and a developer of Pixelit.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>Packman28</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Packman28.png"
-        alt="Packman28"
-        draggable="false"
-        onclick="window.location.href='/stats?name=packman28'"
-      />
-      <h4>Helped alot with backend development and testing of Pixelit.</h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">Packman28</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Packman28.png"
+              alt="Packman28"
+              draggable="false"
+              onclick="window.location.href='/stats?name=packman28'"
+            />
+            <p class="credit-card__role">Helped a lot with backend development and testing of Pixelit.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>FrostyIce109</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/FrostyIce109.png"
-        alt="FrostyIce109"
-        draggable="false"
-        onclick="window.location.href='/stats?name=FrostyIce109'"
-      />
-      <h4>
-        An amazing Pixelit artist, created all of Pixelit v2's art and a very long-time supporter of the game. 
-      </h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">FrostyIce109</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/FrostyIce109.png"
+              alt="FrostyIce109"
+              draggable="false"
+              onclick="window.location.href='/stats?name=FrostyIce109'"
+            />
+            <p class="credit-card__role">An amazing Pixelit artist, created all of Pixelit v2&#39;s art and a very long-time supporter of the game.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>ThatPlanet</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/ThatPlanet.png"
-        alt="ThatPlanet"
-        draggable="false"
-        onclick="window.location.href='/stats?name=ThatPlanet'"
-      />
-      <h4>
-        Long time staff member of Pixelit, helped with testing of Pixelit v2 and is a very long-time supporter of the game.
-      </h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">ThatPlanet</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/ThatPlanet.png"
+              alt="ThatPlanet"
+              draggable="false"
+              onclick="window.location.href='/stats?name=ThatPlanet'"
+            />
+            <p class="credit-card__role">Long time staff member of Pixelit, helped with testing of Pixelit v2 and is a very long-time supporter of the game.</p>
+          </article>
 
-    <div class="credits-container">
-      <h3>RedXbox</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/RedXbox.png"
-        alt="RedXbox"
-        draggable="false"
-        onclick="window.location.href='/stats?name=RedXbox'"
-      />
-      <h4>
-        Long time staff member of Pixelit and a very long-time supporter of the game.
-      </h4>
-    </div>
+          <article class="credit-card">
+            <h2 class="credit-card__name">RedXbox</h2>
+            <img
+              class="credit-card__image"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/RedXbox.png"
+              alt="RedXbox"
+              draggable="false"
+              onclick="window.location.href='/stats?name=RedXbox'"
+            />
+            <p class="credit-card__role">Long time staff member of Pixelit and a very long-time supporter of the game.</p>
+          </article>
+        </div>
+      </section>
 
-  </div>
+      <section class="honors-section" aria-label="Honorable Mentions">
+        <h2 class="honorTitle">Honorable Mentions</h2>
 
-  <br><br>
+        <div class="honors-grid">
+          <article class="credit-card credit-card--honor">
+            <h2 class="credit-card__name">Not_Nico</h2>
+            <img
+              class="credit-card__image credit-card__image--honor"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Not_Nico.png"
+              alt="Not_Nico"
+              draggable="false"
+              onclick="window.location.href='/stats?name=Not_Nico'"
+            />
+            <p class="credit-card__role">OG, Veteran, and has been here since the very beginning.</p>
+          </article>
 
-  <h2 class="honorTitle">Honorable Mentions</h2>
+          <article class="credit-card credit-card--honor">
+            <h2 class="credit-card__name">Berry</h2>
+            <img
+              class="credit-card__image credit-card__image--honor"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Berry.png"
+              alt="Berry"
+              draggable="false"
+              onclick="window.location.href='/stats?name=Berry'"
+            />
+            <p class="credit-card__role">OG, Veteran, and has been here since the very beginning.</p>
+          </article>
 
-  <div class="honor-containers">
+          <article class="credit-card credit-card--honor">
+            <h2 class="credit-card__name">Solid_Snake</h2>
+            <img
+              class="credit-card__image credit-card__image--honor"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Solid_Snake.png"
+              alt="Solid_Snake"
+              draggable="false"
+              onclick="window.location.href='/stats?name=Solid_Snake'"
+            />
+            <p class="credit-card__role">OG, Veteran, and has been here since the very beginning.</p>
+          </article>
 
-    <div class="honor-container">
-      <h3>Not_Nico</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Not_Nico.png"
-        alt="Not_Nico"
-        draggable="false"
-        onclick="window.location.href='/stats?name=Not_Nico'"
-      />
-      <h4>OG, Veteran, and has been here since the very begining.</h4>
-    </div>
-
-    <div class="honor-container">
-      <h3>Berry</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Berry.png"
-        alt="Berry"
-        draggable="false"
-        onclick="window.location.href='/stats?name=Berry'"
-      />
-      <h4>OG, Veteran, and has been here since the very begining.</h4>
-    </div>
-
-    <div class="honor-container">
-      <h3>Solid_Snake</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/Solid_Snake.png"
-        alt="Solid_Snake"
-        draggable="false"
-        onclick="window.location.href='/stats?name=Solid_Snake'"
-      />
-      <h4>OG, Veteran, and has been here since the very begining.</h4>
-    </div>
-
-    <div class="honor-container">
-      <h3>CurryEater</h3>
-<img
-        src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/CurryEater.png"
-        alt="CurryEater"
-        draggable="false"
-        onclick="window.location.href='/stats?name=CurryEater'"
-      />
-      <h4>OG, Veteran, and has been here since the very begining.</h4>
-    </div>
-
-  </div>
-
-</main>
-
-<script>
-const backButton = document.querySelector(".backButton");
-
-backButton.style.cssText = `
-  width: 50px;
-  height: 50px;
-
-  border: none;
-  border-radius: 6px;
-
-  background: #6f057a;
-  color: white;
-
-  font-size: 18px;
-  font-family: Pixelify Sans;
-
-  cursor: pointer;
-
-  box-shadow: inset 0 -3px #0003;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
-`;
-
-backButton.onmouseenter = () => {
-  backButton.style.transform = "translateY(-3px)";
-  backButton.style.background = "#7c068d";
-  backButton.style.boxShadow =
-    "inset 0 -4px #0003, 0 6px 12px rgba(0,0,0,0.25)";
-};
-
-backButton.onmouseleave = () => {
-  backButton.style.transform = "translateY(0px)";
-  backButton.style.background = "#6f057a";
-  backButton.style.boxShadow =
-    "inset 0 -3px #0003";
-};
-
-backButton.onmousedown = () => {
-  backButton.style.transform = "translateY(1px) scale(0.97)";
-};
-
-backButton.onmouseup = () => {
-  backButton.style.transform = "translateY(-3px) scale(1)";
-};
-</script>
-
-<script src="/js/loadingModal.js"></script>
-<script src="/js/auth/checkSession.js"></script>
-<script src="/js/credits.js"></script>
-</body>
-
+          <article class="credit-card credit-card--honor">
+            <h2 class="credit-card__name">CurryEater</h2>
+            <img
+              class="credit-card__image credit-card__image--honor"
+              src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/OG/CurryEater.png"
+              alt="CurryEater"
+              draggable="false"
+              onclick="window.location.href='/stats?name=CurryEater'"
+            />
+            <p class="credit-card__role">OG, Veteran, and has been here since the very beginning.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+  <script src="/js/all.js"></script>
 </html>

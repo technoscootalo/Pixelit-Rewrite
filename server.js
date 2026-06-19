@@ -8,11 +8,7 @@ const path = require("path");
 const session = require("express-session");
 
 const connectDB = require("./backend/utils/db");
-const User = require("./backend/models/User");
-const Message = require("./backend/models/Messages");
-const Emoji = require("./backend/models/Emojis.js");
 
-const stripeHandlers = require("./backend/routers/api/stripe");
 
 if (!process.env.STRIPE_SECRET_KEY) {
     console.warn('Warning: STRIPE_SECRET_KEY is not set. Stripe checkout endpoints will return 500.');
@@ -20,7 +16,14 @@ if (!process.env.STRIPE_SECRET_KEY) {
     console.log('Stripe secret key detected in environment.');
 }
 
+// #----- MODELS -----#
+const User = require("./backend/models/User");
+const Message = require("./backend/models/Messages");
+const Emoji = require("./backend/models/Emojis.js");
+
+// #----- ENDPOINTS -----#
 const pages = require("./backend/routers/pages");
+const stripeHandlers = require("./backend/routers/api/stripe");
 const registerRoute = require("./backend/routers/auth/register");
 const loginRoute = require("./backend/routers/auth/login");
 const loggedinRoute = require("./backend/routers/auth/loggedin");
@@ -56,6 +59,7 @@ const sendTokensRouter = require('./backend/routers/api/sendTokens');
 const boostersRoute = require('./backend/routers/api/boosters');
 const marketBoostersBuyRoute = require('./backend/routers/api/marketBoosterBuy');
 const boostersActivateRoute = require('./backend/routers/api/boostersActivate');
+const marketActiveBoostersRoute = require("./backend/routers/api/marketActiveBoosters");
 const boostersActiveMultiplierRoute = require('./backend/routers/api/getActiveBoosters');
 
 const app = express();
@@ -83,7 +87,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
 
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use("/api/blooks", blookRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/user/daily-wheel", dailyWheelRoute);
@@ -101,7 +104,6 @@ app.use("/api/changePassword", changePasswordRouter);
 app.use("/api/changeUsername", changeUsernameRoute);
 app.use("/api/user", changePfpRoute);
 app.use("/api", changeBannerRoute);
-
 app.use("/api/reportUser", reportUserRoute);
 app.use("/api/moderationReports", moderationReportsRoute);
 app.use("/api/badges", badgeRoutes);
@@ -116,21 +118,13 @@ app.use("/api/userBlooks", userBlooksRoutes);
 app.use("/api/boosters", boostersRoute);
 app.use("/api/boosters", boostersActiveMultiplierRoute);
 app.use("/api/boosters", boostersActivateRoute);
-
 app.use("/api/market/boosters", marketBoostersBuyRoute);
-const marketActiveBoostersRoute = require("./backend/routers/api/marketActiveBoosters");
 app.use("/api/market/boosters", marketActiveBoostersRoute);
-
 app.use("/api/inventory", inventoryRoute);
-
-
 app.use("/api/users", listBlookRouter);
 app.use("/api/bazaar", bazaarRouter);
 app.use("/api/sendTokens", sendTokensRouter);
-
 app.use('/api/stripe', stripeHandlers.router);
-
-
 app.use("/", pages);
 
 app.get("/*path", (req, res) => {
@@ -332,7 +326,6 @@ io.on("connection", async (socket) => {
         }
     });
 });
-
 
 httpServer.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

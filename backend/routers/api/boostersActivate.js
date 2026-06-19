@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-
 const Booster = require("../../models/Booster");
 const UserBooster = require("../../models/UserBooster");
-
 const { requireLoggedIn, requireNotBanned } = require("../../middleware/sessionUser");
 const User = require("../../models/User");
+
+const fetch = global.fetch || ((...args) => import('node-fetch').then(({ default: fetchFn }) => fetchFn(...args)));
+
 
 router.post("/activate/:boosterCode", requireLoggedIn, requireNotBanned, async (req, res) => {
   try {
@@ -51,6 +52,25 @@ router.post("/activate/:boosterCode", requireLoggedIn, requireNotBanned, async (
       expiresAt,
       quantity: 1,
     });
+
+    try {
+      const user = await User.findOne({ id: userId }).select("username").lean();
+
+      const DISCORD_WEBHOOK_BOOSTER = process.env.DISCORD_WEBHOOK_BOOSTER;
+      if (DISCORD_WEBHOOK_BOOSTER) {
+        const boosterType = booster?.name || "Booster";
+
+        fetch(DISCORD_WEBHOOK_BOOSTER, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: `**${String(user?.username || userId)}** has activated a **${boosterType}**`,
+          }),
+        }).catch((err) => console.error("Discord Webhook failed:", err));
+      }
+    } catch (webhookErr) {
+      console.error("Discord webhook booster activation error:", webhookErr);
+    }
 
     return res.json({ success: true, expiresAt: expiresAt.toISOString(), multiplier: booster.multiplier });
   } catch (err) {

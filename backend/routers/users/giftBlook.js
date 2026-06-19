@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require("../../models/User");
 const Blook = require("../../models/Blook");
+const DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY = process.env.DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY;
 
 router.post("/", async (req, res) => {
   try {
@@ -76,6 +77,16 @@ router.post("/", async (req, res) => {
       console.error("Failed to emit inbox:new:", e);
     }
 
+    if (DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY) {
+      fetch(DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `**${senderUpdate.username}** gifted **${recipient.username}** ${qty} ${blook.blookName}`
+        })
+      }).catch(err => console.error("Discord Webhook (token gifting) failed:", err));
+    }
+
     return res.json({ success: true, gifted: qty, blookName: blook.blookName });
   } catch (err) {
     console.error("giftBlook error:", err);
@@ -84,4 +95,3 @@ router.post("/", async (req, res) => {
 });
 
 module.exports = router;
-

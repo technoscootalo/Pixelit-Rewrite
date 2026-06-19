@@ -21,9 +21,7 @@ const AccessKey = require("../backend/models/AccessKey");
 const Blook = require("../backend/models/Blook");
 const BazaarListing = require("../backend/models/BazaarListing");
 
-
 const DISCORD_WEBHOOK_DAILY_WHEEL = process.env.DISCORD_WEBHOOK_DAILY_WHEEL;
-
 const COOLDOWN_MS = 1000 * 60 * 60 * 4; // a 4 hour cooldown for claiming
 
 const DAILY_REWARDS = [
@@ -354,7 +352,8 @@ async function checkExpiredPunishments() {
     for (const mute of expiredMutes) {
       try {
         const member = await guild.members.fetch(mute.userId).catch(() => null);
-        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+        const muteRole = guild.roles.cache.get(MUTE_ROLE_ID);
+
 
         if (muteRole && member && member.roles.cache.has(muteRole.id)) {
           await member.roles.remove(muteRole);
@@ -382,7 +381,8 @@ client.on('guildMemberAdd', async (member) => {
 
     const activeMute = await mutesCollection.findOne({ userId: member.id });
     if (activeMute && new Date() < activeMute.expiresAt) {
-      const muteRole = member.guild.roles.cache.get(process.env.MUTE_ROLE_ID);
+      const muteRole = member.guild.roles.cache.get(MUTE_ROLE_ID);
+
       if (muteRole) {
         await member.roles.add(muteRole);
         console.log(`Re-applied mute role to ${member.user.tag} on rejoin`);
@@ -622,6 +622,22 @@ async function safeDeferReply(interaction, options = {}) {
   }
 }
 
+const MUTE_ROLE_ID = "1276630843552694292";
+
+
+function requireMuteRoleOrReply(interaction, guild) {
+  const muteRole = guild.roles.cache.get(MUTE_ROLE_ID);
+  if (!muteRole) {
+    return {
+      role: null,
+      replied: true,
+      message: `Mute role not found. Expected role ID: ${MUTE_ROLE_ID}`
+    };
+  }
+
+  return { role: muteRole, replied: false };
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -705,10 +721,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
 
       if (action === 'Mute') {
-        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
-        if (!muteRole) return await replyOrEdit(interaction, `Mute role is not configured (MUTE_ROLE_ID).`);
+        const { role: muteRole, replied, message } = requireMuteRoleOrReply(interaction, guild);
+        if (replied) return await replyOrEdit(interaction, message);
 
-        await resolvedTarget.roles.add(muteRole, reason);
+        await resolvedTarget.roles.add(muteRole, reason).catch(err => {
+          console.error("Failed to execute mute:", err);
+          throw err;
+        });
+
 
         const mutesCollection = db.collection('DiscordMutes');
         if (duration && duration > 0) {
@@ -740,10 +760,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
 
       if (action === 'Unmute') {
-        const muteRole = guild.roles.cache.get(process.env.MUTE_ROLE_ID);
-        if (!muteRole) return await replyOrEdit(interaction, `Mute role is not configured (MUTE_ROLE_ID).`);
+        const { role: muteRole, replied, message } = requireMuteRoleOrReply(interaction, guild);
+        if (replied) return await replyOrEdit(interaction, message);
 
         await resolvedTarget.roles.remove(muteRole, reason);
+
 
         const mutesCollection = db.collection('DiscordMutes');
         await mutesCollection.deleteOne({ userId: resolvedTarget.id }).catch(() => null);
