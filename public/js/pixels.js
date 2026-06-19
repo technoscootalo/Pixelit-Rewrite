@@ -121,6 +121,11 @@ function generatePacksHTML(packsData) {
   sortedPacksWithMiscLast.forEach((pack) => {
     const packDiv = document.createElement("div");
     packDiv.className = "pack";
+<<<<<<< HEAD
+=======
+
+    // misc hide the ui if user doesn't own anything in that pack
+>>>>>>> 4c0b535979c818a568cabbf8693d9fd233525e13
     const isMisc = pack?.name === "Miscellaneous";
     const hasOwnedBlooks = (Array.isArray(pack?.blooks) ? pack.blooks : []).some(b => Number(b?.owned ?? 0) > 0);
 

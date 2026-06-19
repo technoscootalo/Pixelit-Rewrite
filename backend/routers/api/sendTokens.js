@@ -100,4 +100,8 @@ router.put("/sendTokens", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> 4c0b535979c818a568cabbf8693d9fd233525e13
