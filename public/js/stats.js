@@ -155,7 +155,6 @@ function renderInboxMessage(msg) {
   return row;
 }
 
-
 async function fetchInbox() {
   const res = await fetch("/api/inbox", { credentials: "include" });
   if (!res.ok) return [];
@@ -827,7 +826,7 @@ async function openPfpModal() {
       unique.set(choice.imageUrl, choice);
     }
 
-    const MAX_PFP_IMAGES = 100;
+    const MAX_PFP_IMAGES = 150;
     const safeChoices = Array.from(unique.values()).slice(0, MAX_PFP_IMAGES);
 
     const modal = document.createElement("div");
