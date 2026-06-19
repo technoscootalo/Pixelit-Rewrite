@@ -82,7 +82,7 @@ router.post("/", async (req, res) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: `**${senderUpdate.username}** gifted **${recipient.username}** ${qty} ${blook.blookName}`
+          content: `**${sender.username}** gifted **${recipient.username}** ${qty} ${blook.blookName}`
         })
       }).catch(err => console.error("Discord Webhook (token gifting) failed:", err));
     }
