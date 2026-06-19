@@ -1,4 +1,4 @@
- const express = require("express");
+const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
 const DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY = process.env.DISCORD_WEBHOOK_TOKEN_GIFTING_ACTIVITY;
@@ -100,8 +100,4 @@ router.put("/sendTokens", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> 4c0b535979c818a568cabbf8693d9fd233525e13
