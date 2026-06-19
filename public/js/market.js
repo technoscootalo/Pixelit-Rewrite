@@ -889,7 +889,7 @@ async function showResult(blook, pack = null) {
   overlay.style.cssText = `
     position: fixed;
     inset: 0;
-    z-index: 999;
+    z-index: 9999;
     background-image: ${overlayBg};
     background-size: cover;
     background-position: center;
