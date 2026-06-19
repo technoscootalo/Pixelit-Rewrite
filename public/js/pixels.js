@@ -289,7 +289,7 @@ function updateBlookInfo(blook) {
 
 function sellBlook() {
   if (!selectedBlook || !selectedBlook.name) {
-    showModal("Select a blook first");
+    showModal("Select a Pixel first");
     return;
   }
   
@@ -493,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function giftBlook() {
   if (!selectedBlook || !selectedBlook.name) {
-    showModal("Select a blook first");
+    showModal("Select a Pixel first");
     return;
   }
 
@@ -704,7 +704,7 @@ function showModal(message) {
 
 function listBlook() {
   if (!selectedBlook || !selectedBlook.name) {
-    showModal("Select a blook first");
+    showModal("Select a Pixel first");
     return;
   }
 
