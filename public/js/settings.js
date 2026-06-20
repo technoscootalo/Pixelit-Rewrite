@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let revealed = false;
   let realKey = "";
-  const hiddenKey = "•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••";
+  const hiddenKey = "••••••••••••••••••••••••••••••••••••••••••••••••••••••";
 
   const userData = await fetchUserData();
 

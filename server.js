@@ -189,7 +189,7 @@ io.on("connection", async (socket) => {
 
         const recentMessages = await Message.find({})
             .sort({ createdAt: -1 })
-            .limit(1000)
+            .limit(150)
             .lean();
 
             socket.emit("chatHistory", recentMessages.reverse());

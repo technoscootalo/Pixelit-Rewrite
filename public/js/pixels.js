@@ -778,6 +778,18 @@ function listBlook() {
   const close = () => modal.remove();
   document.getElementById("cancelList").onclick = close;
 
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape") close();
+    },
+    { once: true }
+  );
+
   (async () => {
     const listPriceEl = document.getElementById("listPrice");
     if (!listPriceEl) return;

@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
     "start": "node server.js"
   },
   "author": "IzumiiHD, Lemon, Iamgamedude, SOUNDGOD, Packman28, Dylanee300, Hjr, Buenar",
@@ -20,5 +22,8 @@
     "socket.io": "^4.8.3",
     "stripe": "^16.12.0",
     "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "vite": "^8.0.16"
   }
 }
