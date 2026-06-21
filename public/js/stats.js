@@ -1,176 +1,10 @@
 let user = null;
-
 const DAILY_WHEEL_COOLDOWN_MS = 1000 * 60 * 60 * 4;
-
-const DEFAULT_PFP = "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
-const DEFAULT_BANNER = "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
-
-const ROLE_COLORS = {
-  Owner: "#020202",
-  Veteran: "#969a5c",
-  Verified: "#5ab65b",
-  Plus: "#5657d3",
-  Tester: "#80a1d3",
-  Helper: "#4b69c3",
-  Moderator: "#ab53c4",
-  Admin: "#dc6dc1",
-  "Community Manager": "#69c95d",
-  Developer: "#6a76c7",
-  Artist: "#ca964c",
-  Player: "#FFFFFF",
-};
-
-const BADGE_PRIORITY = [
-  "OG",
-  "Veteran",
-  "Pixeltuber",
-  "Booster",
-  "Plus",
-  "Owner",
-  "Developer",
-  "Artist",
-  "Tester",
-  "Helper",
-  "Moderator",
-  "Admin",
-  "Community Manager",
-  "Verified",
-];
-
-const ROLE_PRIORITY_MAP = new Map(
-  BADGE_PRIORITY.map((name, idx) => [String(name).toLowerCase(), idx])
-);
-
 function formatRemaining(ms) {
-  const safe = Math.max(0, ms || 0);
-  const hours = Math.floor(safe / 3600000);
-  const minutes = Math.floor((safe % 3600000) / 60000);
-  const seconds = Math.floor((safe % 60000) / 1000);
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
   return `${hours}h ${minutes}m ${seconds}s`;
-}
-
-function normalizeBadgeName(b) {
-  if (!b) return "";
-  if (typeof b === "string") return b;
-  return (
-    b?.name ||
-    b?.badge?.name ||
-    b?.role ||
-    b?.badgeRole ||
-    b?.key ||
-    ""
-  );
-}
-
-function badgePriority(b) {
-  const name = normalizeBadgeName(b);
-  const key = String(name).trim().toLowerCase();
-  if (ROLE_PRIORITY_MAP.has(key)) return ROLE_PRIORITY_MAP.get(key);
-  return Number.MAX_SAFE_INTEGER;
-}
-
-function safeBadgeId(idOrName) {
-  return String(idOrName || "").replace(/[^a-zA-Z0-9_-]/g, "");
-}
-
-function renderBadges({ badges, badgesEl, badgesContainerEl }) {
-  if (!badgesEl || !badgesContainerEl) return;
-
-  const safeBadges = Array.isArray(badges) ? badges : [];
-
-  if (!safeBadges.length) {
-    badgesEl.innerHTML = "";
-    badgesContainerEl.style.display = "none";
-    return;
-  }
-
-  const sorted = safeBadges.slice().sort((a, b) => badgePriority(a) - badgePriority(b));
-
-  badgesContainerEl.style.display = "block";
-  badgesEl.innerHTML = sorted
-    .map((b) => {
-      const isObj = b && typeof b === "object";
-      const id = isObj
-        ? b.badgeId || b._id || b.id || b.badge?.badgeId || ""
-        : b;
-      const url = isObj
-        ? b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || ""
-        : "";
-      const name = isObj ? b.name || b.badge?.name || "Badge" : "Badge";
-
-      if (!url) return "";
-      const safeId = safeBadgeId(id || name);
-      return `<img class="badge" src="${url}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
-    })
-    .filter(Boolean)
-    .join("");
-}
-
-function setProfileDom({
-  profile,
-  viewMode,
-  setSpinState,
-}) {
-  const pfpEl = document.getElementById("pfp");
-  const bannerEl = document.getElementById("banner");
-  const usernameEl = document.getElementById("username");
-  const roleEl = document.getElementById("role");
-  const tokensEl = document.getElementById("tokens");
-  const openedEl = document.getElementById("opened");
-  const messagesEl = document.getElementById("messages");
-  const badgesContainerEl = document.getElementById("badges-container");
-  const badgesEl = document.getElementById("badges");
-  const spinButtonEl = document.getElementById("spinButton");
-  const unlockedEl = document.getElementById("unlocked");
-
-  if (pfpEl) pfpEl.src = profile?.pfp || DEFAULT_PFP;
-  if (bannerEl) bannerEl.src = profile?.banner || DEFAULT_BANNER;
-
-  if (usernameEl) {
-    usernameEl.innerText = profile?.username || "";
-    const color = ROLE_COLORS[profile?.role];
-    if (color) usernameEl.style.color = color;
-  }
-
-  if (roleEl) {
-    roleEl.innerText = profile?.role || "Player";
-    const color = ROLE_COLORS[profile?.role];
-    if (color) roleEl.style.color = color;
-  }
-
-  if (tokensEl) tokensEl.innerText = (profile?.tokens ?? 0).toLocaleString();
-
-  if (openedEl) {
-    const openedVal =
-      typeof profile?.opened === "number"
-        ? profile.opened
-        : typeof profile?.packsOpened === "number"
-          ? profile.packsOpened
-          : 0;
-    openedEl.innerText = Number(openedVal).toLocaleString();
-  }
-
-  if (messagesEl) {
-    const sent = profile?.stats?.sent;
-    const fallbackSent = profile?.stats?.sent ?? profile?.sent ?? 0;
-    messagesEl.innerText = (typeof sent === "number" ? sent : fallbackSent).toLocaleString();
-  }
-
-  if (unlockedEl) {
-    const unlockedVal = typeof profile?.unlocked === "number" ? profile.unlocked : 0;
-    const totalBlooksVal = typeof profile?.totalBlooks === "number" ? profile.totalBlooks : 0;
-    unlockedEl.innerText = `${unlockedVal}/${totalBlooksVal}`;
-  }
-
-  renderBadges({
-    badges: Array.isArray(profile?.badges) ? profile.badges : profile?.userBadges || [],
-    badgesEl,
-    badgesContainerEl,
-  });
-
-  if (typeof setSpinState === "function") {
-    setSpinState({ el: spinButtonEl, viewMode });
-  }
 }
 
 function updateDailyWheelState() {
@@ -619,21 +453,127 @@ async function loadUser() {
     const usernameEl = document.getElementById("username");
     const roleEl = document.getElementById("role");
 
-    setProfileDom({
-      profile: user,
-      viewMode: 'my',
-      setSpinState: ({ el }) => {
-        if (el) {
-          el.style.display = 'inline-flex';
-          el.disabled = false;
+    const roleColors = {
+      Owner: "#020202",
+      Veteran: "#969a5c",
+      Verified: "#5ab65b",
+      Plus: "#5657d3",
+      Tester: "#80a1d3",
+      Helper: "#4b69c3",
+      Moderator: "#ab53c4",
+      Admin: "#dc6dc1",
+      "Community Manager": "#69c95d",
+      Developer: "#6a76c7",
+      Artist: "#ca964c",
+      Player: "#FFFFFF",
+    };
+
+    if (pfp) pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+    if (banner) banner.src = user.banner || "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
+
+    if (usernameEl) {
+      usernameEl.innerText = user.username;
+      const color = roleColors[user.role];
+      if (color) usernameEl.style.color = color;
+    }
+    if (roleEl) {
+      roleEl.innerText = user.role || "Player";
+      const color = roleColors[user.role];
+      if (color) roleEl.style.color = color;
+    }
+
+
+    const tokensEl = document.getElementById("tokens");
+    const openedEl = document.getElementById("opened");
+    const messagesEl = document.getElementById("messages");
+
+    if (tokensEl) tokensEl.innerText = user.tokens.toLocaleString();
+    if (openedEl) openedEl.innerText = user.opened.toLocaleString();
+    if (messagesEl) messagesEl.innerText = user.sent.toLocaleString();
+
+    const badgesContainer = document.getElementById('badges-container');
+    const badgesEl = document.getElementById('badges');
+      if (badgesContainer && badgesEl) {
+        const badges = Array.isArray(user.badges)
+          ? user.badges
+          : (user.userBadges || []);
+
+        const BADGE_PRIORITY = [
+          'OG',
+          'Veteran',
+          'Pixeltuber',
+          'Booster',
+          'Plus',
+          'Owner',
+          'Developer',
+          'Artist',
+          'Tester',
+          'Helper',
+          'Moderator',
+          'Admin',
+          'Community Manager',
+          'Verified',
+        ];
+
+        const rolePriorityMap = new Map(
+          BADGE_PRIORITY.map((name, idx) => [String(name).toLowerCase(), idx])
+        );
+
+        const normalizeBadgeName = (b) => {
+          if (!b) return '';
+          if (typeof b === 'string') return b;
+          return (
+            b?.name ||
+            b?.badge?.name ||
+            b?.role ||
+            b?.badgeRole ||
+            b?.key ||
+            ''
+          );
+        };
+
+        const getPriority = (b) => {
+          const name = normalizeBadgeName(b);
+          const key = String(name).trim().toLowerCase();
+          if (rolePriorityMap.has(key)) return rolePriorityMap.get(key);
+          return Number.MAX_SAFE_INTEGER;
+        };
+
+        if (Array.isArray(badges) && badges.length) {
+          badgesContainer.style.display = 'block';
+
+          const sortedBadges = badges
+            .slice()
+            .sort((a, b) => getPriority(a) - getPriority(b));
+
+          badgesEl.innerHTML = sortedBadges
+            .map((b) => {
+              const isObj = b && typeof b === 'object';
+              const id = isObj
+                ? b.badgeId || b._id || b.id || b.badge?.badgeId || ''
+                : b;
+              const url = isObj
+                ? b.imageUrl || b.badgeImageUrl || b.image || b.badge?.imageUrl || ''
+                : '';
+              const name = isObj ? b.name || b.badge?.name || 'Badge' : 'Badge';
+
+              const src = url || '';
+              if (!src) return '';
+
+              const safeId = String(id || name || '').replace(/[^a-zA-Z0-9_-]/g, '');
+              return `<img class="badge" src="${src}" alt="${name}" title="${name}" data-badge-id="${safeId}">`;
+            })
+            .filter(Boolean)
+            .join('');
+        } else {
+          badgesEl.innerHTML = '';
+          badgesContainer.style.display = 'none';
         }
       }
-    });
 
     checkPanelAccess();
     startDailyWheelCountdownTicker();
     refreshInboxBadge();
-
 
   } catch (err) {
     console.error("Failed to load user data:", err);
