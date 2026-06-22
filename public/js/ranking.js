@@ -22,7 +22,7 @@ async function fetchLeaderboard() {
 
   } catch (err) {
     console.error(err);
-    showError("Failed to load leaderboard");
+    showError("Failed to load leaderboard data");
   }
 }
 
@@ -144,7 +144,7 @@ function renderLeaderboard(users) {
         ? "#cd7f32"
         : "white";
 
-const value = isMessagesView
+    const value = isMessagesView
       ? (user.sent ?? user.messages ?? 0)
       : user.tokens || 0;
 

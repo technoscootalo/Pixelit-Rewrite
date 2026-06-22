@@ -594,26 +594,23 @@ async function safeDeferReply(interaction, options = {}) {
   try {
     if (interaction.deferred || interaction.replied) return true;
 
-    const ephemeralFlag = Boolean(options.ephemeral || options.flags);
-    await interaction.deferReply({ ephemeral: ephemeralFlag });
+    const isEphemeral = Boolean(options.ephemeral || (options.flags && options.flags & MessageFlags.Ephemeral));
+    
+    await interaction.deferReply({ ephemeral: isEphemeral });
     return true;
   } catch (err) {
+    if (err && (err.code === 10062 || err.code === 50027)) {
+      console.warn(`[Interaction Expired] Handled timeout for command: /${interaction.commandName}`);
+      return false;
+    }
+    
     console.error("Failed to defer reply:", err);
     try {
-      if (err && err.code === 10062) {
-        const content = "Processing...";
-        const channel = interaction.channel;
-        if (channel && typeof channel.send === "function") {
-          await channel.send(content).catch(() => null);
-        } else {
-          const user = await client.users.fetch(interaction.user.id).catch(() => null);
-          if (user) await user.send(content).catch(() => null);
-        }
-      } else if (!interaction.replied && !interaction.deferred) {
-        const replyOpts = { content: "Processing..." };
-        if (options.flags) replyOpts.flags = options.flags;
-        else if (options.ephemeral) replyOpts.flags = MessageFlags.Ephemeral;
-        await interaction.reply(replyOpts);
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({ 
+          content: "Request is processing...", 
+          flags: MessageFlags.Ephemeral 
+        });
       }
     } catch (replyErr) {
       console.error("Fallback reply failed:", replyErr);
@@ -621,6 +618,7 @@ async function safeDeferReply(interaction, options = {}) {
     return false;
   }
 }
+
 
 const MUTE_ROLE_ID = "1276630843552694292";
 
@@ -856,7 +854,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-
   if (interaction.commandName === "logout") {
     await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
 
@@ -891,7 +888,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
       return await replyOrEdit(interaction, "An error occurred while logging out. Try again later.");
     }
   }
-
 
   if (interaction.commandName === "user") {
     await safeDeferReply(interaction);
@@ -1051,20 +1047,28 @@ client.on(Events.InteractionCreate, async (interaction) => {
         expiresAt
       });
 
-      return await replyOrEdit(interaction, `━━━━━━━━━━━━━━━━━━
-      ACCESS KEY GENERATED
+      const timestampUnix = Math.floor(expiresAt.getTime() / 1000);
+      const discordTimestamp = `<t:${timestampUnix}:R>`;
 
-      ${key}
+      const embed = new EmbedBuilder()
+        .setColor(0x6f057a)
+        .setTitle("Access Key Generated")
+        .setDescription("Your authentication key is ready. Keep this private.")
+        .addFields(
+          { name: "Key", value: `\`\`\`${key}\`\`\``, inline: false },
+          { name: "Expires", value: discordTimestamp, inline: true },
+          { name: "Security", value: "`One-Time Use Only`", inline: true }
+        )
+        .setFooter({ text: "Do not share this key with anyone." });
 
-      Expires in: 10 minutes
-      One-time use only
-      ━━━━━━━━━━━━━━━━━━`);
+      return await replyOrEdit(interaction, { embeds: [embed] });
 
     } catch (err) {
       console.error("Access key error:", err);
       return await replyOrEdit(interaction, "Failed to generate access key.");
     }
   }
+
   
   if (interaction.commandName === "claim") {
     await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });

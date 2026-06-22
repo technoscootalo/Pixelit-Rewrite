@@ -964,7 +964,7 @@ async function showResult(blook, pack = null) {
     <p style="color:${color};font-size:26px;font-weight:bold;">
       ${capitalize(rarity)}
     </p>
-    <img src="${blook.imageUrl}" style="width:165px;height:170px;object-fit:contain;">
+    <img src="${blook.imageUrl}" style="width:165px;height:170px;object-fit:contain;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.71));">
     <p style="font-size:30px;font-weight:bold;">${blook.chance}%</p>
     ${(adjustedChance !== null) ? `<p style="font-size:18px;opacity:0.95;margin-top:-6px;">Boosted chance: ${adjustedChance}%</p>` : ``}
 

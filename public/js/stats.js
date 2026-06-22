@@ -30,6 +30,37 @@ function updateDailyWheelState() {
   messageEl.innerText = "";
 }
 
+function showModal(message) {
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  `;
+
+  const box = document.createElement("div");
+  box.style.cssText = `
+    background-color: #6f057a;
+    box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 280px;
+    color: white;
+    font-family: Pixelify Sans;
+    font-size: 18px;
+  `;
+
+  box.innerText = message;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  modal.onclick = () => modal.remove();
+}
+
 let __dailyWheelCountdownTimer = null;
 function startDailyWheelCountdownTicker() {
   if (__dailyWheelCountdownTimer) return;
@@ -1496,7 +1527,7 @@ function openViewUserPopup() {
       modal.remove();
     } catch (error) {
       console.error(error);
-      alert('Error loading profile.');
+      showModal('Error loading profile.');
     }
   };
 

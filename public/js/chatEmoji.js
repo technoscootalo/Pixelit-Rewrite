@@ -34,4 +34,3 @@ export function renderChatContentWithEmoji(raw) {
   out += escapeHtml(text.slice(lastIndex));
   return out;
 }
-
