@@ -13,6 +13,25 @@ const Emoji = require("../../backend/models/Emojis.js");
  */
 
 function setupChat(io, onlineUsers) {
+  const emojiNameToUrl = new Map();
+  let emotesLoaded = false;
+
+  async function loadEmotesToCache() {
+    try {
+      const currentEmotes = await Emoji.find({}, "name imageUrl").lean();
+      emojiNameToUrl.clear();
+      currentEmotes.forEach((e) => {
+        if (e?.name && e?.imageUrl) emojiNameToUrl.set(e.name, e.imageUrl);
+      });
+      emotesLoaded = true;
+    } catch (dbErr) {
+      console.error("Failed loading emotes for chat cache:", dbErr);
+      emotesLoaded = true; 
+    }
+  }
+
+  loadEmotesToCache();
+
   io.on("connection", async (socket) => {
     const session = socket.request.session;
 
@@ -39,12 +58,20 @@ function setupChat(io, onlineUsers) {
         socket.join(`user:${user.username}`);
       }
 
-      try {
-        const currentEmotes = await Emoji.find({}, "name imageUrl");
-        socket.emit("emotesList", currentEmotes);
-      } catch (dbErr) {
-        console.error("Failed loading container emotes for picker:", dbErr);
-        socket.emit("emotesList", []);
+      if (emojiNameToUrl.size > 0) {
+        const emotesList = Array.from(emojiNameToUrl.entries()).map(([name, imageUrl]) => ({ name, imageUrl }));
+        socket.emit("emotesList", emotesList);
+      } else {
+        try {
+          const currentEmotes = await Emoji.find({}, "name imageUrl").lean();
+          currentEmotes.forEach((e) => {
+            if (e?.name && e?.imageUrl) emojiNameToUrl.set(e.name, e.imageUrl);
+          });
+          socket.emit("emotesList", currentEmotes);
+        } catch (dbErr) {
+          console.error("Failed loading container emotes for picker:", dbErr);
+          socket.emit("emotesList", []);
+        }
       }
 
       const recentMessages = await Message.find({})
@@ -80,12 +107,12 @@ function setupChat(io, onlineUsers) {
 
         if (textMatches.length > 0) {
           const targetedNames = [...new Set(textMatches.map((m) => m[1]))];
-          const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
 
           const mapLookup = {};
-          matchedDbEmotes.forEach((e) => {
-            mapLookup[e.name] = e.imageUrl;
-          });
+          for (const tokenName of targetedNames) {
+            const url = emojiNameToUrl.get(tokenName);
+            if (url) mapLookup[tokenName] = url;
+          }
 
           content = content.replace(emoteRegex, (fullMatch, tokenName) => {
             if (mapLookup[tokenName]) {
@@ -135,12 +162,12 @@ function setupChat(io, onlineUsers) {
 
         if (textMatches.length > 0) {
           const targetedNames = [...new Set(textMatches.map((m) => m[1]))];
-          const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
 
           const mapLookup = {};
-          matchedDbEmotes.forEach((e) => {
-            mapLookup[e.name] = e.imageUrl;
-          });
+          for (const tokenName of targetedNames) {
+            const url = emojiNameToUrl.get(tokenName);
+            if (url) mapLookup[tokenName] = url;
+          }
 
           updatedContent = updatedContent.replace(emoteRegex, (fullMatch, tokenName) => {
             if (mapLookup[tokenName]) {

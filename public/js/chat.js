@@ -77,7 +77,6 @@ const emojiButton = document.querySelector(".emojiContainer");
 })();
 
 const socket = io({
-  transports: ["websocket"],
   reconnection: true,
   reconnectionAttempts: 20,
   reconnectionDelay: 500,
