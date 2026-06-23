@@ -6,10 +6,10 @@ const connectDB = async () => {
             dbName: "Pixelit-Rewrite"
         });
 
-        console.log("MongoDB connected");
-    } catch (err) {
-        console.error("MongoDB connection failed:", err);
-        process.exit(1);
+        console.log("MongoDB database connection successfully established.");
+    } catch (error) {
+        console.error("Failed to establish MongoDB connection:", error.message);
+        process.exit(1); 
     }
 };
 

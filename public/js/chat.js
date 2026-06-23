@@ -77,14 +77,12 @@ const emojiButton = document.querySelector(".emojiContainer");
 })();
 
 const socket = io({
-
   transports: ["websocket"],
   reconnection: true,
   reconnectionAttempts: 20,
   reconnectionDelay: 500,
   reconnectionDelayMax: 2000,
 });
-
 
 const ROLE_COLOR_MAP = {
   Owner: "#020202",
@@ -374,8 +372,6 @@ function sanitizeForMediaUrl(url) {
   if (lowered.startsWith('data:')) return '';
   return raw;
 }
-
-
 
 function parseMentions(htmlContent, parentRow) {
   const isDirectReplyToMe = parentRow.hasAttribute("data-reply-to-user") && 
@@ -857,7 +853,7 @@ function showEmptyState() {
 }
 
 socket.on("connect", () => {
-  console.log("Connected to chat socket");
+  console.log("Connected to Pixelit Chat Socket");
 });
 
 socket.on("initClient", ({ username, userId }) => {
@@ -868,7 +864,6 @@ socket.on("initClient", ({ username, userId }) => {
 socket.on("chatMuteState", (muteState) => {
   applyChatMuteUI(muteState);
 });
-
 
 socket.on("chatHistory", (messages) => {
   messagesEl.innerHTML = "";
@@ -898,7 +893,6 @@ socket.on("chatHistory", (messages) => {
 });
 
 const PING_SOUND_URL = "https://technoscootalo.github.io/pixelitcdn-1/assets/audio/ping.mp3";
-
 
 const pingAudio = new Audio(PING_SOUND_URL);
 pingAudio.preload = "auto";
@@ -1036,8 +1030,6 @@ socket.on("presence:update", ({ onlineCount } = {}) => {
 if (onlineUsersCounterEl) {
   updateOnlineCounter({ onlineCount: 0, source: "loading" });
 }
-
-
 
 chatForm.addEventListener("submit", (event) => {
   event.preventDefault();

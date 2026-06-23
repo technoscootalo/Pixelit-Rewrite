@@ -1,70 +1,70 @@
 require("dotenv").config();
 
-const express = require("express");
-const http = require("http");
-const bodyParser = require('body-parser');
-const { Server: SocketIOServer } = require("socket.io");
 const path = require("path");
+const http = require("http");
+const express = require("express");
 const session = require("express-session");
+const bodyParser = require("body-parser");
+const { Server: SocketIOServer } = require("socket.io");
 
 const connectDB = require("./backend/utils/db");
-
+const { setupChat } = require("./backend/socket/chat");
 
 if (!process.env.STRIPE_SECRET_KEY) {
-    console.warn('Warning: STRIPE_SECRET_KEY is not set. Stripe checkout endpoints will return 500.');
+    console.warn("STRIPE_SECRET_KEY environment variable is missing. Payment functionality will be disabled.");
 } else {
-    console.log('Stripe secret key detected in environment.');
+    console.log("Stripe initialization payload validated successfully.");
 }
 
-// #----- MODELS -----#
-const User = require("./backend/models/User");
-const Message = require("./backend/models/Messages");
-const Emoji = require("./backend/models/Emojis.js");
+const PORT = process.env.PORT || 3000;
+const allowedCorsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
 
-// #----- ENDPOINTS -----#
-const pages = require("./backend/routers/pages");
-const stripeHandlers = require("./backend/routers/api/stripe");
-const registerRoute = require("./backend/routers/auth/register");
-const loginRoute = require("./backend/routers/auth/login");
-const loggedinRoute = require("./backend/routers/auth/loggedin");
-const logoutRoute = require("./backend/routers/auth/logout");
-const userRoutes = require("./backend/routers/user");
-const packsRouter = require("./backend/routers/api/packs");
-const bazaarPacksRouter = require("./backend/routers/api/bazaarPacks");
-const changePfpRoute = require("./backend/routers/api/changePfp");
-const messagesRoute = require("./backend/routers/api/messages");
-const inboxRoute = require("./backend/routers/api/inbox");
-const leaderboardRoute = require("./backend/routers/api/leaderboard");
-const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
-const viewUserRoute = require("./backend/routers/api/viewUser");
-const blookRoutes = require("./backend/routers/api/blooks");
-const changeUsernameRoute = require("./backend/routers/api/changeUsername");
-const changePasswordRouter = require("./backend/routers/api/changePassword"); 
-const reportUserRoute = require("./backend/routers/api/reportUser");
+// ==========================================
+// ROUTE IMPORTS (Alphabetical)
+// ==========================================
+
+const articlesRoute = require("./backend/routers/api/articles");
 const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
-const usersRoutes = require("./backend/routers/api/users");
-const packRouter = require("./backend/routers/api/pack");
-const moderationReportsRoute = require("./backend/routers/api/moderationReports");
-const articlesRoute = require("./backend/routers/api/articles");
+const bazaarRouter = require("./backend/routers/api/bazaar");
+const bazaarPacksRouter = require("./backend/routers/api/bazaarPacks");
+const blookRoutes = require("./backend/routers/api/blooks");
 const blooksRoutes = require("./backend/routers/users/blooks");
-const userBlooksRoutes = require("./backend/routers/api/userBlooks");
-const sellBlookRoute = require("./backend/routers/users/sellBlook");
+const boostersRoute = require("./backend/routers/api/boosters");
+const boostersActivateRoute = require("./backend/routers/api/boostersActivate");
+const boostersActiveMultiplierRoute = require("./backend/routers/api/getActiveBoosters");
+const changeBannerRoute = require("./backend/routers/api/changeBanner");
+const changePasswordRouter = require("./backend/routers/api/changePassword");
+const changePfpRoute = require("./backend/routers/api/changePfp");
+const changeUsernameRoute = require("./backend/routers/api/changeUsername");
+const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
-const inventoryRoute = require('./backend/routers/api/inventory');
-const listBlookRouter = require('./backend/routers/users/listBlook');
-const bazaarRouter = require('./backend/routers/api/bazaar');
-const changeBannerRoute = require('./backend/routers/api/changeBanner');
-const sendTokensRouter = require('./backend/routers/api/sendTokens');
-const boostersRoute = require('./backend/routers/api/boosters');
-const marketBoostersBuyRoute = require('./backend/routers/api/marketBoosterBuy');
-const boostersActivateRoute = require('./backend/routers/api/boostersActivate');
+const inboxRoute = require("./backend/routers/api/inbox");
+const inventoryRoute = require("./backend/routers/api/inventory");
+const leaderboardRoute = require("./backend/routers/api/leaderboard");
+const listBlookRouter = require("./backend/routers/users/listBlook");
+const loggedinRoute = require("./backend/routers/auth/loggedin");
+const loginRoute = require("./backend/routers/auth/login");
+const logoutRoute = require("./backend/routers/auth/logout");
 const marketActiveBoostersRoute = require("./backend/routers/api/marketActiveBoosters");
-const boostersActiveMultiplierRoute = require('./backend/routers/api/getActiveBoosters');
+const marketBoostersBuyRoute = require("./backend/routers/api/marketBoosterBuy");
+const messagesRoute = require("./backend/routers/api/messages");
+const moderationReportsRoute = require("./backend/routers/api/moderationReports");
+const packRouter = require("./backend/routers/api/pack");
+const packsRouter = require("./backend/routers/api/packs");
+const pages = require("./backend/routers/pages");
+const registerRoute = require("./backend/routers/auth/register");
+const reportUserRoute = require("./backend/routers/api/reportUser");
+const sellBlookRoute = require("./backend/routers/users/sellBlook");
+const sendTokensRouter = require("./backend/routers/api/sendTokens");
+const stripeHandlers = require("./backend/routers/api/stripe");
+const userBlooksRoutes = require("./backend/routers/api/userBlooks");
+const userRoutes = require("./backend/routers/user");
+const usersRoutes = require("./backend/routers/api/users");
+const viewUserRoute = require("./backend/routers/api/viewUser");
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.PORT || 3000;
 
 connectDB();
 
@@ -74,64 +74,66 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
+        secure: false, // set to true if running production https
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     }
 });
 
-app.post('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }), stripeHandlers.webhookHandler);
+app.post("/api/stripe/webhook", bodyParser.raw({ type: "application/json" }), stripeHandlers.webhookHandler);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
-
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/api/blooks", blookRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/user/daily-wheel", dailyWheelRoute);
-app.use("/api/packs", packsRouter);
-app.use("/api/bazaar/packs", bazaarPacksRouter);
+
+// ==========================================
+// ENDPOINT ROUTING
+// ==========================================
+
 app.use("/api/register", registerRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/loggedin", loggedinRoute);
 app.use("/api", logoutRoute);
-app.use("/api/messages", messagesRoute);
-app.use("/api/inbox", inboxRoute);
+app.use("/api/user", userRoutes);
+app.use("/api/user", changePfpRoute);
+app.use("/api/users", usersRoutes);
 app.use("/api/viewUser", viewUserRoute);
-app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/changePassword", changePasswordRouter);
 app.use("/api/changeUsername", changeUsernameRoute);
-app.use("/api/user", changePfpRoute);
 app.use("/api", changeBannerRoute);
-app.use("/api/reportUser", reportUserRoute);
-app.use("/api/moderationReports", moderationReportsRoute);
+app.use("/api/blooks", blookRoutes);
+app.use("/api/users", blooksRoutes);
+app.use("/api/userBlooks", userBlooksRoutes);
+app.use("/api/inventory", inventoryRoute);
 app.use("/api/badges", badgeRoutes);
 app.use("/api/banners", bannerRoutes);
-app.use("/api/users", usersRoutes);
+app.use("/api/packs", packsRouter);
 app.use("/api/packs", packRouter);
-app.use("/api/articles", articlesRoute);
-app.use("/api/users", blooksRoutes);
+app.use("/api/bazaar/packs", bazaarPacksRouter);
+app.use("/api/bazaar", bazaarRouter);
+app.use("/api/sendTokens", sendTokensRouter);
 app.use("/api/users/sell-blook", sellBlookRoute);
 app.use("/api/users/gift-blook", giftBlookRoute);
-app.use("/api/userBlooks", userBlooksRoutes);
+app.use("/api/users", listBlookRouter);
 app.use("/api/boosters", boostersRoute);
 app.use("/api/boosters", boostersActiveMultiplierRoute);
 app.use("/api/boosters", boostersActivateRoute);
 app.use("/api/market/boosters", marketBoostersBuyRoute);
 app.use("/api/market/boosters", marketActiveBoostersRoute);
-app.use("/api/inventory", inventoryRoute);
-app.use("/api/users", listBlookRouter);
-app.use("/api/bazaar", bazaarRouter);
-app.use("/api/sendTokens", sendTokensRouter);
-app.use('/api/stripe', stripeHandlers.router);
+app.use("/api/user/daily-wheel", dailyWheelRoute);
+app.use("/api/messages", messagesRoute);
+app.use("/api/inbox", inboxRoute);
+app.use("/api/leaderboard", leaderboardRoute);
+app.use("/api/articles", articlesRoute);
+app.use("/api/reportUser", reportUserRoute);
+app.use("/api/moderationReports", moderationReportsRoute);
+app.use("/api/stripe", stripeHandlers.router);
 app.use("/", pages);
 
 app.get("/*path", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend/src/views/404.html"));
 });
-
-const allowedCorsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
 
 const io = new SocketIOServer(httpServer, {
     cors: {
@@ -147,186 +149,10 @@ io.use((socket, next) => {
 });
 
 const onlineUsers = new Map();
+setupChat(io, onlineUsers);
 
-io.on("connection", async (socket) => {
-
-    const session = socket.request.session;
-
-    if (!session || !session.userId) {
-        return socket.disconnect(true);
-    }
-
-    try {
-        const user = await User.findOne({ id: session.userId }).select("-password");
-
-        if (!user) {
-            return socket.disconnect(true);
-        }
-
-        socket.user = user;
-
-        if (!onlineUsers.has(user.id.toString())) {
-            onlineUsers.set(user.id.toString(), { username: user.username });
-        }
-
-        const count = onlineUsers.size;
-        io.emit("presence:update", { onlineCount: count });
-
-        socket.emit("initClient", { username: user.username, userId: user.id.toString() });
-
-        if (user.username) {
-            socket.join(`user:${user.username}`);
-        }
-
-
-        try {
-            const currentEmotes = await Emoji.find({}, "name imageUrl");
-            socket.emit("emotesList", currentEmotes);
-        } catch (dbErr) {
-            console.error("Failed loading container emotes for picker:", dbErr);
-            socket.emit("emotesList", []);
-        }
-
-        const recentMessages = await Message.find({})
-            .sort({ createdAt: -1 })
-            .limit(150)
-            .lean();
-
-            socket.emit("chatHistory", recentMessages.reverse());
-
-        socket.emit("chatMuteState", {
-            muted: !!socket.user.muted,
-            muteReason: socket.user.muteReason || "No Reason Provided",
-            muteDuration: socket.user.muteDuration ?? 0,
-            userId: socket.user.id?.toString?.() || socket.user.id
-        });
-
-        socket.on("chatMessage", async (payload) => {
-            if (socket.user.muted) {
-                return;
-            }
-
-            if (!payload || typeof payload.content !== "string") return;
-
-            let content = payload.content.trim();
-            if (!content) return;
-
-            if (/[<>{}]/.test(content) || /on\w+\s*=|javascript:/i.test(content)) {
-                return;
-            }
-
-
-            const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
-            const textMatches = [...content.matchAll(emoteRegex)];
-
-            if (textMatches.length > 0) {
-                const targetedNames = [...new Set(textMatches.map(m => m[1]))];
-                const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
-
-                const mapLookup = {};
-                matchedDbEmotes.forEach(e => {
-                    mapLookup[e.name] = e.imageUrl;
-                });
-
-                content = content.replace(emoteRegex, (fullMatch, tokenName) => {
-                    if (mapLookup[tokenName]) {
-                        return `<img src="${mapLookup[tokenName]}" class="chat-custom-emoji" alt=":${tokenName}:" title=":${tokenName}:" style="width: 32px; height: 32px; vertical-align: middle; object-fit: contain; margin: 0 2px;" />`;
-                    }
-                    return fullMatch; 
-                });
-            }
-
-            const earnedTokens = Math.floor(Math.random() * 6) + 10;
-
-            await User.findOneAndUpdate(
-                { id: socket.user.id },
-                { $inc: { sent: 1, tokens: earnedTokens } },
-                { new: true }
-            );
-
-            const savedMessage = await Message.create({
-                userId: socket.user.id.toString(),
-                username: socket.user.username,
-                pfp: socket.user.pfp,
-                badges: socket.user.badges || [],
-                content,
-                replyToId: payload.replyToId || null,
-                replyToUser: payload.replyToUser || null,
-                replyToContent: payload.replyToContent || null
-            });
-
-            io.emit("chatMessage", savedMessage);
-        });
-
-        socket.on("editMessage", async ({ messageId, content }) => {
-            if (!messageId || typeof content !== "string" || !content.trim()) return;
-
-            const message = await Message.findById(messageId);
-            if (!message || message.userId !== socket.user.id.toString()) return;
-
-            let updatedContent = content.trim();
-            if (!updatedContent) return;
-
-            if (updatedContent.length > 256) return;
-            if (/[<>"'`]/.test(updatedContent)) return;
-            if (/on\w+\s*=|javascript:/i.test(updatedContent)) return;
-
-
-            const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
-            const textMatches = [...updatedContent.matchAll(emoteRegex)];
-
-            if (textMatches.length > 0) {
-                const targetedNames = [...new Set(textMatches.map(m => m[1]))];
-                const matchedDbEmotes = await Emoji.find({ name: { $in: targetedNames } });
-
-                const mapLookup = {};
-                matchedDbEmotes.forEach(e => {
-                    mapLookup[e.name] = e.imageUrl;
-                });
-
-                updatedContent = updatedContent.replace(emoteRegex, (fullMatch, tokenName) => {
-                    if (mapLookup[tokenName]) {
-                        return `<img src="${mapLookup[tokenName]}" class="chat-custom-emoji" alt=":${tokenName}:" title=":${tokenName}:" style="width: 32px; height: 32px; vertical-align: middle; object-fit: contain; margin: 0 2px;" />`;
-                    }
-                    return fullMatch;
-                });
-            }
-
-            message.content = updatedContent;
-            message.edited = true;
-            await message.save();
-
-            io.emit("messageEdited", { messageId: message._id, content: message.content });
-        });
-
-        socket.on("deleteMessage", async ({ messageId }) => {
-            if (!messageId) return;
-
-            const message = await Message.findById(messageId);
-            if (!message || message.userId !== socket.user.id.toString()) return;
-
-            await Message.deleteOne({ _id: messageId });
-            io.emit("messageDeleted", { messageId });
-        });
-
-    } catch (err) {
-        console.error("Socket connection error:", err);
-        socket.disconnect(true);
-    }
-
-    socket.on("disconnect", () => {
-        try {
-            const uid = socket.user?.id?.toString?.() || socket.user?.id;
-            if (uid && onlineUsers.has(uid)) {
-                onlineUsers.delete(uid);
-                io.emit("presence:update", { onlineCount: onlineUsers.size });
-            }
-        } catch (e) {
-            console.error("disconnect presence error:", e);
-        }
+setTimeout(() => {
+    httpServer.listen(PORT, () => {
+        console.log(`Pixelit server successfully initialized and listening on port ${PORT}.`);
     });
-});
-
-httpServer.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+}, 2000);
