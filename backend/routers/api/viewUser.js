@@ -9,7 +9,6 @@ router.post('/getUserStats', async (req, res) => {
             return res.status(401).json({ success: false, message: 'You must be logged in.' });
         }
 
-
         const { username } = req.body;
         if (!username) {
             return res.status(400).json({ success: false, message: 'Username is required.' });
@@ -44,7 +43,17 @@ router.post('/getUserStats', async (req, res) => {
                 packsOpened: user.opened || 0
             },
             banner: user.banner || '',
-            badges: Array.isArray(user.badges) ? user.badges : [],
+            badges: (Array.isArray(user.badges) ? user.badges : []).map((b) => {
+              if (!b || typeof b !== 'object') return b;
+              return {
+                badgeId: b.badgeId,
+                _id: b._id,
+                name: b.name,
+                imageUrl: b.image,
+                badgeImageUrl: b.image,
+                image: b.image,
+              };
+            }),
         };
 
 

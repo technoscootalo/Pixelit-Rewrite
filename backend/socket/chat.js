@@ -10,7 +10,7 @@ const Emoji = require("../../backend/models/Emojis.js");
  * @param {import('socket.io').Server} io
  * @param {Map<string, {username: string}>} onlineUsers
  *
- */
+**/
 
 function setupChat(io, onlineUsers) {
   const emojiNameToUrl = new Map();
@@ -127,7 +127,7 @@ function setupChat(io, onlineUsers) {
         await User.findOneAndUpdate(
           { id: socket.user.id },
           { $inc: { sent: 1, tokens: earnedTokens } },
-          { new: true }
+          { returnDocument: 'after' }
         );
 
         const savedMessage = await Message.create({

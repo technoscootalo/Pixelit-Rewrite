@@ -686,6 +686,14 @@ function renderMessage(message, grouped = false) {
   pfp.className = "chat-pfp";
   pfp.src = message.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
   pfp.alt = `${message.username || "User"} avatar`;
+  pfp.style.cursor = "pointer";
+
+  const targetName = message.username;
+  if (targetName) {
+    pfp.addEventListener("click", () => {
+      window.location.href = `/stats?name=${encodeURIComponent(targetName)}`;
+    });
+  }
 
   const messageContent = document.createElement("div");
   messageContent.className = "message-content";
