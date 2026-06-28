@@ -14,60 +14,44 @@
 </head>
 
 <body>
+    <!-- <nav><div class="logo"><h1>Pixelit</h1></div><div class="registerRedirect"><a href="/register" title="Register">Register</a></div></nav> -->
+    <div class="background"></div>
+    <main>
+        <div class="register-wrapper">
 
-<!-- <nav><div class="logo"><h1>Pixelit</h1></div><div class="registerRedirect"><a href="/register" title="Register">Register</a></div></nav> -->
-
-<div class="background"></div>
-<main>
-    <div class="register-wrapper">
-
-        <img
-            src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/OG/SOUNDGOD.png"
-            class="animated-blook"
-            alt="blook"
-            onclick="window.location.href='/';"
-            style="cursor: pointer;"
-        />
-
-        <div class="register-form-container">
-
-            <h1>Login</h1>
-
-            <form id="loginForm">
-
-                <input type="text" id="username" placeholder="Username" required>
-                <br>
-
-                <input type="password" id="password" placeholder="Password" required>
-                <br>
-
-                <p class="login-error" id="error"></p>
-
-                <p class="redirect-text" id="redirect" style="display:none;">
-                    Redirecting...
-                </p>
-
-                <div style="text-align:center;">
-                    <button type="submit" id="submitBtn">
-                        Login
-                    </button>
-                </div>
-
-            </form>
-
-            <br />
-
-            <span class="tosaccept">
-                Don't miss out! Check out our <a href="/terms" class="tos-link">Discord</a> for live announcements, events, and more Pixelit updates.            
-            </span>
+            <img
+                src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/OG/SOUNDGOD.png"
+                class="animated-blook"
+                alt="blook"
+                onclick="window.location.href='/';"
+                style="cursor: pointer;"
+            />
+            <div class="register-form-container">
+                <h1>Login</h1>
+                <form id="loginForm">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <br>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <br>
+                    <p class="login-error" id="error"></p>
+                    <p class="redirect-text" id="redirect" style="display:none;">
+                        Redirecting...
+                    </p>
+                    <div style="text-align:center;">
+                        <button type="submit" id="submitBtn">
+                            Login
+                        </button>
+                    </div>
+                </form>
+                <br />
+                <span class="tosaccept">
+                    Don't miss out! Check out our <a href="/terms" class="tos-link">Discord</a> for live announcements, events, and more Pixelit updates.            
+                </span>
+            </div>
         </div>
-
-    </div>
-
-    <span class="accessKeyDiscord"><a href="/register" style="color: white;">Need an Account?</a></span> 
-    <span class="terms">Running version 3.0.7</span>
-    
-    <script src="/js/login.js"></script>
-</main>
+        <span class="accessKeyDiscord"><a href="/register" style="color: white;">Need an Account?</a></span> 
+        <span class="terms">Running version 3.0.7</span>
+        <script src="/js/login.js"></script>
+    </main>
 </body>
 </html>

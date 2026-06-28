@@ -13,61 +13,44 @@
     <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
 
     <link rel="stylesheet" href="/styles/register.css">
-    <script src="/js/register.js"></script>
-
 </head>
 
 <body>
+    <!-- <nav><div class="logo"><h1>Pixelit</h1></div><div class="loginRedirect"><a href="/login" title="Login">Login</a></div></nav> -->
+    <img class="background" alt="background"/>
+    <main>
+        <div class="register-wrapper">
 
-<!-- <nav><div class="logo"><h1>Pixelit</h1></div><div class="loginRedirect"><a href="/login" title="Login">Login</a></div></nav> -->
-
-<img class="background" alt="background"/>
-
-<main>
-    <div class="register-wrapper">
-
-        <img src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Space/TimTheAlien.gif" 
-            class="animated-blook" 
-            alt="blook" 
-            onclick="window.location.href='/login';"
-            style="cursor: pointer;"
-        />
-
-        <div class="register-form-container">
-
-            <h1>Register</h1>
-
-            <form id="registerForm">
-
-                <input type="text" id="username" placeholder="Username" required> <br>
-
-                <input type="password" id="password" placeholder="Password" required> <br>
-
-                <input type="text" id="accessKey" placeholder="Access Key" required> <br>
-
-                <p class="register-error" id="error"></p>
-
-                <div style="text-align:center;">
-                    <button type="submit" id="submitBtn">Register</button>
-                </div>
-
-            </form>
-
-            <br />
-
-            <span class="tosaccept">
-                By registering, you acknowledge and agree to our 
-                <a href="/terms" class="tos-link">Terms of Service.</a>
-            </span>
-
+            <img src="https://raw.githubusercontent.com/IzumiiHD/pixelitcdn/main/assets/img/blooks/Space/TimTheAlien.gif" 
+                class="animated-blook" 
+                alt="blook" 
+                onclick="window.location.href='/login';"
+                style="cursor: pointer;"
+            />
+            <div class="register-form-container">
+                <h1>Register</h1>
+                <form id="registerForm">
+                    <input type="text" id="username" placeholder="Username" required> 
+                    <br>
+                    <input type="password" id="password" placeholder="Password" required> 
+                    <br>
+                    <input type="text" id="accessKey" placeholder="Access Key" required> 
+                    <br>
+                    <p class="register-error" id="error"></p>
+                    <div style="text-align:center;">
+                        <button type="submit" id="submitBtn">Register</button>
+                    </div>
+                </form>
+                <br />
+                <span class="tosaccept">
+                    By registering, you acknowledge and agree to our 
+                    <a href="/terms" class="tos-link">Terms of Service.</a>
+                </span>
+            </div>
         </div>
-
-    </div>
-
-    <span class="accessKeyDiscord" style="color: white;" onclick="window.open('https://discord.gg/jRJVFYyJJj', '_blank')">Need an Access key?</span>
-    <span class="terms">Running version 3.0.7</span>
-    
-</main>
-
+        <span class="accessKeyDiscord" style="color: white;" onclick="window.open('https://discord.gg/jRJVFYyJJj', '_blank')">Need an Access key?</span>
+        <span class="terms">Running version 3.0.7</span>
+        <script src="/js/register.js"></script>
+    </main>
 </body>
 </html>

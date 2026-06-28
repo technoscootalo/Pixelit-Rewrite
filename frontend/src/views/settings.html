@@ -20,206 +20,203 @@
   <script src="/js/all.js"></script>
   <script src="/js/game.js"></script>
 </head>
-
 <body>
-
-<nav>
-  <h1 class="logo"
-    onclick="window.location.href='/'"
-    style="cursor:pointer; transition:0.2s;"
-    onmouseover="this.style.opacity='0.7'"
-    onmouseout="this.style.opacity='1'">
-    Pixelit
-  </h1>
-  
-  <div class="profile-container">
-    <div class="profile-row">
-      <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png" id="profilePic" class="profile-pic" alt="Profile" />
-      <span class="profile-name" id="profileName">User</span>
-      <i class="fa-solid fa-chevron-down profile-arrow"></i>
-    </div>
-    <div class="profile-dropdown-menu">
-      <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="/" onclick="handleLogout(event)">
-        <i class="fa-solid fa-sign-out-alt"></i> Logout
-      </a>   
-    </div>
-  </div>
-  
-  <div class="icons">
-    <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
-    <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
-    <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
-    <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
-    <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
-    <a href="/bazaar"><i class="fa-solid fa-gavel"></i> Bazaar</a>
-    <a href="/inventory"><i class="fa-solid fa-box-open"></i> Inventory</a>
-    <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>   
-    <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
-    <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
-    <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
-  </div>
-
-  <div class="buttonGap"></div>
-    <a href="https://discord.gg/jRJVFYyJJj" target="_blank" class="discord" title="Join our Discord">
-  
-  <div class="bottomIcons">
-      <i class="fa-brands fa-discord"></i>
-    </a>
-    <a href="https://github.com/technoscootalo/Pixelit-Rewrite" target="_blank" class="github" title="Visit our Github">
-      <i class="fa-brands fa-github"></i>
-    </a>
-    <a href="/store"  class="store">
-      <i class="fa-solid fa-cart-shopping"></i>
-    </a>
-  </div>
-</nav>
-
-<div class="background"></div>
-
-<div id="newsSidebarOverlay"></div>
-
-<aside id="newsSidebar" class="news-sidebar" aria-hidden="true">
-  <div class="news-sidebar-header">
-    <div class="news-sidebar-header-title">
-      <i class="far fa-newspaper" aria-hidden="true"></i>
-      <span><span class="pixelitLogo">Pixelit</span> News</span>
-    </div>
-
-    <button
-      type="button"
-      class="news-sidebar-close"
-      data-news-sidebar-close
-      aria-label="Close news"
-    >
-      &times;
-    </button>
-  </div>
-  <div class="news-sidebar-content">
-    <div id="newsSidebarArticles"></div>
-  </div>
-</aside>
-
-<main>
-  <div class="main-content">
-
-    <h1 class="page-title">Settings</h1>
-
-    <div class="content-container">
-
-      <div class="profile-section">
-        <h1 class="profile-title">Profile</h1>
-        <hr class="separator"/>
-
-        <div class="profile-details">
-          <h3 id="username"></h3>
-          <h3 id="discordId"></h3>
-          <h3 id="date"></h3>
-          <h3 id="id"></h3>
-          <h3 id="accessKey"></h3>
-
-        <h1 class="profile-title">Navigation</h1>
-
-          <hr class="separator"/>
-          <h3>
-            <i class="fa-solid fa-heart"></i>
-            <a href="/credits" class="credits">Credits</a>
-          </h3>
-
-          <h3>
-            <i class="fa-brands fa-discord"></i>
-            <a href="https://discord.gg/KXvHan3C8R" class="discord">Discord</a>
-          </h3>
-
-          <h3 id="devLink">
-            <i class="fa-solid fa-code"></i>
-            <a href="/developer" class="developer">Developer</a>
-          </h3>
-
-          <h3>
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <a href="/" class="sign-out" onclick="logout()">Sign Out</a>
-          </h3>
-        </div>
-      </div>
-
-      <div class="edit-info-section">
-        <h1 class="edit-info-title">Edit Info</h1>
-        <hr class="separator"/>
-
-        <div class="edit-info-details">
-          <h3 id="changeUsername" class="changeUser">Change Username</h3>
-          <h3 id="changePassword" class="changePass">Change Password</h3>
-
-          <h1 class="profile-title">Accessibility</h1>
-          <hr class="separator"/>
-          
-          <h3 id="chatRulesPopup" class="chatRulesPopup">Chat Guidelines:</h3>
-
-        </div>
-      </div>
-
-    </div>
-  </div>
-</main>
-
-<div class="mobile_nav">
-  <div class="mobile_nav_top">
-    <div class="mobile_brand" onclick="window.location.href='/'" role="button" tabindex="0">
+  <nav>
+    <h1 class="logo"
+      onclick="window.location.href='/'"
+      style="cursor:pointer; transition:0.2s;"
+      onmouseover="this.style.opacity='0.7'"
+      onmouseout="this.style.opacity='1'">
       Pixelit
+    </h1>
+    
+    <div class="profile-container">
+      <div class="profile-row">
+        <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png" id="profilePic" class="profile-pic" alt="Profile" />
+        <span class="profile-name" id="profileName">User</span>
+        <i class="fa-solid fa-chevron-down profile-arrow"></i>
+      </div>
+      <div class="profile-dropdown-menu">
+        <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="/" onclick="handleLogout(event)">
+          <i class="fa-solid fa-sign-out-alt"></i> Logout
+        </a>   
+      </div>
+    </div>
+    
+    <div class="icons">
+      <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
+      <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
+      <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
+      <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
+      <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
+      <a href="/bazaar"><i class="fa-solid fa-gavel"></i> Bazaar</a>
+      <a href="/inventory"><i class="fa-solid fa-box-open"></i> Inventory</a>
+      <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>   
+      <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
+      <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+      <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
     </div>
 
-    <button class="mobile_menu_button" type="button" aria-label="Open menu" aria-controls="mobileSidebar" aria-expanded="false">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </div>
+    <div class="buttonGap"></div>
+      <a href="https://discord.gg/jRJVFYyJJj" target="_blank" class="discord" title="Join our Discord">
+    
+    <div class="bottomIcons">
+        <i class="fa-brands fa-discord"></i>
+      </a>
+      <a href="https://github.com/technoscootalo/Pixelit-Rewrite" target="_blank" class="github" title="Visit our Github">
+        <i class="fa-brands fa-github"></i>
+      </a>
+      <a href="/store"  class="store">
+        <i class="fa-solid fa-cart-shopping"></i>
+      </a>
+    </div>
+  </nav>
 
-  <div class="mobile_nav_overlay" id="mobileSidebarOverlay" aria-hidden="true"></div>
+  <div class="background"></div>
+  <div id="newsSidebarOverlay"></div>
 
-  <aside id="mobileSidebar" class="mobile_sidebar" aria-hidden="true">
-    <div class="mobile_sidebar_header">
-      <div class="mobile_sidebar_title">
-        <span class="pixelitLogo">Pixelit</span>
+  <aside id="newsSidebar" class="news-sidebar" aria-hidden="true">
+    <div class="news-sidebar-header">
+      <div class="news-sidebar-header-title">
+        <i class="far fa-newspaper" aria-hidden="true"></i>
+        <span><span class="pixelitLogo">Pixelit</span> News</span>
       </div>
-      <button class="mobile_sidebar_close" type="button" aria-label="Close menu">
+
+      <button
+        type="button"
+        class="news-sidebar-close"
+        data-news-sidebar-close
+        aria-label="Close news"
+      >
         &times;
       </button>
     </div>
-
-    <nav class="mobile_sidebar_links">
-      <a href="/stats" class="active" data-mobile-nav-link>
-        <i class="fa-solid fa-chart-column"></i><span>Stats</span>
-      </a>
-      <a href="/chat" data-mobile-nav-link>
-        <i class="fa-solid fa-comments"></i><span>Chat</span>
-      </a>
-      <a href="/ranking" data-mobile-nav-link>
-        <i class="fa-solid fa-trophy"></i><span>Ranking</span>
-      </a>
-      <a href="/market" data-mobile-nav-link>
-        <i class="fa-solid fa-store"></i><span>Market</span>
-      </a>
-      <a href="/pixels" data-mobile-nav-link>
-        <i class="fa-solid fa-suitcase"></i><span>Pixels</span>
-      </a>
-      <a href="/bazaar" data-mobile-nav-link>
-        <i class="fa-solid fa-gavel"></i><span>Bazaar</span>
-      </a>
-      <a href="/inventory" data-mobile-nav-link>
-        <i class="fa-solid fa-box-open"></i><span>Inventory</span>
-      </a>
-      <a href="/panel" id="panelLink" data-mobile-nav-link>
-        <i class="fa-solid fa-wrench"></i><span>Panel</span>
-      </a>
-      <a href="/settings" data-mobile-nav-link>
-        <i class="fa-solid fa-gear"></i><span>Settings</span>
-      </a>
-      <a href="/credits" data-mobile-nav-link>
-        <i class="fa-solid fa-heart"></i><span>Credits</span>
-      </a>
-    </nav>
+    <div class="news-sidebar-content">
+      <div id="newsSidebarArticles"></div>
+    </div>
   </aside>
-</div>
-<script src="/js/settings.js"></script>
+
+  <main>
+    <div class="main-content">
+
+      <h1 class="page-title">Settings</h1>
+
+      <div class="content-container">
+
+        <div class="profile-section">
+          <h1 class="profile-title">Profile</h1>
+          <hr class="separator"/>
+
+          <div class="profile-details">
+            <h3 id="username"></h3>
+            <h3 id="discordId"></h3>
+            <h3 id="date"></h3>
+            <h3 id="id"></h3>
+            <h3 id="accessKey"></h3>
+
+          <h1 class="profile-title">Navigation</h1>
+
+            <hr class="separator"/>
+            <h3>
+              <i class="fa-solid fa-heart"></i>
+              <a href="/credits" class="credits">Credits</a>
+            </h3>
+
+            <h3>
+              <i class="fa-brands fa-discord"></i>
+              <a href="https://discord.gg/KXvHan3C8R" class="discord">Discord</a>
+            </h3>
+
+            <h3 id="devLink">
+              <i class="fa-solid fa-code"></i>
+              <a href="/developer" class="developer">Developer</a>
+            </h3>
+
+            <h3>
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <a href="/" class="sign-out" onclick="logout()">Sign Out</a>
+            </h3>
+          </div>
+        </div>
+
+        <div class="edit-info-section">
+          <h1 class="edit-info-title">Edit Info</h1>
+          <hr class="separator"/>
+
+          <div class="edit-info-details">
+            <h3 id="changeUsername" class="changeUser">Change Username</h3>
+            <h3 id="changePassword" class="changePass">Change Password</h3>
+
+            <h1 class="profile-title">Accessibility</h1>
+            <hr class="separator"/>
+            
+            <h3 id="chatRulesPopup" class="chatRulesPopup">Chat Guidelines:</h3>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="mobile_nav">
+    <div class="mobile_nav_top">
+      <div class="mobile_brand" onclick="window.location.href='/'" role="button" tabindex="0">
+        Pixelit
+      </div>
+
+      <button class="mobile_menu_button" type="button" aria-label="Open menu" aria-controls="mobileSidebar" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="mobile_nav_overlay" id="mobileSidebarOverlay" aria-hidden="true"></div>
+
+    <aside id="mobileSidebar" class="mobile_sidebar" aria-hidden="true">
+      <div class="mobile_sidebar_header">
+        <div class="mobile_sidebar_title">
+          <span class="pixelitLogo">Pixelit</span>
+        </div>
+        <button class="mobile_sidebar_close" type="button" aria-label="Close menu">
+          &times;
+        </button>
+      </div>
+
+      <nav class="mobile_sidebar_links">
+        <a href="/stats" class="active" data-mobile-nav-link>
+          <i class="fa-solid fa-chart-column"></i><span>Stats</span>
+        </a>
+        <a href="/chat" data-mobile-nav-link>
+          <i class="fa-solid fa-comments"></i><span>Chat</span>
+        </a>
+        <a href="/ranking" data-mobile-nav-link>
+          <i class="fa-solid fa-trophy"></i><span>Ranking</span>
+        </a>
+        <a href="/market" data-mobile-nav-link>
+          <i class="fa-solid fa-store"></i><span>Market</span>
+        </a>
+        <a href="/pixels" data-mobile-nav-link>
+          <i class="fa-solid fa-suitcase"></i><span>Pixels</span>
+        </a>
+        <a href="/bazaar" data-mobile-nav-link>
+          <i class="fa-solid fa-gavel"></i><span>Bazaar</span>
+        </a>
+        <a href="/inventory" data-mobile-nav-link>
+          <i class="fa-solid fa-box-open"></i><span>Inventory</span>
+        </a>
+        <a href="/panel" id="panelLink" data-mobile-nav-link>
+          <i class="fa-solid fa-wrench"></i><span>Panel</span>
+        </a>
+        <a href="/settings" data-mobile-nav-link>
+          <i class="fa-solid fa-gear"></i><span>Settings</span>
+        </a>
+        <a href="/credits" data-mobile-nav-link>
+          <i class="fa-solid fa-heart"></i><span>Credits</span>
+        </a>
+      </nav>
+    </aside>
+  </div>
+  <script src="/js/settings.js"></script>
 </body>
 </html>
