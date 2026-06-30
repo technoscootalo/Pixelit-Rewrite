@@ -56,7 +56,6 @@ router.post('/getUserStats', async (req, res) => {
             }),
         };
 
-
         res.json({ success: true, user: userStats });
     } catch (err) {
         console.error('getUserStats error:', err);

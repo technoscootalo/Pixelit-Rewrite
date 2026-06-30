@@ -182,10 +182,10 @@ function renderLeaderboard(users) {
       </div>
 
       <img src="${pfp}" style="
-        width: 38px;
+        width: auto;
         height: 38px;
-        border-radius: 6px;
-        object-fit: cover;
+        border-radius: 0px;
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
       ">
 
       <div style="

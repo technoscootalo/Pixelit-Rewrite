@@ -514,6 +514,62 @@ client.once(Events.ClientReady, async () => {
   console.log(`Logged in as ${client.user.tag}`);
   console.log(`Bot is active and ready to serve.`);
 
+  const BOOSTER_VERIFY_INTERVAL_MS = 30000;
+
+  async function verifyBoostersAndSyncBadges() {
+    try {
+      if (!mongoose.connection || !mongoose.connection.db) return;
+
+      if (verifyBoostersAndSyncBadges.isRunning) return;
+      verifyBoostersAndSyncBadges.isRunning = true;
+
+      const guild =
+
+        client.guilds.cache.get(process.env.GUILD_ID) ||
+        (await client.guilds.fetch(process.env.GUILD_ID).catch(() => null));
+      if (!guild) return;
+
+      const usersNeedingCheck = await User.find({
+        discordId: { $ne: null },
+        badges: {
+          $elemMatch: {
+            $or: [
+              { badgeId: boosterBadgeId },
+              { name: "Booster" },
+              { _id: new mongoose.Types.ObjectId(boosterBadgeId) }
+            ]
+          }
+        }
+      }).select("discordId badges");
+
+      if (!usersNeedingCheck || usersNeedingCheck.length === 0) return;
+
+      for (const user of usersNeedingCheck) {
+        if (!user.discordId) continue;
+
+        const member = await guild.members
+          .fetch(user.discordId)
+          .catch(() => null);
+        if (!member) continue;
+
+        const isBoosting = Boolean(
+          member.premiumSince || member.premiumSinceTimestamp
+        );
+
+        const beforeHasBadge = hasBoosterBadge(user);
+        if (beforeHasBadge && !isBoosting) {
+          syncBoosterBadge(user, false);
+          await user.save();
+          console.log(
+            `Booster badge removed for ${user.username || user.discordId} (no longer boosting).`
+          );
+        }
+      }
+    } catch (err) {
+      console.error("verifyBoostersAndSyncBadges error:", err);
+    }
+  }
+
   const activities = [
     { name: "Playing with the Pixelit API", type: ActivityType.Playing },
     { name: "Watching the developers code", type: ActivityType.Watching },
@@ -536,7 +592,10 @@ client.once(Events.ClientReady, async () => {
   }
 
   setInterval(checkExpiredPunishments, 60000);
+  verifyBoostersAndSyncBadges();
+  setInterval(verifyBoostersAndSyncBadges, BOOSTER_VERIFY_INTERVAL_MS);
 });
+
 
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
   try {
@@ -619,9 +678,7 @@ async function safeDeferReply(interaction, options = {}) {
   }
 }
 
-
 const MUTE_ROLE_ID = "1276630843552694292";
-
 
 function requireMuteRoleOrReply(interaction, guild) {
   const muteRole = guild.roles.cache.get(MUTE_ROLE_ID);
@@ -726,7 +783,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
           console.error("Failed to execute mute:", err);
           throw err;
         });
-
 
         const mutesCollection = db.collection('DiscordMutes');
         if (duration && duration > 0) {
