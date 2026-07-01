@@ -25,8 +25,11 @@ function updateDailyWheelState() {
     }
   }
 
+  if (!button.dataset.dailyWheelEligible) button.style.display = "none";
+
   button.style.display = "inline-flex";
   button.disabled = false;
+  button.dataset.dailyWheelEligible = "true";
   messageEl.innerText = "";
 }
 
