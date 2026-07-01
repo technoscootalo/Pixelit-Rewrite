@@ -79,7 +79,7 @@ function setupChat(io, onlineUsers) {
       const recentMessages = await Message.find({})
         .sort({ createdAt: -1 })
         .limit(50) 
-        .select("userId username pfp badges content replyToId replyToUser replyToContent edited")
+        .select("userId username pfp badges content replyToId replyToUser replyToContent edited createdAt")
         .lean();
 
       socket.emit("chatHistory", recentMessages.reverse());
