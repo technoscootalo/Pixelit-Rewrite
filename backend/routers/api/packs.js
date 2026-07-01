@@ -23,13 +23,15 @@ router.get("/", async (req, res) => {
       };
     });
 
+      transformed.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+
     return res.json(transformed);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch packs" });
   }
-  
 });
+
 
 router.post(
   "/open/:packName",

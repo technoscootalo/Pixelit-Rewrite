@@ -437,6 +437,9 @@ async function fetchPacks() {
     }
 
     const packs = JSON.parse(text);
+
+    packs.sort((a, b) => (Number(b.cost) || 0) - (Number(a.cost) || 0));
+
     displayPacks(packs);
 
   } catch (err) {
@@ -969,7 +972,6 @@ async function showResult(blook, pack = null) {
     ${(adjustedChance !== null) ? `<p style="font-size:18px;opacity:0.95;margin-top:-6px;">Boosted chance: ${adjustedChance}%</p>` : ``}
 
   `;
-
 
   overlay.appendChild(box);
   document.body.appendChild(overlay);

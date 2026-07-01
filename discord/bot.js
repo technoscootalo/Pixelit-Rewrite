@@ -1043,7 +1043,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
         return await replyOrEdit(interaction, `Could not find a Pixel named **${query}**.`);
       }
 
-      const users = await User.find({ [`blooks.${blook.blookName}`]: { $exists: true } }).select('username blooks').lean();
+      const users = await User.find({ [`blooks.${blook.blookName}`]: { $exists: true } }).select('username blooks banned').lean();
+
 
       const holders = [];
       for (const u of users) {
@@ -1052,14 +1053,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (typeof val === 'number') amt = val;
         else if (val && typeof val.amount !== 'undefined') amt = Number(val.amount) || 0;
         if (Number.isFinite(amt) && amt > 0) {
-          holders.push({ username: u.username, amount: amt });
+          holders.push({ username: u.username, amount: amt, banned: !!u.banned });
+
         }
       }
 
       const total = holders.reduce((s, h) => s + h.amount, 0);
       const top = holders.sort((a, b) => b.amount - a.amount).slice(0, 10);
 
-      const topText = top.length ? top.map((t, i) => `${i + 1}. ${t.username} — ${t.amount.toLocaleString()}`).join('\n') : 'No holders';
+      const topText = top.length
+        ? top
+            .map((t, i) => {
+              const displayName = `${i + 1}. ${t.username}${t.banned ? ' [BANNED]' : ''} — ${t.amount.toLocaleString()}`;
+              return t.banned ? `${displayName}` : displayName;
+            })
+            .join('\n')
+        : 'No holders';
 
       const bazaarListedAmount = await BazaarListing.countDocuments({ blookName: blook.blookName });
 
@@ -1126,7 +1135,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-  
+
   if (interaction.commandName === "claim") {
     await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
 
