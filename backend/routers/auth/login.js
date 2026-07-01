@@ -10,7 +10,7 @@ const DISCORD_WEBHOOK_AUTH = process.env.DISCORD_WEBHOOK_AUTH;
 router.post(
   "/",
   rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 5 * 60 * 1000,
     max: 5,
     handler: (_req, res) => {
       res.status(429).json({ error: "Too many login attempts. Please try again in 15 minutes." });
