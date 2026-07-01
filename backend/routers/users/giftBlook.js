@@ -3,9 +3,20 @@ const router = express.Router();
 
 const User = require("../../models/User");
 const Blook = require("../../models/Blook");
+const { rateLimit } = require("../../middleware/rateLimit");
+
 const DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY = process.env.DISCORD_WEBHOOK_PIXELS_GIFTING_ACTIVITY;
 
-router.post("/", async (req, res) => {
+router.post(
+  "/",
+  rateLimit({
+    windowMs: 10 * 1000,
+    max: 10, 
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many gifting actions. Please wait a moment." });
+    }
+  }),
+  async (req, res) => {
   try {
     const { userId, blookName, quantity, recipientUsername } = req.body || {};
 

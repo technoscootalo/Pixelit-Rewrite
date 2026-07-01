@@ -2,11 +2,21 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 
 const User = require("../../models/User");
+const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
 const DISCORD_WEBHOOK_AUTH = process.env.DISCORD_WEBHOOK_AUTH;
 
-router.post("/", async (req, res) => {
+router.post(
+  "/",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many login attempts. Please try again in 15 minutes." });
+    }
+  }),
+  async (req, res) => {
     try {
 
         const {
@@ -77,7 +87,6 @@ router.post("/", async (req, res) => {
                 "Discord webhook failed:",
                 webhookError
             );
-
         }
 
         return res.json({

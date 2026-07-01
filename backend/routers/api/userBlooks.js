@@ -17,8 +17,6 @@ router.get("/", async (req, res) => {
 
     const packs = await Pack.find({}).populate("blooks");
 
-
-
     const MISC_PACK_ID = "6a2239b7b6623c0c0b5e8502";
 
     const formattedPacks = packs
@@ -45,8 +43,6 @@ router.get("/", async (req, res) => {
         };
       })
       .filter((pack) => (String(pack._id) === MISC_PACK_ID ? pack.blooks.length > 0 : true));
-
-
 
     res.json({ packs: formattedPacks });
   } catch (err) {

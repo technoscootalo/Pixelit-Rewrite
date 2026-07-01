@@ -1,9 +1,19 @@
 const express = require('express');
 const User = require('../../models/User');
+const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
 
-router.post('/getUserStats', async (req, res) => {
+router.post(
+  '/getUserStats',
+  rateLimit({
+    windowMs: 60 * 1000, 
+    max: 60,            
+    handler: (_req, res) => {
+      res.status(429).json({ success: false, message: 'Too many profile requests. Please slow down.' });
+    }
+  }),
+  async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ success: false, message: 'You must be logged in.' });

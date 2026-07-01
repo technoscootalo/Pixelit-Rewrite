@@ -4,9 +4,20 @@ const mongoose = require("mongoose");
 const User = require("../../models/User");
 const BazaarListing = require("../../models/BazaarListing");
 const Blook = require("../../models/Blook"); 
+const { rateLimit } = require("../../middleware/rateLimit");
+
 const DISCORD_WEBHOOK_BAZAAR = process.env.DISCORD_WEBHOOK_BAZAAR;
 
-router.post('/listBlook', async (req, res) => {
+router.post(
+  '/listBlook',
+  rateLimit({
+    windowMs: 10 * 1000,
+    max: 10, 
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many listing attempts. Please wait a moment." });
+    }
+  }),
+  async (req, res) => {
   const { blookName, price } = req.body;
   const userId = req.session.userId;
 

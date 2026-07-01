@@ -1,10 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const { rateLimit } = require("../../middleware/rateLimit");
 
 const User = require("../../models/User");
 
-router.post("/", async (req, res) => {
+router.post(
+  "/", 
+  rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 3,                
+    handler: (_req, res) => {
+    res.status(429).send("Too many password reset attempts. Please try again in 15 minutes.");
+    }
+  }),
+  async (req, res) => {
     try {
         const session = req.session;
         const { currentPassword, newPassword } = req.body;

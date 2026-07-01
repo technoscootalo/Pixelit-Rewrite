@@ -4,11 +4,21 @@ const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 const User = require("../../models/User");
 const AccessKey = require("../../models/AccessKey");
+const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
 const DISCORD_WEBHOOK_AUTH = process.env.DISCORD_WEBHOOK_AUTH;
 
-router.post("/", async (req, res) => {
+router.post(
+  "/",
+  rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 2,
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many registration attempts. Please try again in an hour." });
+    }
+  }),
+  async (req, res) => {
     try {
         const { username, password, accessKey } = req.body;
 
