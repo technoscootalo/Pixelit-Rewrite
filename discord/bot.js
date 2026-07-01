@@ -625,15 +625,16 @@ async function replyOrEdit(interaction, response) {
     console.error("replyOrEdit failed:", err);
     try {
       if (err && err.code === 10062) {
-        const content = typeof response === "string" ? response : (response.content || JSON.stringify(response));
+        const sendPayload = typeof response === "string" ? { content: response } : response;
         const channel = interaction.channel;
+        
         if (channel && typeof channel.send === "function") {
-          return await channel.send(content);
+          return await channel.send(sendPayload);
         }
 
         try {
           const user = await client.users.fetch(interaction.user.id).catch(() => null);
-          if (user) return await user.send(content);
+          if (user) return await user.send(sendPayload);
         } catch (dmErr) {
           console.error("DM fallback failed:", dmErr);
         }
@@ -653,7 +654,7 @@ async function safeDeferReply(interaction, options = {}) {
   try {
     if (interaction.deferred || interaction.replied) return true;
 
-    const isEphemeral = Boolean(options.ephemeral || (options.flags && options.flags & MessageFlags.Ephemeral));
+    const isEphemeral = Boolean(options.ephemeral || (options.flags && options.flags & 64));
     
     await interaction.deferReply({ ephemeral: isEphemeral });
     return true;
@@ -668,7 +669,7 @@ async function safeDeferReply(interaction, options = {}) {
       if (!interaction.replied && !interaction.deferred) {
         await interaction.reply({ 
           content: "Request is processing...", 
-          flags: MessageFlags.Ephemeral 
+          ephemeral: true 
         });
       }
     } catch (replyErr) {

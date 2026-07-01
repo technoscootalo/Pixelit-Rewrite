@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const BazaarListing = require("../../models/BazaarListing");
 const User = require("../../models/User");
+const { rateLimit } = require("../../middleware/rateLimit");
+
 const DISCORD_WEBHOOK_BAZAAR = process.env.DISCORD_WEBHOOK_BAZAAR;
 
 router.get('/listings', async (req, res) => {
@@ -17,7 +19,16 @@ router.get('/listings', async (req, res) => {
   }
 });
 
-router.post('/buy/:id', async (req, res) => {
+router.post(
+  '/buy/:id',
+  rateLimit({
+    windowMs: 10 * 1000,
+    max: 10,   
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many purchase attempts. Please slow down." });
+    }
+  }),
+  async (req, res) => {
     const currentUserId = req.session.userId;
     if (!currentUserId) return res.status(401).json({ error: "Unauthorized" });
 
@@ -62,7 +73,16 @@ router.post('/buy/:id', async (req, res) => {
     }
 });
 
-router.post('/remove/:id', async (req, res) => {
+router.post(
+  '/remove/:id',
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 15,           
+    handler: (_req, res) => {
+      res.status(429).json({ error: "Too many removal requests. Please try again in a moment." });
+    }
+  }),
+  async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ 
             error: "You must be logged in to remove a listing." 
