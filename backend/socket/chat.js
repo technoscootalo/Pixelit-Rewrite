@@ -16,8 +16,6 @@ function setupChat(io, onlineUsers) {
   const emojiNameToUrl = new Map();
   let emotesLoaded = false;
 
-  const chatRateLimits = new Map();
-
   async function loadEmotesToCache() {
     try {
       const currentEmotes = await Emoji.find({}, "name imageUrl").lean();
@@ -42,7 +40,7 @@ function setupChat(io, onlineUsers) {
     }
 
     try {
-      const user = await User.findOne({ id: session.userId }).select("-password").lean();
+      const user = await User.findOne({ id: session.userId }).select("-password");
       if (!user) {
         return socket.disconnect(true);
       }
@@ -78,8 +76,7 @@ function setupChat(io, onlineUsers) {
 
       const recentMessages = await Message.find({})
         .sort({ createdAt: -1 })
-        .limit(50) 
-        .select("userId username pfp badges content replyToId replyToUser replyToContent edited createdAt")
+        .limit(150)
         .lean();
 
       socket.emit("chatHistory", recentMessages.reverse());
@@ -92,25 +89,18 @@ function setupChat(io, onlineUsers) {
       });
 
       socket.on("chatMessage", async (payload) => {
-        if (socket.user.muted) return;
-
-        const now = Date.now();
-        const userIdStr = socket.user.id.toString();
-        const lastMessageTime = chatRateLimits.get(userIdStr) || 0;
-
-        if (now - lastMessageTime < 1500) {
-          return socket.emit("chatError", { message: "You are sending messages too fast!" });
+        if (socket.user.muted) {
+          return;
         }
-        chatRateLimits.set(userIdStr, now);
 
         if (!payload || typeof payload.content !== "string") return;
 
         let content = payload.content.trim();
         if (!content) return;
 
-        if (content.length > 256) return;
-
-        if (/[<>{}]/.test(content) || /on\w+\s*=|javascript:/i.test(content)) return;
+        if (/[<>{}]/.test(content) || /on\w+\s*=|javascript:/i.test(content)) {
+          return;
+        }
 
         const emoteRegex = /:([a-zA-Z0-9_\-]+):/g;
         const textMatches = [...content.matchAll(emoteRegex)];
@@ -134,13 +124,14 @@ function setupChat(io, onlineUsers) {
 
         const earnedTokens = Math.floor(Math.random() * 6) + 10;
 
-        User.updateOne(
+        await User.findOneAndUpdate(
           { id: socket.user.id },
-          { $inc: { sent: 1, tokens: earnedTokens } }
-        ).catch(err => console.error("Async user reward increment failure:", err));
+          { $inc: { sent: 1, tokens: earnedTokens } },
+          { returnDocument: 'after' }
+        );
 
         const savedMessage = await Message.create({
-          userId: userIdStr,
+          userId: socket.user.id.toString(),
           username: socket.user.username,
           pfp: socket.user.pfp,
           badges: socket.user.badges || [],
@@ -210,12 +201,9 @@ function setupChat(io, onlineUsers) {
     socket.on("disconnect", () => {
       try {
         const uid = socket.user?.id?.toString?.() || socket.user?.id;
-        if (uid) {
-          chatRateLimits.delete(uid);
-          if (onlineUsers.has(uid)) {
-            onlineUsers.delete(uid);
-            io.emit("presence:update", { onlineCount: onlineUsers.size });
-          }
+        if (uid && onlineUsers.has(uid)) {
+          onlineUsers.delete(uid);
+          io.emit("presence:update", { onlineCount: onlineUsers.size });
         }
       } catch (e) {
         console.error("disconnect presence error:", e);
