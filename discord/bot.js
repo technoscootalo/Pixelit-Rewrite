@@ -986,8 +986,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
           { name: "Role", value: user.role, inline: true },
           { name: "Discord", value: discordStatus, inline: true },
           { name: "Tokens", value: user.tokens.toLocaleString(), inline: true },
-          { name: "Packs Opened", value: user.opened.toString(), inline: true },
-          { name: "Messages Sent", value: user.sent.toString(), inline: true },
+          { name: "Packs Opened", value: user.opened.toLocaleString(), inline: true },
+          { name: "Messages Sent", value: user.sent.toLocaleString(), inline: true },
           { name: "Join Date", value: new Date(user.joinDate).toLocaleDateString(), inline: true }
         )
         .setFooter({ text: `User ID: ${user.id}` });
@@ -1039,7 +1039,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       const blook = await Blook.findOne({ blookName: new RegExp(`^${escaped}$`, "i") });
 
       if (!blook) {
-        return await replyOrEdit(interaction, `Could not find a blook named **${query}**.`);
+        return await replyOrEdit(interaction, `Could not find a Pixel named **${query}**.`);
       }
 
       const users = await User.find({ [`blooks.${blook.blookName}`]: { $exists: true } }).select('username blooks').lean();

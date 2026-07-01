@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
 
 router.post(
   "/open/:packName",
-  rateLimit({ max: 30, windowMs: 60000 }),
+  rateLimit({ max: 60, windowMs: 60000 }),
   async (req, res) => {
     try {
       const packName = req.params.packName?.trim();
