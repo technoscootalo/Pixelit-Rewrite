@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banner Editor</title>
+  <title>Auto Mod</title>
 
-  <link rel="stylesheet" href="/styles/panel/bannereditor.css">
+  <link rel="stylesheet" href="/styles/panel/automod.css">
   <link rel="stylesheet" href="/styles/navbar.css">
   <link rel="stylesheet" href="/styles/panel/shared.css">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
-    crossorigin="anonymous" 
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous"
     referrerpolicy="no-referrer">
-  
+
   <link rel="icon" type="image/png" href="https://izumiihd.github.io/pixelitcdn/assets/img/favicon.ico">
 
   <script src="/js/all.js"></script>
@@ -30,7 +30,7 @@
     onmouseout="this.style.opacity='1'">
     Pixelit
   </h1>
-  
+
   <div class="profile-container">
     <div class="profile-row">
       <img src="https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png" id="profilePic" class="profile-pic" alt="Profile" />
@@ -41,25 +41,26 @@
       <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
       <a href="/" onclick="handleLogout(event)">
         <i class="fa-solid fa-sign-out-alt"></i> Logout
-      </a>   
+      </a>
     </div>
   </div>
-  
+
   <div class="icons">
     <a href="/stats"><i class="fa-solid fa-chart-column"></i> Stats</a>
     <a href="/chat"><i class="fa-solid fa-comments"></i> Chat</a>
     <a href="/ranking"><i class="fa-solid fa-trophy"></i> Ranking</a>
     <a href="/market"><i class="fa-solid fa-store"></i> Market</a>
     <a href="/pixels"><i class="fa-solid fa-suitcase"></i> Pixels</a>
+    <a href="/bazaar"><i class="fa-solid fa-gavel"></i> Bazaar</a>
     <a href="/inventory"><i class="fa-solid fa-box-open"></i> Inventory</a>
-    <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>   
+    <a href="#" id="newsBtn"><i class="fa-solid fa-newspaper"></i> News</a>
     <a href="/panel" id="panelLink"><i class="fa-solid fa-wrench"></i> Panel</a>
     <a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a>
     <a href="/credits"><i class="fa-solid fa-heart"></i> Credits</a>
   </div>
 
   <div class="buttonGap"></div>
-  
+
   <div class="bottomIcons">
     <a href="https://discord.gg/jRJVFYyJJj" target="_blank" class="discord" title="Join our Discord">
       <i class="fa-brands fa-discord"></i>
@@ -75,7 +76,7 @@
 
 <div class="background"></div>
 
-<a href="/developer" class="panelBackBtn"><i class="fa-solid fa-arrow-left"></i> Back to Developer</a>
+<a href="/panel" class="panelBackBtn"><i class="fa-solid fa-arrow-left"></i> Back to Panel</a>
 
 <div id="newsSidebarOverlay"></div>
 
@@ -100,19 +101,7 @@
   </div>
 </aside>
 
-<main>
-  <div class="topBar">
-
-    <div class="topBarRight">
-      <button id="addBannerBtn">
-        <i class="fa-solid fa-plus"></i>
-      </button>
-    </div>
-
-    <div id="bannerGrid" class="bannerGrid"></div>
-
-  </div>
-</main>
+<main></main>
 
 <div class="mobile_nav">
   <div class="mobile_nav_top">
@@ -171,7 +160,6 @@
     </nav>
   </aside>
 </div>
-<script src="/js/auth/developerAuth.js"></script>
-<script src="/js/panel/bannerEditor.js"></script>
+<script src="/js/panel/automod.js"></script>
 </body>
 </html>

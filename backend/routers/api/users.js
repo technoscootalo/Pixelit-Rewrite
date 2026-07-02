@@ -6,6 +6,7 @@ const { requirePanelAccess } = require("../../middleware/panelAuth");
 const { requireDeveloperAccess } = require("../../middleware/panelAuth");
 const { rateLimit } = require("../../middleware/rateLimit");
 const { requireNotBanned } = require("../../middleware/sessionUser");
+const { logAdminAction } = require("../../utils/adminLog");
 
 router.get("/", requirePanelAccess(), requireNotBanned, rateLimit({ max: 10, windowMs: 60 * 1000 }), async (req, res) => {
   if (req.headers["sec-fetch-mode"] === "navigate") {
@@ -26,6 +27,18 @@ router.get("/", requirePanelAccess(), requireNotBanned, rateLimit({ max: 10, win
   }
 });
 
+router.get("/:id/ips", requireDeveloperAccess(), requireNotBanned, rateLimit({ max: 20, windowMs: 60 * 1000 }), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("username hashedIps");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({ username: user.username, hashedIps: user.hashedIps || [] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load IPs" });
+  }
+});
+
 router.put("/:id/mute", requirePanelAccess(), requireNotBanned, rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
 
   try {
@@ -41,6 +54,14 @@ router.put("/:id/mute", requirePanelAccess(), requireNotBanned, rateLimit({ max:
       },
       { new: true }
     );
+
+    await logAdminAction(req, {
+      action: "mute",
+      targetType: "user",
+      targetLabel: user?.username || req.params.id,
+      reason: reason || "No reason provided",
+      meta: { duration: Number(duration) || 0 },
+    });
 
     res.json(user);
   } catch (err) {
@@ -65,6 +86,12 @@ router.put("/:id/unmute", requirePanelAccess(), requireNotBanned, rateLimit({ ma
       },
       { new: true }
     );
+
+    await logAdminAction(req, {
+      action: "unmute",
+      targetType: "user",
+      targetLabel: user?.username || req.params.id,
+    });
 
     res.json(user);
   } catch (err) {
@@ -92,6 +119,14 @@ router.put("/:id/ban", requirePanelAccess(), requireNotBanned, rateLimit({ max: 
       { new: true }
     );
 
+    await logAdminAction(req, {
+      action: "ban",
+      targetType: "user",
+      targetLabel: user?.username || req.params.id,
+      reason: reason || "No reason provided",
+      meta: { duration: Number(duration) || 0 },
+    });
+
     res.json(user);
   } catch (err) {
     console.error(err);
@@ -116,6 +151,12 @@ router.put("/:id/unban", requirePanelAccess(), requireNotBanned, rateLimit({ max
       { new: true }
     );
 
+    await logAdminAction(req, {
+      action: "unban",
+      targetType: "user",
+      targetLabel: user?.username || req.params.id,
+    });
+
     res.json(user);
   } catch (err) {
     console.error(err);
@@ -135,13 +176,21 @@ router.put("/:id/role", requirePanelAccess(), requireDeveloperAccess(), requireN
       return res.status(400).json({ error: "role must be a non-empty string" });
     }
 
+    const previousUser = await User.findById(req.params.id).select("username role");
+    if (!previousUser) return res.status(404).json({ error: "User not found" });
+
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { role: role.trim() },
       { new: true }
     );
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    await logAdminAction(req, {
+      action: "role_change",
+      targetType: "user",
+      targetLabel: user.username,
+      meta: { from: previousUser.role, to: user.role },
+    });
 
     res.json({ _id: user._id, role: user.role });
   } catch (err) {
@@ -185,6 +234,14 @@ router.post(
       }
 
       await user.save();
+
+      await logAdminAction(req, {
+        action: "badge_add",
+        targetType: "user",
+        targetLabel: user.username,
+        meta: { badgeName: badge.name },
+      });
+
       res.json({ success: true, badges: user.badges });
     } catch (err) {
       console.error(err);
@@ -221,6 +278,14 @@ router.post(
       }
 
       await user.save();
+
+      await logAdminAction(req, {
+        action: "badge_remove",
+        targetType: "user",
+        targetLabel: user.username,
+        meta: { badgeId: badgeId.trim() },
+      });
+
       res.json({ success: true, badges: user.badges });
     } catch (err) {
       console.error(err);

@@ -1,7 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const User = require("../../models/User");
+const IPBlacklist = require("../../models/IPBlacklist");
 const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
@@ -49,6 +51,20 @@ router.post(
         if (!isMatch) {
             return res.status(400).json({
                 error: "Username or password incorrect"
+            });
+        }
+
+        const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+        const hashedIp = crypto.createHash("sha256").update(ip).digest("hex");
+
+        const blacklistEntry = await IPBlacklist.findOne({
+            hashedIp,
+            active: true,
+            $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
+        });
+        if (blacklistEntry) {
+            return res.status(403).json({
+                error: "Your IP address has been blacklisted. If you believe this is a mistake, please contact a staff member."
             });
         }
 

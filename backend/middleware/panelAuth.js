@@ -17,7 +17,7 @@ function requireRoles(allowedRoles) {
         return res.status(401).json({ error: "Not logged in" });
       }
 
-      const user = await User.findOne({ id: req.session.userId }).select("role");
+      const user = await User.findOne({ id: req.session.userId }).select("id username role");
       if (!user) {
         return res.status(401).json({ error: "Not logged in" });
       }

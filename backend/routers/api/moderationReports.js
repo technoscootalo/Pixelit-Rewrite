@@ -5,6 +5,7 @@ const UserReport = require("../../models/UserReport");
 const User = require("../../models/User");
 const { requirePanelAccess } = require("../../middleware/panelAuth");
 const { rateLimit } = require("../../middleware/rateLimit");
+const { logAdminAction } = require("../../utils/adminLog");
 
 
 
@@ -27,9 +28,15 @@ router.get("/pending", requirePanelAccess(), rateLimit({ max: 10, windowMs: 60 *
 router.post("/:reportId/dismiss", requirePanelAccess(), rateLimit({ max: 5, windowMs: 60 * 1000 }), async (req, res) => {
 
   try {
-    await UserReport.findByIdAndUpdate(req.params.reportId, {
+    const report = await UserReport.findByIdAndUpdate(req.params.reportId, {
 
       status: "dismissed",
+    });
+
+    await logAdminAction(req, {
+      action: "report_dismiss",
+      targetType: "report",
+      targetLabel: report?.reportedUsername || req.params.reportId,
     });
 
     res.json({ success: true, message: "Report dismissed." });
@@ -63,6 +70,14 @@ router.post("/:reportId/mute", requirePanelAccess(), rateLimit({ max: 5, windowM
       status: "muted",
     });
 
+    await logAdminAction(req, {
+      action: "mute",
+      targetType: "user",
+      targetLabel: targetUser.username,
+      reason: reason || "No reason provided",
+      meta: { duration: Number(duration) || 0, viaReport: req.params.reportId },
+    });
+
     res.json({ success: true, message: "User muted." });
   } catch (err) {
     console.error("moderationReports mute error:", err);
@@ -92,6 +107,14 @@ router.post("/:reportId/ban", requirePanelAccess(), rateLimit({ max: 5, windowMs
 
     await UserReport.findByIdAndUpdate(req.params.reportId, {
       status: "banned",
+    });
+
+    await logAdminAction(req, {
+      action: "ban",
+      targetType: "user",
+      targetLabel: targetUser.username,
+      reason: reason || "No reason provided",
+      meta: { duration: Number(duration) || 0, viaReport: req.params.reportId },
     });
 
     res.json({ success: true, message: "User banned." });

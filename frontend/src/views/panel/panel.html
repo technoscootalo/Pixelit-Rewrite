@@ -99,19 +99,86 @@
 </aside>
 
 <main>
-  <center>
-    <div class="adminManagments">
-      <div class="adminManagment">
-        <button onclick="window.location.href='/users'"> <i class="fa-solid fa-users"></i>
-          User Management
+  <div class="dashboard">
+    <div class="dashboardHeader">
+      <h1><i class="fa-solid fa-wrench"></i> Admin Panel</h1>
+    </div>
+
+    <div class="statGrid" id="statGrid">
+      <div class="statTile">
+        <div class="statValue" id="statTotalUsers">-</div>
+        <div class="statLabel">Total Users</div>
+      </div>
+      <div class="statTile danger">
+        <div class="statValue" id="statBanned">-</div>
+        <div class="statLabel">Banned</div>
+      </div>
+      <div class="statTile warn">
+        <div class="statValue" id="statMuted">-</div>
+        <div class="statLabel">Muted</div>
+      </div>
+      <div class="statTile warn">
+        <div class="statValue" id="statReports">-</div>
+        <div class="statLabel">Pending Reports</div>
+      </div>
+      <div class="statTile">
+        <div class="statValue" id="statNewToday">-</div>
+        <div class="statLabel">New Today</div>
+      </div>
+      <div class="statTile">
+        <div class="statValue" id="statTokens">-</div>
+        <div class="statLabel">Tokens in Economy</div>
+      </div>
+    </div>
+
+    <div class="panelSection">
+      <h2><i class="fa-solid fa-shield-halved"></i> Moderation</h2>
+      <div class="cardGrid">
+        <button class="panelCard" onclick="window.location.href='/users'">
+          <div class="cardIcon"><i class="fa-solid fa-users"></i></div>
+          <div class="cardTitle">User Management</div>
+          <div class="cardDesc">Ban, mute, and manage player accounts.</div>
         </button>
-        <br>
-        <button onclick="window.location.href='/reports'"> <i class="fa-solid fa-flag"></i>
-          Reports
+
+        <button class="panelCard" onclick="window.location.href='/reports'">
+          <div class="cardIcon"><i class="fa-solid fa-flag"></i></div>
+          <div class="cardTitle">Reports</div>
+          <div class="cardDesc">Review pending player reports.</div>
+        </button>
+
+        <button class="panelCard" onclick="window.location.href='/auditlog'">
+          <div class="cardIcon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          <div class="cardTitle">Audit Log</div>
+          <div class="cardDesc">See every action staff have taken.</div>
+        </button>
+
+        <button class="panelCard" onclick="window.location.href='/automod'">
+          <div class="cardIcon"><i class="fa-solid fa-robot"></i></div>
+          <div class="cardTitle">Auto Mod</div>
+          <div class="cardDesc">Review chat spam flagged automatically.</div>
+        </button>
+
+        <button class="panelCard" onclick="window.location.href='/altdetection'">
+          <div class="cardIcon"><i class="fa-solid fa-user-secret"></i></div>
+          <div class="cardTitle">Alt Detection</div>
+          <div class="cardDesc">Find accounts sharing the same IP.</div>
+        </button>
+
+        <button class="panelCard devOnly" onclick="window.location.href='/ipblacklist'">
+          <div class="cardIcon"><i class="fa-solid fa-ban"></i></div>
+          <div class="cardTitle">IP Blacklist</div>
+          <div class="cardDesc">Block a user's IP from registering or logging in.</div>
         </button>
       </div>
     </div>
-  </center>
+
+    <div class="panelSection">
+      <h2><i class="fa-solid fa-bolt"></i> Recent Activity</h2>
+      <div class="activityList" id="recentActivity">
+        <div class="activityEmpty">Loading recent activity...</div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <div class="mobile_nav">
@@ -171,5 +238,6 @@
     </nav>
   </aside>
 </div>
+<script src="/js/panel/panel.js"></script>
 </body>
 </html>

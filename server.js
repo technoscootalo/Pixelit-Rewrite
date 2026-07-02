@@ -23,7 +23,10 @@ const allowedCorsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
 // ROUTE IMPORTS (Alphabetical)
 // ==========================================
 
+const adminLogsRoute = require("./backend/routers/api/adminLogs");
+const altDetectionRoute = require("./backend/routers/api/altDetection");
 const articlesRoute = require("./backend/routers/api/articles");
+const autoModRoute = require("./backend/routers/api/autoMod");
 const badgeRoutes = require("./backend/routers/api/badges");
 const bannerRoutes = require("./backend/routers/api/banners");
 const bazaarRouter = require("./backend/routers/api/bazaar");
@@ -41,6 +44,7 @@ const dailyWheelRoute = require("./backend/routers/api/dailyWheel");
 const giftBlookRoute = require("./backend/routers/users/giftBlook");
 const inboxRoute = require("./backend/routers/api/inbox");
 const inventoryRoute = require("./backend/routers/api/inventory");
+const ipBlacklistRoute = require("./backend/routers/api/ipBlacklist");
 const leaderboardRoute = require("./backend/routers/api/leaderboard");
 const listBlookRouter = require("./backend/routers/users/listBlook");
 const loggedinRoute = require("./backend/routers/auth/loggedin");
@@ -53,6 +57,7 @@ const moderationReportsRoute = require("./backend/routers/api/moderationReports"
 const packRouter = require("./backend/routers/api/pack");
 const packsRouter = require("./backend/routers/api/packs");
 const pages = require("./backend/routers/pages");
+const panelStatsRoute = require("./backend/routers/api/panelStats");
 const registerRoute = require("./backend/routers/auth/register");
 const reportUserRoute = require("./backend/routers/api/reportUser");
 const sellBlookRoute = require("./backend/routers/users/sellBlook");
@@ -128,6 +133,11 @@ app.use("/api/leaderboard", leaderboardRoute);
 app.use("/api/articles", articlesRoute);
 app.use("/api/reportUser", reportUserRoute);
 app.use("/api/moderationReports", moderationReportsRoute);
+app.use("/api/adminLogs", adminLogsRoute);
+app.use("/api/ipBlacklist", ipBlacklistRoute);
+app.use("/api/panel", panelStatsRoute);
+app.use("/api/automod", autoModRoute);
+app.use("/api/altDetection", altDetectionRoute);
 app.use("/api/stripe", stripeHandlers.router);
 app.use("/", pages);
 
