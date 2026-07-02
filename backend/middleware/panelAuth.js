@@ -3,6 +3,24 @@ const User = require("../models/User");
 const PANEL_ROLES = ["Owner", "Developer", "Community Manager", "Admin"];
 const DEVELOPER_ROLES = ["Owner", "Developer"];
 
+const ROLE_RANK = {
+  Owner: 4,
+  Developer: 3,
+  "Community Manager": 2,
+  Admin: 1,
+};
+
+function getRoleRank(role) {
+  if (!role) return 0;
+  return ROLE_RANK[String(role)] ?? 0;
+}
+
+const canActOnTarget = (requesterRole, targetRole) => {
+  const requesterRank = ROLE_RANK[requesterRole] || 0;
+  const targetRank = ROLE_RANK[targetRole] || 0;
+  return requesterRank > targetRank;
+};
+
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ error: "Not logged in" });
@@ -50,4 +68,7 @@ module.exports = {
   requireDeveloperAccess,
   PANEL_ROLES,
   DEVELOPER_ROLES,
+  ROLE_RANK,
+  getRoleRank,
+  canActOnTarget,
 };

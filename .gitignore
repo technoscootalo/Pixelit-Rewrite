@@ -3,4 +3,4 @@ node_modules/
 .vscode/
 discord/
 hash.js
-setblookpercent.js
+blookpercent.js
