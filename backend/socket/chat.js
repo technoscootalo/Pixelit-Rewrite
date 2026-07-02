@@ -3,6 +3,9 @@ const { Server: SocketIOServer } = require("socket.io");
 const User = require("../../backend/models/User");
 const Message = require("../../backend/models/Messages");
 const Emoji = require("../../backend/models/Emojis.js");
+const AutoModFlag = require("../../backend/models/AutoModFlag");
+
+const SPAM_STREAK_THRESHOLD = 5;
 
 /**
  * Wire socket chat events
@@ -15,6 +18,36 @@ const Emoji = require("../../backend/models/Emojis.js");
 function setupChat(io, onlineUsers) {
   const emojiNameToUrl = new Map();
   let emotesLoaded = false;
+
+  let spamStreak = { userId: null, username: null, pfp: null, messages: [] };
+
+  async function trackSpamStreak(user, savedMessage) {
+    const userId = user.id.toString();
+
+    if (spamStreak.userId === userId) {
+      spamStreak.messages.push({ content: savedMessage.content, createdAt: savedMessage.createdAt });
+    } else {
+      spamStreak = {
+        userId,
+        username: user.username,
+        pfp: user.pfp,
+        messages: [{ content: savedMessage.content, createdAt: savedMessage.createdAt }],
+      };
+    }
+
+    if (spamStreak.messages.length === SPAM_STREAK_THRESHOLD) {
+      try {
+        await AutoModFlag.create({
+          userId: spamStreak.userId,
+          username: spamStreak.username,
+          pfp: spamStreak.pfp,
+          messages: spamStreak.messages,
+        });
+      } catch (err) {
+        console.error("Failed to create automod flag:", err);
+      }
+    }
+  }
 
   async function loadEmotesToCache() {
     try {
@@ -142,6 +175,8 @@ function setupChat(io, onlineUsers) {
         });
 
         io.emit("chatMessage", savedMessage);
+
+        await trackSpamStreak(socket.user, savedMessage);
       });
 
       socket.on("editMessage", async ({ messageId, content }) => {

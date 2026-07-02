@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 const User = require("../../models/User");
 const AccessKey = require("../../models/AccessKey");
+const IPBlacklist = require("../../models/IPBlacklist");
 const { rateLimit } = require("../../middleware/rateLimit");
 
 const router = express.Router();
@@ -33,6 +34,15 @@ router.post(
 
         const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
         const hashedIp = crypto.createHash("sha256").update(ip).digest("hex");
+
+        const blacklistEntry = await IPBlacklist.findOne({
+            hashedIp,
+            active: true,
+            $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
+        });
+        if (blacklistEntry) {
+            return res.status(403).json({ error: "You are not permitted to register an account." });
+        }
 
         // allow up to 2 accounts per IP to prevent abuse without blocking shared networks
         const existingCount = await User.countDocuments({ hashedIps: hashedIp });

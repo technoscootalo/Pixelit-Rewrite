@@ -122,4 +122,20 @@ router.get("/reports", requirePanelAccess(), (req, res) => {
     res.sendFile(path.join(__dirname, "../../frontend/src/views/panel/reports.html"));
 });
 
+router.get("/auditlog", requirePanelAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/src/views/panel/auditlog.html"));
+});
+
+router.get("/ipblacklist", requireDeveloperAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/src/views/panel/ipblacklist.html"));
+});
+
+router.get("/automod", requirePanelAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/src/views/panel/automod.html"));
+});
+
+router.get("/altdetection", requirePanelAccess(), (req, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/src/views/panel/altdetection.html"));
+});
+
 module.exports = router;

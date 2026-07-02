@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: white;
+  background: #6f0083;
+  overflow-y: auto;
+}
+
+.background {
+  position: fixed;
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  background-size: 550px;
+  background-position: -100px -100px;
+  background-image: url("https://izumiihd.github.io/pixelitcdn/assets/background.png");
+  transform: translate(-50%, -50%) rotate(15deg);
+  opacity: 0.1;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #6f057a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8c099a;
+  border-radius: 10px;
+  border: 3px solid #6f057a;
+}
+
+main {
+  min-height: 100vh;
+  padding: 110px 20px 100px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.altWrap {
+  width: min(100%, 900px);
+}
+
+.altWrap h1 {
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.altGroupList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.altGroup {
+  background: #5e046e;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: inset 0 -0.365vw #53055c, 3px 3px 15px rgba(0,0,0,0.6);
+}
+
+.altGroupHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.altGroupHead .hash {
+  font-family: monospace;
+}
+
+.altGroupHead .count {
+  font-weight: 800;
+  color: #ffd479;
+}
+
+.altUserRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.18);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.altUserRow:last-child {
+  margin-bottom: 0;
+}
+
+.altUserLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.altUserLeft img {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.altUserName {
+  font-weight: 800;
+}
+
+.altUserMeta {
+  font-size: 11.5px;
+  opacity: 0.75;
+}
+
+.altStatus {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.25);
+  margin-left: 8px;
+}
+
+.altStatus.banned { color: #ff6d6d; }
+.altStatus.muted { color: #ffb347; }
+
+.altBtnRow {
+  display: flex;
+  gap: 8px;
+}
+
+.altBtnRow button {
+  font-family: 'Pixelify Sans', sans-serif;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: white;
+  box-shadow: inset 0 -0.225vw rgba(0,0,0,0.35), 3px 3px 10px rgba(0,0,0,0.4);
+}
+
+.altBtnRow button:hover {
+  filter: brightness(1.08);
+}
+
+.altEmpty {
+  text-align: center;
+  opacity: 0.85;
+  padding: 30px;
+}
