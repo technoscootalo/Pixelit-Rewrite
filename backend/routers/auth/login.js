@@ -81,6 +81,9 @@ router.post(
             });
         }
 
+        user.lastOnline = new Date();
+        await user.save();
+
         req.session.userId = user.id;
 
         try {

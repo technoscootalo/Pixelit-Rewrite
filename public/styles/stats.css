@@ -400,6 +400,237 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.85);
 }
 
+.stats-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeInOverlay 0.25s ease;
+}
+
+.stats-modal-box {
+  background-color: #6f057a;
+  box-shadow: inset 0 -0.365vw #61056b, 3px 3px 15px rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+  font-family: Pixelify Sans, sans-serif;
+  font-size: 18px;
+  transform: scale(0.85);
+  min-width: 280px;
+  animation: popIn 0.25s ease forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-modal-box--small {
+  width: min(100%, 420px);
+}
+
+.stats-modal-box--medium {
+  width: min(100%, 555px);
+  height: 490px;
+}
+
+.stats-modal-box--large {
+  width: min(100%, 450px);
+  height: 750px;
+}
+
+.stats-modal-title {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 14px;
+  text-shadow: #000 1px 0 13px;
+  width: 100%;
+}
+
+.stats-modal-input {
+  width: 60%;
+  height: 50px;
+  background-color: transparent;
+  padding: 10px 14px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  border: 3px solid white;
+  color: white;
+  font-size: 24px;
+  font-family: Pixelify Sans, sans-serif;
+  outline: none;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.stats-modal-error,
+.stats-modal-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-size: 24px;
+  opacity: 0.9;
+  text-align: center;
+}
+
+.stats-modal-error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+}
+
+.stats-modal-button-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.inbox-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 10px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.18);
+  margin: 10px 0;
+  box-shadow: inset 0 -2px rgba(0,0,0,0.15);
+}
+
+.inbox-avatar {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 40%;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.87));
+}
+
+.inbox-content {
+  flex: 1;
+  text-align: left;
+}
+
+.inbox-content-top {
+  font-size: 16px;
+  font-weight: 800;
+  opacity: 0.95;
+}
+
+.inbox-content-text {
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.3;
+}
+
+.inbox-content-time {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.65;
+}
+
+.inbox-delete-button {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.gift-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 100000;
+  background: rgba(111,5,122,0.98);
+  border-radius: 0px;
+  box-shadow: inset 0 -0.365vw #61056b, 0 10px 30px rgba(0,0,0,0.45);
+  padding: 14px 16px;
+  width: 360px;
+  color: white;
+  font-family: Pixelify Sans, sans-serif;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gift-toast-title {
+  font-weight: 900;
+  font-size: 16px;
+  opacity: 0.95;
+}
+
+.gift-toast-body {
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.3;
+}
+
+.stats-modal-list {
+  position: absolute;
+  inset: 70px 14px 14px 14px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.stats-modal-banners .banner-option {
+  overflow: hidden;
+}
+
+.stats-modal-banners .banner-option img {
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+.pfp-choice-img {
+  width: auto;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.55));
+}
+
+.stats-modal-pfp .pfp-choices-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 10.5px;
+  overflow: auto;
+  padding: 6px;
+  width: 100%;
+  align-content: start;
+}
+
+.stats-modal-banners .empty-state,
+.stats-modal-pfp .empty-state {
+  padding: 30px;
+  opacity: 0.9;
+  font-size: 20px;
+  width: 100%;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .badges-container {
   padding: 7px;
   border-radius: 5px;

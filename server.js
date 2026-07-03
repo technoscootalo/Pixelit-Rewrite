@@ -7,8 +7,10 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const { Server: SocketIOServer } = require("socket.io");
 
+const User = require("./backend/models/User");
 const connectDB = require("./backend/utils/db");
 const { setupChat } = require("./backend/socket/chat");
+const { setupPresence } = require("./backend/socket/presence");
 
 if (!process.env.STRIPE_SECRET_KEY) {
     console.warn("STRIPE_SECRET_KEY environment variable is missing. Payment functionality will be disabled.");
@@ -92,6 +94,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use((req, res, next) => {
+    if (req.session && req.session.userId) {
+        User.updateOne({ id: req.session.userId }, { $set: { lastOnline: new Date() } })
+            .catch(() => {});
+    }
+    next();
+});
+
 // ==========================================
 // ENDPOINT ROUTING
 // ==========================================
@@ -159,6 +169,7 @@ io.use((socket, next) => {
 });
 
 const onlineUsers = new Map();
+setupPresence(io, onlineUsers);
 setupChat(io, onlineUsers);
 
 setTimeout(() => {

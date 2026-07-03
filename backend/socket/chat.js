@@ -74,18 +74,15 @@ function setupChat(io, onlineUsers) {
 
     try {
       const user = await User.findOne({ id: session.userId }).select("-password");
+
       if (!user) {
         return socket.disconnect(true);
       }
 
       socket.user = user;
 
-      if (!onlineUsers.has(user.id.toString())) {
-        onlineUsers.set(user.id.toString(), { username: user.username });
-      }
-
-      io.emit("presence:update", { onlineCount: onlineUsers.size });
       socket.emit("initClient", { username: user.username, userId: user.id.toString() });
+
 
       if (user.username) {
         socket.join(`user:${user.username}`);
@@ -233,18 +230,7 @@ function setupChat(io, onlineUsers) {
       socket.disconnect(true);
     }
 
-    socket.on("disconnect", () => {
-      try {
-        const uid = socket.user?.id?.toString?.() || socket.user?.id;
-        if (uid && onlineUsers.has(uid)) {
-          onlineUsers.delete(uid);
-          io.emit("presence:update", { onlineCount: onlineUsers.size });
-        }
-      } catch (e) {
-        console.error("disconnect presence error:", e);
-      }
-    });
   });
 }
 
-module.exports = { setupChat };
+module.exports = { setupChat }; 

@@ -979,6 +979,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
         ? `<@${user.discordId}>`
         : "Not Linked";
 
+      const msAgo = user.lastOnline ? (Date.now() - new Date(user.lastOnline).getTime()) : null;
+      let lastOnlineValue = "Never";
+      if (msAgo !== null && Number.isFinite(msAgo) && msAgo >= 0) {
+        const seconds = Math.floor(msAgo / 1000);
+        const timestampUnix = Math.floor(new Date(user.lastOnline).getTime() / 1000);
+        const discordRelative = `<t:${timestampUnix}:R>`;
+
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+
+        if (seconds < 60) lastOnlineValue = `${discordRelative}`;
+        else if (minutes < 60) lastOnlineValue = `${discordRelative}`;
+        else lastOnlineValue = `${discordRelative}`;
+      }
+
+
       const embed = new EmbedBuilder()
         .setColor(0x6f057a)
         .setTitle(`${user.username}'s Profile`)
@@ -987,9 +1003,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
           { name: "Role", value: user.role, inline: true },
           { name: "Discord", value: discordStatus, inline: true },
           { name: "Tokens", value: user.tokens.toLocaleString(), inline: true },
-          { name: "Packs Opened", value: user.opened.toLocaleString(), inline: true },
-          { name: "Messages Sent", value: user.sent.toLocaleString(), inline: true },
-          { name: "Join Date", value: new Date(user.joinDate).toLocaleDateString(), inline: true }
+          { name: "Pixels Owned", value: (() => {
+            try {
+              const b = user.blooks || {};
+              return Object.values(b).reduce((acc, v) => {
+                const n = typeof v === 'number' ? v : Number(v?.amount ?? 0);
+                return acc + (Number.isFinite(n) && n > 0 ? 1 : 0);
+              }, 0);
+            } catch {
+              return 0;
+            }
+          })().toLocaleString(), inline: true },
+          { name: "Packs Opened", value: (user.opened || 0).toLocaleString(), inline: true },
+          { name: "Messages Sent", value: (user.sent || 0).toLocaleString(), inline: true },
+          { name: "Banned", value: user.banned ? (user.banReason || "No Reason Provided") : "False", inline: true },
+          { name: "Last Online", value: lastOnlineValue, inline: true },
+          { name: "Join Date", value: `<t:${Math.floor(new Date(user.joinDate).getTime() / 1000)}:F>`, inline: true }
         )
         .setFooter({ text: `User ID: ${user.id}` });
 

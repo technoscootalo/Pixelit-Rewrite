@@ -121,21 +121,6 @@ function showClaimModal(reward) {
   document.body.appendChild(modal);
 
   modal.addEventListener("click", () => modal.remove());
-
-  const style = document.createElement("style");
-  style.innerHTML = `
-    @keyframes popIn {
-      from { transform: scale(0.7); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes fadeInOverlay {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  `;
-
-  modal.appendChild(style);
 }
 
 const inboxButton = document.querySelector(".inboxButton");
@@ -174,35 +159,26 @@ async function refreshInboxBadge() {
 function renderInboxMessage(msg) {
 
   const row = document.createElement("div");
-  row.style.cssText = `
-    display:flex;
-    gap:12px;
-    align-items:center;
-    padding:12px 10px;
-    border-radius:10px;
-    background: rgba(0,0,0,0.18);
-    margin:10px 0;
-    box-shadow: inset 0 -2px rgba(0,0,0,0.15);
-  `;
+  row.className = "inbox-row";
 
   const img = document.createElement("img");
+  img.className = "inbox-avatar";
   img.src = msg.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
   img.alt = `${msg.username || "User"} avatar`;
-  img.style.cssText = `width:55px;height:55px;object-fit:cover;filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.87));border-radius:40%;`;
 
   const content = document.createElement("div");
-  content.style.cssText = `flex:1; text-align:left;`;
+  content.className = "inbox-content";
 
   const top = document.createElement("div");
-  top.style.cssText = `font-size:16px;font-weight:800;opacity:0.95;`;
+  top.className = "inbox-content-top";
   top.textContent = msg.username ? msg.username : "System";
 
   const text = document.createElement("div");
-  text.style.cssText = `margin-top:4px;font-size:14px;opacity:0.9;line-height:1.3;`;
+  text.className = "inbox-content-text";
   text.textContent = msg.content || "";
 
   const time = document.createElement("small");
-  time.style.cssText = `display:block;margin-top:6px;opacity:0.65;`;
+  time.className = "inbox-content-time";
   time.textContent = msg.createdAt ? new Date(msg.createdAt).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
 
   content.appendChild(top);
@@ -239,7 +215,7 @@ async function loadInboxIntoModal() {
   if (!Array.isArray(filtered) || filtered.length === 0) {
     const empty = document.createElement("div");
     empty.textContent = "No notifications.";
-    empty.style.cssText = `display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:24px;opacity:0.9;text-align:center;`;
+    empty.className = "empty-state";
     inboxListEl.appendChild(empty);
     return;
   }
@@ -248,16 +224,7 @@ async function loadInboxIntoModal() {
     const row = renderInboxMessage(m);
     const del = document.createElement("button");
     del.textContent = "✕";
-    del.style.cssText = `
-      background: transparent;
-      border: none;
-      color: white;
-      width: 34px;
-      height: 34px;
-      cursor: pointer;
-      font-size: 26px;
-      font-weight: 900;
-    `;
+    del.className = "inbox-delete-button";
     del.title = "Delete notification";
     del.onclick = async () => {
       try {
@@ -282,29 +249,14 @@ async function loadInboxIntoModal() {
 
 function showGiftToast(msg) {
   const toast = document.createElement("div");
-  toast.style.cssText = `
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    z-index: 100000;
-    background: rgba(111, 5, 122, 0.98);
-    border-radius: 0px;
-    box-shadow: inset 0 -0.365vw #61056b, 0 10px 30px rgba(0,0,0,0.45);
-    padding: 14px 16px;
-    width: 360px;
-    color: white;
-    font-family: Pixelify Sans, sans-serif;
-    transform: translateY(10px);
-    opacity: 0;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  `;
+  toast.className = "gift-toast";
 
   const title = document.createElement("div");
-  title.style.cssText = `font-weight:900; font-size:16px; opacity:0.95;`;
+  title.className = "gift-toast-title";
   title.textContent = msg.username ? `${msg.username}` : "Gift";
 
   const body = document.createElement("div");
-  body.style.cssText = `margin-top:6px; font-size:14px; opacity:0.9; line-height:1.3;`;
+  body.className = "gift-toast-body";
   body.textContent = msg.content || "";
 
   toast.appendChild(title);
@@ -502,7 +454,10 @@ async function loadUser() {
       Player: "#FFFFFF",
     };
 
-    if (pfp) pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+    if (pfp) {
+      pfp.src = user.pfp || "https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png";
+      pfp.style.filter = "";
+    }
     if (banner) banner.src = user.banner || "https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png";
 
     if (usernameEl) {
@@ -1150,7 +1105,10 @@ function openViewUserPopup() {
       spinButton: document.getElementById('spinButton')
     };
 
-    if (elements.pfp) elements.pfp.src = orig.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+    if (elements.pfp) {
+      elements.pfp.src = orig.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+      elements.pfp.style.filter = '';
+    }
     if (elements.banner) elements.banner.src = orig.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
     if (elements.username) elements.username.innerText = orig.username;
     if (elements.role) elements.role.innerText = orig.role || 'Player';
@@ -1227,8 +1185,13 @@ function openViewUserPopup() {
         viewUserBtn: document.querySelector('.viewUser')
       };
 
+      if (ui.pfp) {
+        ui.pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+        ui.pfp.style.filter = other.online
+          ? 'drop-shadow(0 0 5px rgba(0, 255, 0, 0.93))'
+          : 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.5))';
+      }
 
-      if (ui.pfp) ui.pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
       if (ui.banner) ui.banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
       const roleColors = {
         Owner: "#020202",
@@ -1600,7 +1563,13 @@ if (viewUserButton) {
         Player: "#FFFFFF",
       };
 
-      if (pfp) pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+      if (pfp) {
+        pfp.src = other.pfp || 'https://izumiihd.github.io/pixelitcdn/assets/img/blooks/logo.png';
+        pfp.style.filter = other.online
+          ? 'drop-shadow(0 0 5px rgba(0, 255, 0, 0.93))'
+          : 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.5))';
+      }
+
       if (banner) banner.src = other.banner || 'https://izumiihd.github.io/pixelitcdn/assets/img/banner/pixelitBanner.png';
       if (usernameEl) {
         usernameEl.innerText = other.username;

@@ -301,7 +301,9 @@ window.addEventListener("DOMContentLoaded", () => {
 // ------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+
   (function mobileNavDrawer() {
+
     const overlay = document.getElementById('mobileSidebarOverlay');
     const sidebar = document.getElementById('mobileSidebar');
     const openBtn = document.querySelector('.mobile_menu_button');
@@ -358,3 +360,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 });
+
+function presenceSocket() {
+  try {
+    if (typeof io !== "function") return;
+
+    fetch("/api/loggedin", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data || !data.loggedIn) return;
+
+        if (window.__pixelitPresenceSocketInitialized) return;
+        window.__pixelitPresenceSocketInitialized = true;
+
+        const s = io({
+          reconnection: true,
+          reconnectionAttempts: 10,
+          reconnectionDelay: 1000,
+          timeout: 10000,
+        });
+
+        s.on("connect", () => {
+          console.log("Presence socket connected");
+        });
+
+        s.on("disconnect", () => {
+          console.log("Presence socket disconnected");
+        });
+
+        window.__pixelitPresenceSocket = s;
+      })
+      .catch(() => {});
+  } catch {}
+}
+
+presenceSocket();

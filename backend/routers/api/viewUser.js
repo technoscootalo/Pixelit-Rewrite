@@ -39,6 +39,13 @@ router.post(
 
         const totalBlooks = await require('../../models/Blook').countDocuments({});
 
+        const ONLINE_THRESHOLD_MS = 30 * 1000;
+        const lastOnlineDate = user.lastOnline ? new Date(user.lastOnline) : null;
+        const online =
+          lastOnlineDate && !Number.isNaN(lastOnlineDate.getTime())
+            ? Date.now() - lastOnlineDate.getTime() <= ONLINE_THRESHOLD_MS
+            : false;
+
         const userStats = {
             username: user.username,
             pfp: user.pfp,
@@ -53,6 +60,10 @@ router.post(
                 packsOpened: user.opened || 0
             },
             banner: user.banner || '',
+            online,
+            lastOnline: user.lastOnline || null,
+            lastOnlineFormatted: user.lastOnline ? new Date(user.lastOnline).toLocaleString() : null,
+
             badges: (Array.isArray(user.badges) ? user.badges : []).map((b) => {
               if (!b || typeof b !== 'object') return b;
               return {

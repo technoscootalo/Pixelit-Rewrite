@@ -81,6 +81,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: () => new Date().toISOString(),
   },
+
+  lastOnline: {
+    type: Date,
+    default: null,
+  },
+
 }, { versionKey: false });
 
 module.exports = mongoose.model("User", userSchema, "accounts");
