@@ -25,6 +25,17 @@ const RARITY_VALUES = {
   mystical: 1000
 };
 
+async function fetchAndUpdateTokens() {
+  try {
+    const res = await fetch("/api/user", { credentials: "include" });
+    if (!res.ok) return;
+    const user = await res.json().catch(() => null);
+    if (!user || typeof user.tokens === "undefined") return;
+    updateTokenDisplay(user.tokens);
+  } catch (e) {
+  }
+}
+
 async function loadBlooks() {
   try {
     const res = await fetch("/api/userBlooks", {
@@ -287,6 +298,13 @@ function updateBlookInfo(blook) {
   }
 }
 
+function updateTokenDisplay(newTokens) {
+  const el = document.getElementById("tokenAmount");
+  if (!el) return;
+  const n = Number(newTokens ?? 0);
+  el.innerText = Number.isFinite(n) ? n.toLocaleString() : "0";
+}
+
 function sellBlook() {
   if (!selectedBlook || !selectedBlook.name) {
     showModal("Select a Pixel first");
@@ -359,14 +377,12 @@ function sellBlook() {
     updateSellTitle();
   });
 
-
   inputRow.appendChild(label);
   inputRow.appendChild(input);
 
   input.addEventListener("input", () => {
     updateSellTitle();
   });
-
 
   const error = document.createElement("div");
   error.className = "sell-blook-modal-error";
@@ -452,6 +468,10 @@ function sellBlook() {
       if (!res.ok || !data.success) {
         error.textContent = data?.error || "Failed to sell blook";
         return;
+      }
+
+      if (typeof data.tokens !== "undefined") {
+        updateTokenDisplay(data.tokens);
       }
 
       await loadBlooks();
@@ -748,7 +768,6 @@ function listBlook() {
       return null;
     }
   };
-
   
   const modal = document.createElement("div");
   modal.id = "list-blook-modal";
@@ -845,6 +864,7 @@ function listBlook() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  fetchAndUpdateTokens();
   loadBlooks();
   const listBtnEl = document.querySelector(".listBtn");
   if (listBtnEl) {

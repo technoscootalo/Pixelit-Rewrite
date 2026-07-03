@@ -425,7 +425,6 @@ function updateTokens() {
   if (el) el.innerText = userTokens.toLocaleString();
 }
 
-
 async function fetchPacks() {
   try {
     const res = await fetch("/api/packs");
