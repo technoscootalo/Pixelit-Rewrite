@@ -715,7 +715,7 @@ async function openBannersModal() {
         const img = document.createElement("img");
         img.src = banner.image || "";
         img.alt = "Banner";
-        img.style.cssText = ` object-fit: cover; display:block; cursor: pointer;`;
+        img.style.cssText = `width: 320px; height: 110px; border-radius: 5px; object-fit: cover; max- display:block; cursor: pointer;`;
 
         img.addEventListener("click", async (e) => {
           e.stopPropagation();
