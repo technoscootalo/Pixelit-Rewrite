@@ -20,7 +20,7 @@ function triggerRaritySpecificParticles(rarity) {
     scene: {
       preload: function () {
         for (let i = 0; i < particleUrls.length; i++) {
-          this.load.svg((i + 1).toString(), particleUrls[i], { width: 30, height: 30 });
+          this.load.image((i + 1).toString(), particleUrls[i]);
         }
       },
       create: null
@@ -29,22 +29,22 @@ function triggerRaritySpecificParticles(rarity) {
 
   switch (rarity) {
     case 'Common':
-    case 'Uncommon':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658567787/Media/market/particles/square_green.svg",
-        "https://media.blooket.com/image/upload/v1658567787/Media/market/particles/square_light_green.svg",
-        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/circle_dark_green.svg",
-        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/serpentine_dark_green.svg",
-        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/triangle_light_green.svg",
-        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/serpentine_light_green.svg",
-        "https://media.blooket.com/image/upload/v1658567785/Media/market/particles/triangle_green.svg"
-      );
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/common/common.png"
+      ); 
+      
       baseConfig.scene.create = function () {
-        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
         const emitters = particles.map(p =>
           p.createEmitter({
             speed: { min: 700, max: 800 },
             angle: { min: -115, max: -65 },
+            scale: { start: 0.10, end: 0.05 },
             gravityY: 700,
             frequency: 75,
             lifespan: 5000,
@@ -55,24 +55,53 @@ function triggerRaritySpecificParticles(rarity) {
         setTimeout(() => emitters.forEach(e => e.stop()), 1500);
       };
       break;
+
+    case 'Uncommon':
+      particleUrls.push(
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/uncommon/uncommon.png"
+      ); 
+      
+      baseConfig.scene.create = function () {
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const emitters = particles.map(p =>
+          p.createEmitter({
+            speed: { min: 700, max: 800 },
+            angle: { min: -115, max: -65 },
+            gravityY: 700,
+            frequency: 75,
+            lifespan: 5000,
+            x: { min: window.innerWidth / 2 - 25, max: window.innerWidth / 2 + 25 },
+            y: window.innerHeight / 2 + 25,
+            scale: { start: 0.10, end: 0.05 }
+          })
+        );
+        setTimeout(() => emitters.forEach(e => e.stop()), 1500);
+      };
+      break;
+
     case 'Rare':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658567765/Media/market/particles/square_light_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567765/Media/market/particles/square_dark_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/triangle_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/serpentine_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/triangle_light_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/serpentine_light_blue.svg",
-        "https://media.blooket.com/image/upload/v1658567763/Media/market/particles/circle_dark_blue.svg"
-      );
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/rare/rare.png"
+       );
       baseConfig.scene.create = function () {
-        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
         const emitters = [];
         particles.forEach(p => {
           emitters.push(
             p.createEmitter({
               speed: { min: 700, max: 750 },
               angle: { min: -70, max: -20 },
+              scale: { start: 0.10, end: 0.05 },
               gravityY: 500,
               frequency: 75,
               lifespan: 5000,
@@ -84,6 +113,7 @@ function triggerRaritySpecificParticles(rarity) {
             p.createEmitter({
               speed: { min: 700, max: 750 },
               angle: { min: -160, max: -110 },
+              scale: { start: 0.10, end: 0.05 },
               gravityY: 500,
               frequency: 75,
               lifespan: 5000,
@@ -95,18 +125,19 @@ function triggerRaritySpecificParticles(rarity) {
         setTimeout(() => emitters.forEach(e => e.stop()), 1500);
       };
       break;
+
     case 'Epic':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/red.svg",
-        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/light_red.svg",
-        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/serpentine_red.svg",
-        "https://media.blooket.com/image/upload/v1658790239/Media/market/particles/serpentine_dark_red.svg",
-        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/triangle_red.svg",
-        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/triangle_light_red.svg",
-        "https://media.blooket.com/image/upload/v1658790237/Media/market/particles/circle_dark_red.svg"
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/epic/epic.png"
       );
+
       baseConfig.scene.create = function () {
-        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
         particles.forEach(p => {
           p.createEmitter({
             speed: 650,
@@ -115,6 +146,7 @@ function triggerRaritySpecificParticles(rarity) {
             frequency: 65,
             lifespan: 5000,
             x: 0,
+            scale: { start: 0.10, end: 0.05 },
             y: { min: 0, max: window.innerHeight }
           });
           p.createEmitter({
@@ -122,6 +154,7 @@ function triggerRaritySpecificParticles(rarity) {
             angle: { min: -180, max: -130 },
             gravityY: 400,
             frequency: 65,
+            scale: { start: 0.10, end: 0.05 },
             lifespan: 5000,
             x: window.innerWidth,
             y: { min: 0, max: window.innerHeight }
@@ -129,18 +162,18 @@ function triggerRaritySpecificParticles(rarity) {
         });
       };
       break;
+
     case 'Legendary':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658567740/Media/market/particles/square_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567740/Media/market/particles/square_light_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/circle_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/serpentine_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/serpentine_light_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/circle_dark_orange.svg",
-        "https://media.blooket.com/image/upload/v1658567738/Media/market/particles/triangle_dark_orange.svg"
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/legendary/legendary.png"
       );
       baseConfig.scene.create = function () {
-        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
         particles.forEach(p =>
           p.createEmitter({
             speed: 500,
@@ -148,67 +181,61 @@ function triggerRaritySpecificParticles(rarity) {
             gravityY: 300,
             frequency: 65,
             lifespan: 5000,
+            scale: { start: 0.10, end: 0.05 },
             x: { min: 0, max: window.innerWidth },
             y: -50
           })
         );
       };
       break;
+
     case 'Chroma':
-    case 'Mystical':
       particleUrls.push(
-        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_light_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790246/Media/market/particles/square_light_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_dark_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/serpentine_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/triangle_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/triangle_light_turquoise.svg",
-        "https://media.blooket.com/image/upload/v1658790244/Media/market/particles/circle_dark_turquoise.svg"
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/chroma/chroma.png"
       );
       baseConfig.scene.create = function () {
-        const particles = Array(7).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
         particles.forEach(p => {
-          p.createEmitter({
-            speed: 700,
-            angle: -30,
-            frequency: 350,
-            lifespan: 3000,
-            y: { min: window.innerHeight - 651, max: window.innerHeight },
-            x: 0
-          });
-          p.createEmitter({
-            speed: 700,
-            angle: -150,
-            frequency: 350,
-            lifespan: 3000,
-            y: { min: window.innerHeight - 651, max: window.innerHeight },
-            x: window.innerWidth
-          });
-          p.createEmitter({
-            speed: 700,
-            angle: 30,
-            frequency: 350,
-            lifespan: 3000,
-            y: { min: 0, max: 601 },
-            x: 0
-          });
-          p.createEmitter({
-            speed: 700,
-            angle: -210,
-            frequency: 350,
-            lifespan: 3000,
-            y: { min: 0, max: 601 },
-            x: window.innerWidth
-          });
+          p.createEmitter({ speed: 700, angle: -30, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: window.innerHeight - 651, max: window.innerHeight }, x: 0 });
+          p.createEmitter({ speed: 700, angle: -150, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: window.innerHeight - 651, max: window.innerHeight }, x: window.innerWidth });
+          p.createEmitter({ speed: 700, angle: 30, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: 0, max: 601 }, x: 0 });
+          p.createEmitter({ speed: 700, angle: -210, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: 0, max: 601 }, x: window.innerWidth });
         });
       };
       break;
-      default:
+
+    case 'Mystical':
+      particleUrls.push(
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png",
+        "https://raw.githubusercontent.com/technoscootalo/pixelitcdn-1/gh-pages/assets/img/particles/mystical/mystical.png"
+      );
+      baseConfig.scene.create = function () {
+        const particles = Array(particleUrls.length).fill(null).map((_, i) => this.add.particles((i + 1).toString()));
+        particles.forEach(p => {
+          p.createEmitter({ speed: 700, angle: -30, frequency: 350,nscale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: window.innerHeight - 651, max: window.innerHeight }, x: 0 });
+          p.createEmitter({ speed: 700, angle: -150, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: window.innerHeight - 651, max: window.innerHeight }, x: window.innerWidth });
+          p.createEmitter({ speed: 700, angle: 30, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: 0, max: 601 }, x: 0 });
+          p.createEmitter({ speed: 700, angle: -210, frequency: 350, scale: { start: 0.10, end: 0.05 }, lifespan: 3000, y: { min: 0, max: 601 }, x: window.innerWidth });
+        });
+      };
+      break;
+
+    default:
       return;
   }
 
   phaserGame = new Phaser.Game(baseConfig);
 }
+
 
 function capitalize(str = "") {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
