@@ -387,6 +387,19 @@ function sellBlook() {
   const error = document.createElement("div");
   error.className = "sell-blook-modal-error";
 
+  const sellAllDupesBtn = document.createElement("button");
+  sellAllDupesBtn.type = "button";
+  sellAllDupesBtn.className = "sell-blook-modal-btn sell-blook-modal-btn-blue";
+  sellAllDupesBtn.textContent = "One Left";
+
+  if (owned < 2) sellAllDupesBtn.style.display = "none";
+
+  sellAllDupesBtn.onclick = () => {
+    const v = Math.max(1, owned - 1);
+    input.value = String(v);
+    updateSellTitle();
+  };
+
   const actions = document.createElement("div");
   actions.className = "sell-blook-modal-actions";
 
@@ -407,6 +420,7 @@ function sellBlook() {
   box.appendChild(subtitle);
   box.appendChild(inputRow);
   box.appendChild(error);
+  box.appendChild(sellAllDupesBtn);
   box.appendChild(actions);
 
   modal.appendChild(box);
