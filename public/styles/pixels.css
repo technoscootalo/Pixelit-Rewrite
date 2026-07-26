@@ -507,6 +507,21 @@ main {
   filter: brightness(1.08);
 }
 
+.sell-blook-modal-btn-blue {
+  display: block;
+  width: 50%;
+  height: 42px;
+  margin: 14px auto 0;
+  font-size: 15px;
+  background: #0077ff;
+  color: white;
+  box-shadow: inset 0 -0.265vw rgba(0, 0, 0, 0.25), 3px 3px 14px rgba(0,0,0,0.5);
+}
+
+.sell-blook-modal-btn-blue:hover {
+  filter: brightness(1.08);
+}
+
 @media (max-width: 1600px) {
   .pixelsContainer {
     /* width: 700px; */
