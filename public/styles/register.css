@@ -135,7 +135,7 @@ h1 {
   font-size: 44px;
   margin-bottom: 20px;
   font-family: 'DaydreamWeb';
-
+  text-shadow: #000 1px 0 13px;
 }
 
 .register-form-container input {
