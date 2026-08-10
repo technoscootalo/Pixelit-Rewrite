@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "echo 'Skipping frontend build step'", 
-    "start": "node server.js"
+    "start": "node discord/bot.js & node server.js"
   },
   "author": "IzumiiHD, Lemon, Iamgamedude, SOUNDGOD, Packman28, Dylanee300, Hjr, Buenar",
   "license": "ISC",
