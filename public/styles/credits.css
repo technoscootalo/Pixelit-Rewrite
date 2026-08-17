@@ -106,7 +106,7 @@ body {
   font-size: clamp(2rem, 4.5vw, 3rem);
   letter-spacing: 0.3px;
   margin: 0;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  text-shadow: #000 1px 0 13px;
 }
 
 .credits-subtitle {
@@ -142,11 +142,12 @@ body {
   text-align: center;
   padding-bottom: 10px;
   border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+  text-shadow: #000 1px 0 13px;
 }
 
 .honors-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -168,6 +169,7 @@ body {
   font-family: 'DaydreamWeb', 'Pixelify Sans', sans-serif;
   font-size: 1.25rem;
   letter-spacing: 0.2px;
+  text-shadow: #000 1px 0 13px;
 }
 
 .credit-card__image {
