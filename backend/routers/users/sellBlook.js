@@ -26,10 +26,11 @@ router.post(
   }),
   async (req, res) => {
   try {
-    const { userId, blookName, quantity } = req.body || {};
+    const { blookName, quantity } = req.body || {};
+    const userId = req.session.userId;
 
     if (!userId || typeof userId !== "string") {
-      return res.status(400).json({ error: "Missing userId" });
+      return res.status(401).json({ error: "Nuh uh!" });
     }
 
     if (!blookName || typeof blookName !== "string") {
