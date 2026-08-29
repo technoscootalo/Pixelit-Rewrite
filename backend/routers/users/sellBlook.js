@@ -30,7 +30,7 @@ router.post(
     const userId = req.session.userId;
 
     if (!userId || typeof userId !== "string") {
-      return res.status(401).json({ error: "Nuh uh!" });
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     if (!blookName || typeof blookName !== "string") {

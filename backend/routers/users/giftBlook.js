@@ -21,7 +21,7 @@ router.post(
     const { blookName, quantity, recipientUsername } = req.body || {};
     const userId = req.session.userId;
 
-    if (!userId || typeof userId !== "string") return res.status(401).json({ error: "Nuh uh!" });
+    if (!userId || typeof userId !== "string") return res.status(401).json({ error: "Not authenticated" });
     if (!blookName || typeof blookName !== "string") return res.status(400).json({ error: "Missing blookName" });
     if (!recipientUsername || typeof recipientUsername !== "string") return res.status(400).json({ error: "Missing recipientUsername" });
 
