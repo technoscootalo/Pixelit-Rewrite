@@ -1124,12 +1124,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
     try {
       await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
 
-      const hasGeneratedBefore = await AccessKey.findOne({
-        discordId: interaction.user.id
+      const hasUsedKey = await AccessKey.findOne({
+        discordId: interaction.user.id,
+        used: true
       });
 
-      if (hasGeneratedBefore) {
-        return await replyOrEdit(interaction, "You have already generated an access key.");
+      if(hasUsedKey) {
+        return await replyOrEdit(
+          interaction,
+          "You have already used a key"
+        );
+      }
+
+      const activeKey = await AccessKey.findOne({
+        discordId: interaction.user.id,
+        used: false,
+        expiresAt: { $gt: new Date() }
+      });
+
+      if (activeKey) {
+        return await replyOrEdit(
+          interaction,
+          "You alredy have an active key"
+        );
       }
 
       const key = crypto.randomBytes(32).toString("hex");
